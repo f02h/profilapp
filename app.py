@@ -148,9 +148,14 @@ optVariable = StringVar(tab2)
 optVariable.set("   Select   ") # default value
 optFiles = OptionMenu(root, optVariable,*profilList)
 optFiles.pack()
-optFiles.place(x=240,y=250)
+optFiles.grid(column=1,row=0,padx=30,pady=30)
 
-Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').place(x=180,y=380)
+
+Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=0,
+                                    row=1,
+                                    padx=30,
+                                    pady=30)
+
 
 
 
