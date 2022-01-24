@@ -42,6 +42,9 @@ def hear():
     mystring = msg.decode('ascii')  # decode n return
     return mystring
 
+def callback(*args):
+    print(f"the variable has changed to '{monthchoosen.get()}'")
+
 
 def drill():
     res = c.execute("SELECT name,value FROM vars").fetchall()
@@ -142,8 +145,10 @@ monthchoosen = ttk.Combobox(tab2, width=27,
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
 monthchoosen.grid(column=1, row=15)
+monthchoosen.trace("w", callback)
 
 Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').place(x=100,y=100)
+
 
 
 label = tk.Label(root, fg="dark green")
