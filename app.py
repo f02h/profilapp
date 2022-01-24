@@ -2,7 +2,7 @@ import tkinter as tk
 import serial
 import json
 import sqlite3
-from tkinter import ttk
+from tkinter import *
 
 
 
@@ -26,6 +26,12 @@ class FullScreenApp(object):
         self.master.geometry(self._geom)
         self._geom=geom
 
+
+def submitForm():
+    strFile = optVariable.get()
+    # Print the selected value from Option (Combo Box)
+    if (strFile !=''):
+        print('Selected Value is : ' + strFile)
 
 def write_slogan():
     print("Tkinter is easy to use!")
@@ -132,6 +138,22 @@ homing = tk.Button(tab1,
                                row=0,
                                padx=30,
                                pady=30)
+
+res = c.execute("SELECT id,name FROM profili").fetchall()
+profilList = dict(res)
+
+
+optVariable = StringVar(tab2)
+optVariable.set("   Select   ") # default value
+optFiles = OptionMenu(root, optVariable,*profilList)
+optFiles.pack()
+optFiles.place(x=240,y=250)
+
+Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').place(x=180,y=380)
+
+
+
+
 label = tk.Label(root, fg="dark green")
 label.pack()
 
