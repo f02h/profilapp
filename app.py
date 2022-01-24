@@ -103,22 +103,19 @@ ttk.Label(tab2,
                                     pady=30)
 
 
-frame = tk.Frame(tab2)
-frame.pack()
-
-button = tk.Button(frame,
+button = tk.Button(tab1,
                    text="QUIT",
                    fg="red",
                    command=quit)
-button.pack(side=tk.LEFT)
-drill = tk.Button(frame,
+button.pack(side=tab1.LEFT)
+drill = tk.Button(tab1,
                    text="Drill",
                    command=drill)
-drill.pack(side=tk.LEFT)
-homing = tk.Button(frame,
+drill.pack(side=tab1.LEFT)
+homing = tk.Button(tab1,
                    text="Homing",
                    command=home)
-homing.pack(side=tk.LEFT)
+homing.pack(side=tab1.LEFT)
 label = tk.Label(root, fg="dark green")
 label.pack()
 
