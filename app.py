@@ -65,6 +65,7 @@ def drill():
 
     usb.write(json.dumps(data).encode())
     hearv = hear()
+    label.config(text=str(hearv))
 
 def home():
 
@@ -74,6 +75,7 @@ def home():
 
     usb.write(json.dumps(data).encode())
     hearv = hear()
+    label.config(text=str(hearv))
 
 root = tk.Tk()
 frame = tk.Frame(root)
@@ -92,5 +94,7 @@ homing = tk.Button(frame,
                    text="Homing",
                    command=home)
 homing.pack(side=tk.LEFT)
+label = tk.Label(root, fg="dark green")
+label.pack()
 
 root.mainloop()
