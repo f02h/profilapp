@@ -111,14 +111,6 @@ tabControl.add(tab1, text='Vrtalka')
 tabControl.add(tab2, text='Nastavitve')
 tabControl.pack(expand=1, fill="both")
 
-ttk.Label(tab2,
-          text="Lets dive into the\
-          world of computers").grid(column=0,
-                                    row=0,
-                                    padx=30,
-                                    pady=30)
-
-
 button = tk.Button(tab1,
                    text="QUIT",
                    fg="red",
@@ -148,14 +140,9 @@ optVariable = StringVar(tab2)
 optVariable.set("   Select   ") # default value
 optFiles = OptionMenu(root, optVariable,*profilList)
 optFiles.pack()
-optFiles.grid(column=1,row=0,padx=30,pady=30)
+optFiles.place(x=50,y=50)
 
-
-Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=0,
-                                    row=1,
-                                    padx=30,
-                                    pady=30)
-
+Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').place(x=100,y=100)
 
 
 
