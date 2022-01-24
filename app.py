@@ -2,6 +2,7 @@ import tkinter as tk
 import serial
 import json
 import sqlite3
+from tkinter import ttk
 
 
 
@@ -78,7 +79,31 @@ def home():
     label.config(text=str(hearv))
 
 root = tk.Tk()
-frame = tk.Frame(root)
+
+tabControl = ttk.Notebook(root)
+
+tab1 = ttk.Frame(tabControl)
+tab2 = ttk.Frame(tabControl)
+
+tabControl.add(tab1, text='Vrtalka')
+tabControl.add(tab2, text='Nastavitve')
+tabControl.pack(expand=1, fill="both")
+
+ttk.Label(tab1,
+          text="Welcome to \
+          GeeksForGeeks").grid(column=0,
+                               row=0,
+                               padx=30,
+                               pady=30)
+ttk.Label(tab2,
+          text="Lets dive into the\
+          world of computers").grid(column=0,
+                                    row=0,
+                                    padx=30,
+                                    pady=30)
+
+
+frame = tk.Frame(tab2)
 frame.pack()
 
 button = tk.Button(frame,
