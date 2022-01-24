@@ -106,16 +106,23 @@ ttk.Label(tab2,
 button = tk.Button(tab1,
                    text="QUIT",
                    fg="red",
-                   command=quit)
-button.pack(side=tab1.LEFT)
+                   command=quit).grid(column=0,
+                               row=0,
+                               padx=30,
+                               pady=30)
 drill = tk.Button(tab1,
                    text="Drill",
-                   command=drill)
-drill.pack(side=tab1.LEFT)
+                   command=drill).grid(column=0,
+                               row=0,
+                               padx=30,
+                               pady=30)
+
 homing = tk.Button(tab1,
                    text="Homing",
-                   command=home)
-homing.pack(side=tab1.LEFT)
+                   command=home).grid(column=0,
+                               row=0,
+                               padx=30,
+                               pady=30)
 label = tk.Label(root, fg="dark green")
 label.pack()
 
