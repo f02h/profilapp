@@ -60,9 +60,6 @@ def callback(*args):
         i+=1
 
 
-    print(f"the variable has changed to '{profilList[monthchoosen.get()]}'")
-
-
 def drill():
     res = c.execute("SELECT name,value FROM vars").fetchall()
     dictionary = {}
