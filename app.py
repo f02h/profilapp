@@ -43,7 +43,16 @@ def hear():
     return mystring
 
 def callback(*args):
-    print(f"the variable has changed to '{monthchoosen.get()}'")
+    """idProfil = request.GET.alu_profiles.strip()
+    if not idProfil:
+        idProfil = 1
+
+    conn = sqlite3.connect('/home/pi/profil/todo.db')
+    c = conn.cursor()
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil))).fetchall()
+    dbvars = dict(res)
+    """
+    print(f"the variable has changed to '{profilList[monthchoosen.get()]}'")
 
 
 def drill():
