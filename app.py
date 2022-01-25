@@ -43,9 +43,8 @@ def hear():
     return mystring
 
 def callback(*args):
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()))).fetchall()
-    result = c.fetchone()
-    idProfil = float(result[0])
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()))).fetchone()
+    idProfil = float(res[0])
     if not idProfil:
         idProfil = 1
 
