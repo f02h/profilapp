@@ -43,7 +43,8 @@ def hear():
     return mystring
 
 def callback(*args):
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()))).fetchone()
+    print(f"the variable has changed to '{monthchoosen.get()}'")
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", ((monthchoosen.get()))).fetchone()
     idProfil = float(res[0])
     if not idProfil:
         idProfil = 1
@@ -120,9 +121,9 @@ def home():
     hearv = hear()
     label.config(text=str(hearv))
 
-root = tk.Tk()
-app=FullScreenApp(root)
-tabControl = ttk.Notebook(root)
+main = tk.Tk()
+app=FullScreenApp(main)
+tabControl = ttk.Notebook(main)
 
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
@@ -169,7 +170,7 @@ Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').
 
 
 
-label = tk.Label(root, fg="dark green")
+label = tk.Label(main, fg="dark green")
 label.pack()
 
-root.mainloop()
+main.mainloop()
