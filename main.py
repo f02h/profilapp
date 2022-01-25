@@ -37,7 +37,7 @@ class YScrolledFrame(tk.Frame):
         canvas.grid(row=0, column=0, sticky='nsew')
 
         scroll = tk.Scrollbar(self, command=canvas.yview, orient=tk.VERTICAL)
-        canvas.config(yscrollcommand=scroll.set)
+        canvas.config(yscrollcommand=scroll.set, width=600)
         scroll.grid(row=0, column=1, sticky='nsew')
 
         self.content = tk.Frame(canvas)
@@ -61,6 +61,24 @@ class Notebook(ttk.Notebook):
 
     def tab(self, key):
         return self._tab[key].content
+
+class ResizingCanvas(Canvas):
+    def __init__(self,parent,**kwargs):
+        Canvas.__init__(self,parent,**kwargs)
+        self.bind("<Configure>", self.on_resize)
+        self.height = self.winfo_reqheight()
+        self.width = self.winfo_reqwidth()
+
+    def on_resize(self,event):
+        # determine the ratio of old width/height to new width/height
+        wscale = float(event.width)/self.width
+        hscale = float(event.height)/self.height
+        self.width = event.width
+        self.height = event.height
+        # resize the canvas
+        self.config(width=self.width, height=self.height)
+        # rescale all the objects tagged with the "all" tag
+        self.scale("all",0,0,wscale,hscale)
 
 def submitForm():
     strFile = optVariable.get()
