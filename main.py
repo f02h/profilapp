@@ -44,11 +44,10 @@ def hear():
 
 def callback(*args):
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
-    idProfil = float(res[0])
+    idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    print("Test: " + str(idProfil))
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
 
