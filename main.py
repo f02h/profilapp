@@ -48,6 +48,7 @@ def callback(*args):
     if not idProfil:
         idProfil = 1
 
+    print("Test: " + idProfil)
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
 
