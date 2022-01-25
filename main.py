@@ -206,8 +206,8 @@ profilList = dict(res)
 
 n = tk.StringVar()
 n.trace("w", callback)
-monthchoosen = ttk.Combobox(tab2, width=27,
-                            textvariable=n)
+text_font = ('Courier New', '18')
+monthchoosen = ttk.Combobox(tab2, width=27,textvariable=n,font=text_font)
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
 monthchoosen.grid(column=0, row=0)
