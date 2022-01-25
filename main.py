@@ -54,11 +54,11 @@ def callback(*args):
     i=3
     for var in dbvars:
         print("Test: "+var)
-        tk.Label(tab2, text="{var}").grid(row=i)
+        tk.Label(tab2, text=var).grid(row=i,column=0)
         e1 = tk.Entry(tab2)
         e1.grid(row=i, column=1)
         e1.insert(0,dbvars[var])
-        i+1
+        i+=1
 
 
 def drill():
