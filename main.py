@@ -203,6 +203,6 @@ Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').
 
 
 label = tk.Label(main, fg="dark green")
-label.pack()
+label.grid()
 
 main.mainloop()
