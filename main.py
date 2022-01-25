@@ -51,13 +51,13 @@ def callback(*args):
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
 
-    i=0
+    i=3
     for var in dbvars:
         tk.Label(tab2, text="{var}").grid(row=i)
         e1 = tk.Entry(tab2)
         e1.grid(row=i, column=1)
         e1.insert(0,dbvars[var])
-        i+=1
+        i+1
 
 
 def drill():
