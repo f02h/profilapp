@@ -43,15 +43,24 @@ def hear():
     return mystring
 
 def callback(*args):
-    """idProfil = request.GET.alu_profiles.strip()
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()))).fetchall()
+    result = c.fetchone()
+    idProfil = float(result[0])
     if not idProfil:
         idProfil = 1
 
-    conn = sqlite3.connect('/home/pi/profil/todo.db')
-    c = conn.cursor()
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil))).fetchall()
     dbvars = dict(res)
-    """
+
+    i=0
+    for var in dbvars:
+        tk.Label(tab2, text="{var}").grid(row=i)
+        e1 = tk.Entry(tab2)
+        e1.grid(row=i, column=1)
+        e1.insert(0,dbvars[var])
+        i+=1
+
+
     print(f"the variable has changed to '{profilList[monthchoosen.get()]}'")
 
 
