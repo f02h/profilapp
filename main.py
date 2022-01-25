@@ -161,9 +161,6 @@ notebook.grid(row=0, column=0, sticky='nsew')
 tab1 = notebook.tab('Vrtalka')
 tab2 = notebook.tab('Nastavitve')
 
-tab1 = ttk.Frame(tabControl)
-tab2 = ttk.Frame(tabControl)
-
 button = tk.Button(tab1,
                    text="QUIT",
                    fg="red",
