@@ -192,10 +192,10 @@ monthchoosen = ttk.Combobox(tab2, width=27,
                             textvariable=n)
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
-monthchoosen.grid(column=1, row=15)
+monthchoosen.grid(column=0, row=0)
 
 
-Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').place(x=100,y=100)
+Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=1, row=0)
 
 
 
