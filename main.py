@@ -44,7 +44,7 @@ def hear():
 
 def callback(*args):
     print(f"the variable has changed to '{monthchoosen.get()}'")
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", ((monthchoosen.get()))).fetchone()
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str({monthchoosen.get()}))).fetchone()
     idProfil = float(res[0])
     if not idProfil:
         idProfil = 1
