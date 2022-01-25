@@ -106,8 +106,8 @@ def callback(*args):
     i=3
     for var in dbvars:
         print("Test: "+var)
-        tk.Label(tab2, text=var).grid(row=i,column=0)
-        e1 = tk.Entry(tab2)
+        tk.Label(tab2, text=var,font=text_font).grid(row=i,column=0)
+        e1 = tk.Entry(tab2,font=text_font)
         e1.grid(row=i,column=1)
         e1.insert(0,dbvars[var])
         i+=1
