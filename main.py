@@ -27,42 +27,40 @@ class FullScreenApp(object):
         self.master.geometry(self._geom)
         self._geom=geom
 
-class Scrollable(tk.Frame):
-    """
-       Make a frame scrollable with scrollbar on the right.
-       After adding or removing widgets to the scrollable frame,
-       call the update() method to refresh the scrollable area.
-    """
+class YScrolledFrame(tk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
 
-    def __init__(self, frame, width=16):
+        self.canvas = canvas = tk.Canvas(self, bg='white', relief='raised')
+        canvas.grid(row=0, column=0, sticky='nsew')
 
-        scrollbar = tk.Scrollbar(frame, width=width)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y, expand=False)
+        scroll = tk.Scrollbar(self, command=canvas.yview, orient=tk.VERTICAL)
+        canvas.config(yscrollcommand=scroll.set)
+        scroll.grid(row=0, column=1, sticky='nsew')
 
-        self.canvas = tk.Canvas(frame, yscrollcommand=scrollbar.set)
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.content = tk.Frame(canvas)
+        self.canvas.create_window(0, 0, window=self.content, anchor="nw")
 
-        scrollbar.config(command=self.canvas.yview)
+        self.bind('<Configure>', self.on_configure)
 
-        self.canvas.bind('<Configure>', self.__fill_canvas)
+    def on_configure(self, event):
+        bbox = self.content.bbox('ALL')
+        self.canvas.config(scrollregion=bbox)
 
-        # base class initialization
-        tk.Frame.__init__(self, frame)
+class Notebook(ttk.Notebook):
+    def __init__(self, parent, tab_labels):
+        super().__init__(parent)
 
-        # assign this obj (the inner frame) to the windows item of the canvas
-        self.windows_item = self.canvas.create_window(0,0, window=self, anchor=tk.NW)
+        self._tab = {}
+        for text in tab_labels:
+            self._tab[text] = YScrolledFrame(self)
+            # layout by .add defaults to fill=tk.BOTH, expand=True
+            self.add(self._tab[text], text=text, compound=tk.TOP)
 
-
-    def __fill_canvas(self, event):
-        "Enlarge the windows item to the canvas width"
-
-        canvas_width = event.width
-        self.canvas.itemconfig(self.windows_item, width = canvas_width)
-
-    def update(self):
-        "Update the canvas and the scrollregion"
-
-        self.update_idletasks()
+    def tab(self, key):
+        return self._tab[key].content
 
 def submitForm():
     strFile = optVariable.get()
@@ -90,12 +88,11 @@ def callback(*args):
     i=3
     for var in dbvars:
         print("Test: "+var)
-        tk.Label(scrollable_body, text=var).grid(row=i,column=0)
-        e1 = tk.Entry(scrollable_body)
+        tk.Label(tab1, text=var).grid(row=i,column=0)
+        e1 = tk.Entry(tab1)
         e1.grid(row=i, column=1)
         e1.insert(0,dbvars[var])
         i+=1
-    scrollable_body.update()
 
 
 def drill():
@@ -159,12 +156,13 @@ main = tk.Tk()
 app=FullScreenApp(main)
 tabControl = ttk.Notebook(main)
 
+notebook = Notebook(main, ['Vrtalka', 'Nastavitve', 'Page 3'])
+notebook.grid(row=0, column=0, sticky='nsew')
+tab1 = notebook.tab('Vrtalka')
+tab2 = notebook.tab('Nastavitve')
+
 tab1 = ttk.Frame(tabControl)
 tab2 = ttk.Frame(tabControl)
-
-tabControl.add(tab1, text='Vrtalka')
-tabControl.add(tab2, text='Nastavitve')
-tabControl.pack(expand=1, fill="both")
 
 button = tk.Button(tab1,
                    text="QUIT",
@@ -190,7 +188,6 @@ homing = tk.Button(tab1,
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
 
-scrollable_body = Scrollable(tab2, width=32)
 
 n = tk.StringVar()
 n.trace("w", callback)
