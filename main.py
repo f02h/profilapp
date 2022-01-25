@@ -112,6 +112,17 @@ def callback(*args):
         e1.insert(0,dbvars[var])
         i+=1
 
+def initEmptyCombo():
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
+    dbvars = dict(res)
+
+    i = 3
+    for var in dbvars:
+        print("Test: " + var)
+        tk.Label(tab2, text=var, font=text_font).grid(row=i, column=0)
+        e1 = tk.Entry(tab2, font=text_font)
+        e1.grid(row=i, column=1)
+        i += 1
 
 def drill():
     res = c.execute("SELECT name,value FROM vars").fetchall()
@@ -212,6 +223,7 @@ monthchoosen = ttk.Combobox(tab2, width=27,textvariable=n,font=text_font)
 monthchoosen['values'] = list(profilList.values())
 monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
+initEmptyCombo()
 
 Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=1, row=0)
 
