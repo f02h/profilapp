@@ -43,13 +43,12 @@ def hear():
     return mystring
 
 def callback(*args):
-    print(f"the variable has changed to '{monthchoosen.get()}'")
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str({monthchoosen.get()}))).fetchone()
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get(),))).fetchone()
     idProfil = float(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil))).fetchall()
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
 
     i=0
