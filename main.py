@@ -27,6 +27,42 @@ class FullScreenApp(object):
         self.master.geometry(self._geom)
         self._geom=geom
 
+class Scrollable(tk.Frame):
+    """
+       Make a frame scrollable with scrollbar on the right.
+       After adding or removing widgets to the scrollable frame,
+       call the update() method to refresh the scrollable area.
+    """
+
+    def __init__(self, frame, width=16):
+
+        scrollbar = tk.Scrollbar(frame, width=width)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y, expand=False)
+
+        self.canvas = tk.Canvas(frame, yscrollcommand=scrollbar.set)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+
+        scrollbar.config(command=self.canvas.yview)
+
+        self.canvas.bind('<Configure>', self.__fill_canvas)
+
+        # base class initialization
+        tk.Frame.__init__(self, frame)
+
+        # assign this obj (the inner frame) to the windows item of the canvas
+        self.windows_item = self.canvas.create_window(0,0, window=self, anchor=tk.NW)
+
+
+    def __fill_canvas(self, event):
+        "Enlarge the windows item to the canvas width"
+
+        canvas_width = event.width
+        self.canvas.itemconfig(self.windows_item, width = canvas_width)
+
+    def update(self):
+        "Update the canvas and the scrollregion"
+
+        self.update_idletasks()
 
 def submitForm():
     strFile = optVariable.get()
@@ -54,11 +90,12 @@ def callback(*args):
     i=3
     for var in dbvars:
         print("Test: "+var)
-        tk.Label(tab2, text=var).grid(row=i,column=0)
-        e1 = tk.Entry(tab2)
+        tk.Label(scrollable_body, text=var).grid(row=i,column=0)
+        e1 = tk.Entry(scrollable_body)
         e1.grid(row=i, column=1)
         e1.insert(0,dbvars[var])
         i+=1
+    scrollable_body.update()
 
 
 def drill():
@@ -153,6 +190,7 @@ homing = tk.Button(tab1,
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
 
+scrollable_body = Scrollable(tab2, width=32)
 
 n = tk.StringVar()
 n.trace("w", callback)
