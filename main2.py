@@ -310,17 +310,35 @@ def home():
 
 main = tk.Tk()
 app=FullScreenApp(main)
-tabControl = ttk.Notebook(main)
 
-
+"""
 notebook = Notebook(main, ['Vrtalka', 'Nastavitve', 'Page 3'])
 notebook.grid(row=0, column=0, sticky='nsew')
 tab1 = notebook.tab('Vrtalka')
 tab2 = notebook.tab('Nastavitve')
 tab3 = notebook.tab('Page 3')
+"""
+
+notebook = ttk.Notebook(main)
+notebook.pack(pady=10, expand=True)
+
+# create frames
+tab1 = ttk.Frame(notebook, width=1000, height=500)
+tab2 = ttk.Frame(notebook, width=1000, height=500)
+tab3 = ttk.Frame(notebook, width=1000, height=500)
+
+tab1.pack(fill='both', expand=True)
+tab2.pack(fill='both', expand=True)
+tab3.pack(fill='both', expand=True)
+
+# add frames to notebook
+
+notebook.add(tab1, text='Vrtalka')
+notebook.add(tab2, text='Nastavitve')
+notebook.add(tab3, text='Profile')
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=200, width=1000, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=600, width=1000, hscroll=False, vscroll=True)
 canvas_tab2.pack(fill="both", expand=True)
 
 canvas_tab3 = ScrolledText(tab3, width=20)
