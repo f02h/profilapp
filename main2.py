@@ -338,8 +338,8 @@ notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Profile')
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=500, width=1000, hscroll=False, vscroll=True)
-canvas_tab2.pack(fill="both", expand=True)
+canvas_tab2 = ScrollableFrame(tab2, height=500, width=600, hscroll=False, vscroll=True)
+canvas_tab2.pack(side = LEFT, expand=True)
 
 canvas_tab3 = ScrolledText(tab3, width=20)
 canvas_tab3.grid()
