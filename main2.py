@@ -326,10 +326,6 @@ tab1 = ttk.Frame(notebook, width=1000, height=550)
 tab2 = ttk.Frame(notebook, width=1000, height=550)
 tab3 = ttk.Frame(notebook, width=1000, height=550)
 
-tab1.pack(fill='both', expand=True)
-tab2.pack(fill='both', expand=True)
-tab3.pack(fill='both', expand=True)
-
 # add frames to notebook
 
 notebook.add(tab1, text='Vrtalka')
