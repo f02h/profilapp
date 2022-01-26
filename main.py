@@ -208,7 +208,7 @@ tab2 = notebook.tab('Nastavitve')
 tab3 = notebook.tab('Page 3')
 
 canvas_tab3 = ScrolledText(tab3, width=20)
-canvas_tab3.pack()
+canvas_tab3.grid()
 
 button = tk.Button(tab1,
                    text="QUIT",
