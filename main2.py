@@ -383,7 +383,4 @@ Button(canvas_tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='w
 
 
 
-label = tk.Label(main, fg="dark green")
-label.grid()
-
 main.mainloop()
