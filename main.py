@@ -107,8 +107,8 @@ def callback(*args):
 
     i=3
     for var in dbvars:
-        tk.Label(tab2, text=var,font=text_font).grid(row=i,column=0)
-        e1 = tk.Entry(tab2,font=text_font)
+        tk.Label(canvas_tab2, text=var,font=text_font).grid(row=i,column=0)
+        e1 = tk.Entry(canvas_tab2,font=text_font)
         e1.grid(row=i,column=1)
         e1.insert(0,dbvars[var])
         i+=1
@@ -127,8 +127,8 @@ def initEmptyCombo():
 
     i = 3
     for var in dbvars:
-        tk.Label(tab2, text=var, font=text_font).grid(row=i, column=0)
-        e1 = tk.Entry(tab2, font=text_font)
+        tk.Label(canvas_tab2, text=var, font=text_font).grid(row=i, column=0)
+        e1 = tk.Entry(canvas_tab2, font=text_font)
         e1.grid(row=i, column=1)
         i += 1
 
@@ -200,6 +200,10 @@ tab1 = notebook.tab('Vrtalka')
 tab2 = notebook.tab('Nastavitve')
 tab3 = notebook.tab('Page 3')
 
+canvas_tab2 = ScrolledText(tab2, width=20)
+canvas_tab2.grid()
+
+
 canvas_tab3 = ScrolledText(tab3, width=20)
 canvas_tab3.grid()
 
@@ -231,14 +235,14 @@ profilList = dict(res)
 n = tk.StringVar()
 n.trace("w", callback)
 text_font = ('Courier New', '18')
-monthchoosen = ttk.Combobox(tab2, width=27,textvariable=n,font=text_font)
+monthchoosen = ttk.Combobox(canvas_tab2, width=27,textvariable=n,font=text_font)
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
 monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
-Button(tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=1, row=0)
+Button(canvas_tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=1, row=0)
 
 
 
