@@ -115,8 +115,8 @@ def callback(*args):
 
     i=3
     for var in dbvars:
-        tk.Label(tab3, text=var,font=text_font).grid(row=i,column=0)
-        e1 = tk.Entry(tab3,font=text_font)
+        tk.Label(canvas_tab3, text=var,font=text_font).grid(row=i,column=0)
+        e1 = tk.Entry(canvas_tab3,font=text_font)
         e1.grid(row=i,column=1)
         e1.insert(0,dbvars[var])
         i+=1
@@ -129,13 +129,6 @@ def initEmptyCombo():
     for var in dbvars:
         tk.Label(tab2, text=var, font=text_font).grid(row=i, column=0)
         e1 = tk.Entry(tab2, font=text_font)
-        e1.grid(row=i, column=1)
-        i += 1
-
-    i = 3
-    for var in dbvars:
-        tk.Label(tab3, text=var, font=text_font).grid(row=i, column=0)
-        e1 = tk.Entry(tab3, font=text_font)
         e1.grid(row=i, column=1)
         i += 1
 
