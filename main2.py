@@ -320,7 +320,7 @@ tab3 = notebook.tab('Page 3')
 """
 
 notebook = ttk.Notebook(main)
-notebook.pack(pady=10, expand=True)
+notebook.pack(expand=True)
 
 # create frames
 tab1 = ttk.Frame(notebook, width=1000, height=500)
