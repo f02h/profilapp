@@ -4,6 +4,7 @@ import json
 import sqlite3
 from tkinter import *
 from tkinter import ttk
+from tkinter.scrolledtext import ScrolledText
 
 
 
@@ -112,15 +113,29 @@ def callback(*args):
         e1.insert(0,dbvars[var])
         i+=1
 
+    i=3
+    for var in dbvars:
+        tk.Label(tab3, text=var,font=text_font).grid(row=i,column=0)
+        e1 = tk.Entry(tab3,font=text_font)
+        e1.grid(row=i,column=1)
+        e1.insert(0,dbvars[var])
+        i+=1
+
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
     dbvars = dict(res)
 
     i = 3
     for var in dbvars:
-        print("Test: " + var)
         tk.Label(tab2, text=var, font=text_font).grid(row=i, column=0)
         e1 = tk.Entry(tab2, font=text_font)
+        e1.grid(row=i, column=1)
+        i += 1
+
+    i = 3
+    for var in dbvars:
+        tk.Label(tab3, text=var, font=text_font).grid(row=i, column=0)
+        e1 = tk.Entry(tab3, font=text_font)
         e1.grid(row=i, column=1)
         i += 1
 
@@ -190,6 +205,10 @@ notebook = Notebook(main, ['Vrtalka', 'Nastavitve', 'Page 3'])
 notebook.grid(row=0, column=0, sticky='nsew')
 tab1 = notebook.tab('Vrtalka')
 tab2 = notebook.tab('Nastavitve')
+tab3 = notebook.tab('Page 3')
+
+canvas_tab3 = ScrolledText(tab3, width=20)
+canvas_tab3.pack()
 
 button = tk.Button(tab1,
                    text="QUIT",
