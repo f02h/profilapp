@@ -38,7 +38,7 @@ class YScrolledFrame(tk.Frame):
         canvas.grid(row=0, column=0, sticky='nsew')
 
         scroll = tk.Scrollbar(self, command=canvas.yview, orient=tk.VERTICAL)
-        canvas.config(yscrollcommand=scroll.set, width=600)
+        canvas.config(yscrollcommand=scroll.set, width=1024)
         scroll.grid(row=0, column=1, sticky='nsew')
 
         self.content = tk.Frame(canvas)
