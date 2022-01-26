@@ -320,7 +320,7 @@ tab2 = notebook.tab('Nastavitve')
 tab3 = notebook.tab('Page 3')
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=200, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=600, width=1000, hscroll=False, vscroll=True)
 canvas_tab2.pack(fill="both", expand=True)
 
 canvas_tab3 = ScrolledText(tab3, width=20)
