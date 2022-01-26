@@ -6,6 +6,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 import os
+from tkinter import simpledialog
 
 
 
@@ -17,6 +18,72 @@ db = os.path.join(path, 'todo.db')
 
 conn = sqlite3.connect(db)
 c = conn.cursor()
+
+
+def enumerate_row_column(iterable, num_cols):
+    for idx, item in enumerate(iterable):
+        row = idx // num_cols
+        col = idx % num_cols
+        yield row, col, item
+
+
+class NumpadEntry(Entry):
+    def __init__(self, parent=None, **kw):
+        Entry.__init__(self, parent, **kw)
+        self.bind('<FocusIn>', self.numpadEntry)
+        self.bind('<FocusOut>', self.numpadExit)
+        self.edited = False
+
+    def numpadEntry(self, event):
+        if self.edited == False:
+            print("You Clicked on me")
+            self['bg'] = '#ffffcc'
+            self.edited = True
+            new = numPad(self)
+        else:
+            self.edited = False
+
+    def numpadExit(self, event):
+        self['bg'] = '#ffffff'
+
+
+class numPad(simpledialog.Dialog):
+    def __init__(self, master=None, textVariable=None):
+        self.top = Toplevel(master=master)
+        self.top.protocol("WM_DELETE_WINDOW", self.ok)
+        self.createWidgets()
+        self.master = master
+
+    def createWidgets(self):
+        btn_list = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', 'Close', 'Del']
+        # create and position all buttons with a for-loop
+        btn = []
+        # Use custom generator to give us row/column positions
+        for r, c, label in enumerate_row_column(btn_list, 3):
+            # partial takes care of function and argument
+            cmd = lambda x=label: self.click(x)
+            # create the button
+            cur = Button(self.top, text=label, width=10, height=5, command=cmd)
+            # position the button
+            cur.grid(row=r, column=c)
+            btn.append(cur)
+
+    def click(self, label):
+        print(label)
+        if label == 'Del':
+            currentText = self.master.get()
+            self.master.delete(0, END)
+            self.master.insert(0, currentText[:-1])
+        elif label == 'Close':
+            self.ok()
+        else:
+            currentText = self.master.get()
+            self.master.delete(0, END)
+            self.master.insert(0, currentText + label)
+
+    def ok(self):
+        self.top.destroy()
+        self.top.master.focus()
 
 class FullScreenApp(object):
     def __init__(self, master, **kwargs):
@@ -230,7 +297,7 @@ def callback(*args):
 
     i=3
     for var in dbvars:
-        tk.Label(canvas_tab2, text=var,font=text_font).grid(row=i,column=0)
+        tk.Label(canvas_tab2, text=var,font=text_font,anchor='w', width=25).grid(row=i,column=0)
         e1 = tk.Entry(canvas_tab2,font=text_font)
         e1.grid(row=i,column=1)
         e1.insert(0,dbvars[var])
@@ -243,8 +310,8 @@ def initEmptyCombo():
 
     i = 3
     for var in dbvars:
-        tk.Label(canvas_tab2, text=var, font=text_font).grid(row=i, column=0)
-        e1 = tk.Entry(canvas_tab2, font=text_font)
+        tk.Label(canvas_tab2, text=var, font=text_font,anchor='w', width=25).grid(row=i, column=0)
+        e1 = NumpadEntry(canvas_tab2, font=text_font)
         e1.grid(row=i, column=1)
         i += 1
 
@@ -333,7 +400,7 @@ notebook.add(tab3, text='Profile')
 notebook.pack(side=TOP)
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=500, width=600, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=500, width=1000, hscroll=False, vscroll=True)
 canvas_tab2.pack(side=LEFT, expand=True)
 
 canvas_tab3 = ScrolledText(tab3, width=20)
