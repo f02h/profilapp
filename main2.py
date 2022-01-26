@@ -331,6 +331,7 @@ tab3 = ttk.Frame(notebook, width=1000, height=550)
 notebook.add(tab1, text='Vrtalka')
 notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Profile')
+notebook.pack()
 
 
 canvas_tab2 = ScrollableFrame(tab2, height=500, width=600, hscroll=False, vscroll=True)
