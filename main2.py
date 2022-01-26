@@ -5,13 +5,17 @@ import sqlite3
 from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
+import os
 
 
 
 USB_PORT = "/dev/ttyACM0"
-usb = serial.Serial(USB_PORT, 115200)
+#usb = serial.Serial(USB_PORT, 115200)
+usb = 0
+path = os.path.dirname(os.path.abspath(__file__))
+db = os.path.join(path, 'todo.db')
 
-conn = sqlite3.connect('/home/pi/profil/todo.db')
+conn = sqlite3.connect(db)
 c = conn.cursor()
 
 class FullScreenApp(object):
@@ -232,13 +236,6 @@ def callback(*args):
         e1.insert(0,dbvars[var])
         i+=1
 
-    i=3
-    for var in dbvars:
-        tk.Label(canvas_tab3, text=var,font=text_font).grid(row=i,column=0)
-        e1 = tk.Entry(canvas_tab3,font=text_font)
-        e1.grid(row=i,column=1)
-        e1.insert(0,dbvars[var])
-        i+=1
 
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
@@ -309,6 +306,7 @@ def home():
     label.config(text=str(hearv))
 
 main = tk.Tk()
+main.geometry("1024x600")
 app=FullScreenApp(main)
 
 """
@@ -319,7 +317,8 @@ tab2 = notebook.tab('Nastavitve')
 tab3 = notebook.tab('Page 3')
 """
 
-notebook = ttk.Notebook(main)
+
+notebook = ttk.Notebook(main, width=1000, height=600)
 
 # create frames
 tab1 = ttk.Frame(notebook, width=1000, height=550)
@@ -331,7 +330,7 @@ tab3 = ttk.Frame(notebook, width=1000, height=550)
 notebook.add(tab1, text='Vrtalka')
 notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Profile')
-notebook.pack()
+notebook.pack(side=TOP)
 
 
 canvas_tab2 = ScrollableFrame(tab2, height=500, width=600, hscroll=False, vscroll=True)
