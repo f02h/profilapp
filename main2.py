@@ -249,6 +249,35 @@ class Calculator(tk.Tk):
             settingsList[currentSetting].delete(0, END)
             settingsList[currentSetting].insert(0, currentText + label)
 
+class Calculator2(tk.Tk):
+
+    def __init__(self):
+        super().__init__()
+
+        btn_list = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', 'Del']
+        # create and position all buttons with a for-loop
+        btn = []
+        # Use custom generator to give us row/column positions
+        for r, c, label in enumerate_row_column(btn_list, 3):
+            # partial takes care of function and argument
+            cmd = lambda x=label: self.click(x)
+            # create the button
+            cur = Button(numpad2, text=label, width=10, height=5, command=cmd)
+            # position the button
+            cur.grid(row=r, column=c)
+            btn.append(cur)
+
+    def click(self, label):
+        if label == 'Del':
+            currentText = moveStepperInput.get()
+            moveStepperInput.delete(0, END)
+            moveStepperInput.insert(0, currentText[:-1])
+        else:
+            currentText = moveStepperInput.get()
+            moveStepperInput.delete(0, END)
+            moveStepperInput.insert(0, currentText + label)
+
+
 
 class YScrolledFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -429,6 +458,19 @@ def home():
     hearv = hear()
     label.config(text=str(hearv))
 
+
+def moveStepper():
+
+    data = {
+        "action": "moveS",
+        "IDS": stepperchoosen.get(),
+        "MS": int(moveStepperInput.get()) * 160,
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hear()
+    label.config(text=str(hearv))
+
 main = tk.Tk()
 main.geometry("1024x600")
 app=FullScreenApp(main)
@@ -464,8 +506,11 @@ numpad = ttk.Frame(tab2, width=310, height=500)
 numpad.pack(expand=True, anchor='e')
 
 
-canvas_tab3 = ScrolledText(tab3, width=20)
-canvas_tab3.grid()
+canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
+canvas_tab3.pack(side=LEFT, expand=True, anchor='w')
+
+numpad2 = ttk.Frame(tab3, width=310, height=500)
+numpad2.pack(expand=True, anchor='e')
 
 button = tk.Button(tab1,
                    text="QUIT",
@@ -503,8 +548,20 @@ monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
+stepperchoosen = ttk.Combobox(canvas_tab3, width=27,textvariable=n,font=text_font)
+# Adding combobox drop down list
+stepperchoosen['values'] = [1,2,3,4,5,6,7]
+stepperchoosen.grid(column=0, row=0)
+main.option_add('*TCombobox*Listbox.font', text_font)
+
+tk.Label(canvas_tab3, text="Premakni za: ", font=text_font,anchor='w', width=25).grid(row=1, column=0)
+moveStepperInput = Entry(canvas_tab3, font=text_font)
+moveStepperInput.grid(row=1, column=1)
+
+Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white').grid(column=1, row=2)
 Button(canvas_tab2, text='Submit', command=saveSettings, width=20,bg='brown',fg='white').grid(column=1, row=0)
 Calculator()
+Calculator2()
 main.bind("<FocusIn>", handle_focus)
 main.bind("<FocusOut>", handle_focus_lost)
 
