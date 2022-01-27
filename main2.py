@@ -466,7 +466,7 @@ def moveStepper():
         "IDS": stepperchoosen.get(),
         "MS": int(moveStepperInput.get()) * 160,
     }
-
+    print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
     label.config(text=str(hearv))
