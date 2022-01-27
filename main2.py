@@ -396,7 +396,7 @@ def initEmptyCombo():
     i = 3
     for var in dbvars:
         tk.Label(canvas_tab2, text=var, font=text_font,anchor='w', width=25).grid(row=i, column=0)
-        e1 = Entry(canvas_tab2, font=text_font)
+        e1 = Entry(canvas_tab2, font=text_font, width=10)
         e1.grid(row=i, column=1)
         settingsList[var] = e1
         i += 1
@@ -499,7 +499,7 @@ notebook.add(tab3, text='Profile')
 notebook.pack(side=TOP)
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=500, width=690, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=500, width=590, hscroll=False, vscroll=True)
 canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
 
 numpad = ttk.Frame(tab2, width=310, height=500)
