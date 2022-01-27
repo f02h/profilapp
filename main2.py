@@ -336,10 +336,15 @@ def callback(*args):
         e1.insert(0,dbvars[var])
         i+=1"""
 
+def saveSettings():
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
 
-def setCurrentFocusedSetting(var):
-    print("Curr setting "+var)
-    currentSetting = var
+    for key in settingsList:
+        c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
+        conn.commit()
 
 def handle_focus(event):
     global currentSetting
@@ -490,6 +495,7 @@ profilList = dict(res)
 n = tk.StringVar()
 n.trace("w", callback)
 text_font = ('Courier New', '18')
+
 monthchoosen = ttk.Combobox(canvas_tab2, width=27,textvariable=n,font=text_font)
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
@@ -497,7 +503,7 @@ monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
-Button(canvas_tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=1, row=0)
+Button(canvas_tab2, text='Submit', command=saveSettings, width=20,bg='brown',fg='white').grid(column=1, row=0)
 Calculator()
 main.bind("<FocusIn>", handle_focus)
 main.bind("<FocusOut>", handle_focus_lost)
