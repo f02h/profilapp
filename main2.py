@@ -462,7 +462,7 @@ def home():
 def moveStepper():
 
     data = {
-        "action": "moveS",
+        "A": "moveS",
         "IDS": stepperchoosen.get(),
         "MS": int(moveStepperInput.get()) * 160,
     }
