@@ -391,20 +391,25 @@ def handle_focus_lost(event):
 
 
 def Simpletoggle():
-    if toggle_button.config('text')[-1] == 'ON':
-        toggle_button.config(text='OFF')
-        data = {
-            "A": "spindle",
-            "IDS": int(stepperchoosen.get()),
-            "T": 1,
-        }
-    else:
-        toggle_button.config(text='ON')
-        data = {
-            "A": "spindle",
-            "IDS": int(stepperchoosen.get()),
-            "T": 0,
-        }
+
+    data = {
+        "A": "spindle",
+        "IDS": int(stepperchoosen.get()),
+        "T": 1,
+    }
+
+    print(json.dumps(data).encode())
+    usb.write(json.dumps(data).encode())
+    hearv = hear()
+    label.config(text=str(hearv))
+
+
+def Simpletoggle2():
+    data = {
+        "A": "spindle",
+        "IDS": int(stepperchoosen.get()),
+        "T": 0,
+    }
 
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
@@ -583,6 +588,7 @@ moveStepperInput.grid(row=1, column=1)
 stepperButton = Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white').grid(column=1, row=2)
 saveSett = Button(canvas_tab2, text='Submit', command=saveSettings, width=20,bg='brown',fg='white').grid(column=1, row=0)
 toggle_button = Button(canvas_tab3,text="ON", width=10, command=Simpletoggle).grid(column=1, row=6)
+toggle_button2 = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle2).grid(column=1, row=7)
 
 Calculator()
 Calculator2()
