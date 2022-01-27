@@ -10,6 +10,7 @@ from tkinter import simpledialog
 
 
 
+
 USB_PORT = "/dev/ttyACM0"
 #usb = serial.Serial(USB_PORT, 115200)
 usb = 0
@@ -19,6 +20,8 @@ db = os.path.join(path, 'todo.db')
 conn = sqlite3.connect(db)
 c = conn.cursor()
 
+settingsList = dict()
+currentSetting = None
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -26,7 +29,7 @@ def enumerate_row_column(iterable, num_cols):
         col = idx % num_cols
         yield row, col, item
 
-
+"""
 class NumpadEntry(Entry):
     def __init__(self, parent=None, **kw):
         Entry.__init__(self, parent, **kw)
@@ -84,7 +87,7 @@ class numPad(simpledialog.Dialog):
     def ok(self):
         self.top.destroy()
         self.top.master.focus()
-
+"""
 class FullScreenApp(object):
     def __init__(self, master, **kwargs):
         self.master=master
@@ -218,6 +221,34 @@ class ScrollableFrame(tk.Frame):
     fit = resize
 
 
+class Calculator(tk.Tk):
+
+    def __init__(self):
+        super().__init__()
+
+        btn_list = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', 'Del']
+        # create and position all buttons with a for-loop
+        btn = []
+        # Use custom generator to give us row/column positions
+        for r, c, label in enumerate_row_column(btn_list, 3):
+            # partial takes care of function and argument
+            cmd = lambda x=label: self.click(x)
+            # create the button
+            cur = Button(numpad, text=label, width=10, height=5, command=cmd)
+            # position the button
+            cur.grid(row=r, column=c)
+            btn.append(cur)
+
+    def click(self, label):
+        if label == 'Del':
+            currentText = settingsList[currentSetting].get()
+            settingsList[currentSetting].delete(0, END)
+            settingsList[currentSetting].insert(0, currentText[:-1])
+        else:
+            currentText = settingsList[currentSetting].get()
+            settingsList[currentSetting].delete(0, END)
+            settingsList[currentSetting].insert(0, currentText + label)
+
 
 class YScrolledFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -297,12 +328,32 @@ def callback(*args):
 
     i=3
     for var in dbvars:
-        tk.Label(canvas_tab2, text=var,font=text_font,anchor='w', width=25).grid(row=i,column=0)
+        settingsList[var].delete(0, END)
+        settingsList[var].insert(0,dbvars[var])
+        """tk.Label(canvas_tab2, text=var,font=text_font,anchor='w', width=25).grid(row=i,column=0)
         e1 = tk.Entry(canvas_tab2,font=text_font)
         e1.grid(row=i,column=1)
         e1.insert(0,dbvars[var])
-        i+=1
+        i+=1"""
 
+
+def setCurrentFocusedSetting(var):
+    print("Curr setting "+var)
+    currentSetting = var
+
+def handle_focus(event):
+    global currentSetting
+    for k in settingsList:
+        if event.widget == settingsList[k]:
+            settingsList[k].config({"background": "#ffffcc"})
+            currentSetting = k
+
+def handle_focus_lost(event):
+    global currentSetting
+    for k in settingsList:
+        if event.widget == settingsList[k]:
+            settingsList[k].config({"background": "White"})
+            currentSetting = k
 
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
@@ -311,8 +362,9 @@ def initEmptyCombo():
     i = 3
     for var in dbvars:
         tk.Label(canvas_tab2, text=var, font=text_font,anchor='w', width=25).grid(row=i, column=0)
-        e1 = NumpadEntry(canvas_tab2, font=text_font)
+        e1 = Entry(canvas_tab2, font=text_font)
         e1.grid(row=i, column=1)
+        settingsList[var] = e1
         i += 1
 
 def drill():
@@ -400,8 +452,12 @@ notebook.add(tab3, text='Profile')
 notebook.pack(side=TOP)
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=500, width=1000, hscroll=False, vscroll=True)
-canvas_tab2.pack(side=LEFT, expand=True)
+canvas_tab2 = ScrollableFrame(tab2, height=500, width=690, hscroll=False, vscroll=True)
+canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
+
+numpad = ttk.Frame(tab2, width=310, height=500)
+numpad.pack(expand=True, anchor='e')
+
 
 canvas_tab3 = ScrolledText(tab3, width=20)
 canvas_tab3.grid()
@@ -442,7 +498,8 @@ main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
 Button(canvas_tab2, text='Submit', command=submitForm, width=20,bg='brown',fg='white').grid(column=1, row=0)
-
-
+Calculator()
+main.bind("<FocusIn>", handle_focus)
+main.bind("<FocusOut>", handle_focus_lost)
 
 main.mainloop()
