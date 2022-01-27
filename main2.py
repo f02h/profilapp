@@ -463,7 +463,7 @@ def moveStepper():
 
     data = {
         "A": "moveS",
-        "IDS": stepperchoosen.get(),
+        "IDS": int(stepperchoosen.get()),
         "MS": int(moveStepperInput.get()) * 160,
     }
     print(json.dumps(data).encode())
