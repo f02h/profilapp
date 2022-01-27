@@ -389,6 +389,28 @@ def handle_focus_lost(event):
             settingsList[k].config({"background": "White"})
             currentSetting = k
 
+
+def Simpletoggle():
+    if toggle_button.config('text')[-1] == 'ON':
+        toggle_button.config(text='OFF')
+        data = {
+            "A": "spindle",
+            "IDS": int(stepperchoosen.get()),
+            "T": 0,
+        }
+    else:
+        toggle_button.config(text='ON')
+        data = {
+            "A": "spindle",
+            "IDS": int(stepperchoosen.get()),
+            "T": 1,
+        }
+
+    print(json.dumps(data).encode())
+    usb.write(json.dumps(data).encode())
+    hearv = hear()
+    label.config(text=str(hearv))
+
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
     dbvars = dict(res)
@@ -560,6 +582,8 @@ moveStepperInput.grid(row=1, column=1)
 
 stepperButton = Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white').grid(column=1, row=2)
 saveSett = Button(canvas_tab2, text='Submit', command=saveSettings, width=20,bg='brown',fg='white').grid(column=1, row=0)
+toggle_button = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle).grid(column=1, row=6)
+
 Calculator()
 Calculator2()
 main.bind("<FocusIn>", handle_focus)
