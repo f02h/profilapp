@@ -671,7 +671,7 @@ tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=8)
 
 toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllOff, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=9)
 toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=9)
-tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
+#tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
 
 toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
 toolButton2 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
