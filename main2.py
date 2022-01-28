@@ -585,7 +585,7 @@ numpad.pack(expand=True, anchor='e')
 
 
 #canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
-canvas_tab3 = ttk.Frame(tab3, height=500, width=690)
+canvas_tab3 = ttk.Frame(tab3, height=450, width=690)
 #canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
 canvas_tab3.grid(column=0, row=0)
 
