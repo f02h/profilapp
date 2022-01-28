@@ -23,6 +23,9 @@ c = conn.cursor()
 settingsList = dict()
 currentSetting = None
 
+stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
+spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
+
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
         row = idx // num_cols
@@ -395,10 +398,11 @@ def Simpletoggle():
 
     data = {
         "A": "spindle",
-        "IDS": int(stepperchoosen.get()),
+        "IDS": int(spindlechoosen.get()),
         "T": 1,
     }
 
+    spindleList[int(spindlechoosen.get())] = 1;
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
@@ -408,10 +412,37 @@ def Simpletoggle():
 def Simpletoggle2():
     data = {
         "A": "spindle",
-        "IDS": int(stepperchoosen.get()),
+        "IDS": int(spindlechoosen.get()),
         "T": 0,
     }
 
+    spindleList[int(spindlechoosen.get())] = 0;
+    print(json.dumps(data).encode())
+    usb.write(json.dumps(data).encode())
+    hearv = hear()
+    label.config(text=str(hearv))
+
+def toggleAllOff():
+    global spindleList
+    data = {
+        "A": "spindleA",
+        "T": 0,
+    }
+
+    spindleList = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
+    print(json.dumps(data).encode())
+    usb.write(json.dumps(data).encode())
+    hearv = hear()
+    label.config(text=str(hearv))
+
+def toggleAllOn():
+    global spindleList
+    data = {
+        "A": "spindleA",
+        "T": 1,
+    }
+
+    spindleList = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1}
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
@@ -578,20 +609,38 @@ monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
-stepperchoosen = ttk.Combobox(canvas_tab3, width=15,textvariable=n,font=text_font)
+saveSett = Button(canvas_tab2, text='Submit', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
+
+tk.Label(canvas_tab3, text="Izberi stepper: ", font=text_font,anchor='w', width=15).grid(column=0, row=0,pady=(15,0))
+stepperchoosen = ttk.Combobox(canvas_tab3, width=5,textvariable=n,font=('Arial', '30'))
 # Adding combobox drop down list
 stepperchoosen['values'] = [1,2,3,4,5,6,7]
-stepperchoosen.grid(column=0, row=0)
+stepperchoosen.grid(column=1, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 
-tk.Label(canvas_tab3, text="Premakni za: ", font=text_font,anchor='w', width=25).grid(row=1, column=0)
-moveStepperInput = Entry(canvas_tab3, font=text_font)
-moveStepperInput.grid(row=1, column=1)
+tk.Label(canvas_tab3, text="Premakni za: ", font=text_font,anchor='w', width=15).grid(column=0, row=2,pady=(15,0))
+moveStepperInput = Entry(canvas_tab3, font=text_font, width=10)
+moveStepperInput.grid(column=1, row=2)
 
-stepperButton = Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white').grid(column=1, row=2)
-saveSett = Button(canvas_tab2, text='Submit', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
-toggle_button = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle).grid(column=1, row=6)
-toggle_button2 = Button(canvas_tab3,text="ON", width=10, command=Simpletoggle2).grid(column=1, row=7)
+stepperButton = Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=3)
+tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=4)
+
+tk.Label(canvas_tab3, text="Izberi spindle: ", font=text_font,anchor='w', width=15).grid(column=0, row=5,pady=(15,0))
+spindlechoosen = ttk.Combobox(canvas_tab3, width=5,textvariable=n,font=('Arial', '30'))
+# Adding combobox drop down list
+spindlechoosen['values'] = [1,2,3,4,5,6,7]
+spindlechoosen.grid(column=1, row=5)
+
+tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=6)
+
+toggle_button = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=7)
+toggle_button2 = Button(canvas_tab3,text="ON", width=10, command=Simpletoggle2, bg='green',font=('Arial', '20')).grid(column=1, row=7)
+
+tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=8)
+tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=9)
+
+toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllOff, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=10)
+toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=10)
 
 Calculator()
 Calculator2()
