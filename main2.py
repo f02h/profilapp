@@ -12,8 +12,8 @@ from tkinter import simpledialog
 
 
 USB_PORT = "/dev/ttyACM0"
-#usb = serial.Serial(USB_PORT, 115200)
-usb = 0
+usb = serial.Serial(USB_PORT, 115200)
+#usb = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -452,9 +452,12 @@ def toggleAllOn():
     hearv = hear()
     label.config(text=str(hearv))
 
-def changeTool(idTool):
+def changeTool(idTool, dir):
+
+    action = (dir == "LEFT" and "CTL" or "CTR")
+
     data = {
-        "A": "CT",
+        "A": action,
         "T": int(idTool),
     }
 
@@ -670,10 +673,10 @@ toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllO
 toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=9)
 tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
 
-toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1), bg='green',font=('Arial', '20')).grid(column=0, row=0)
-toolButton2 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2), bg='green',font=('Arial', '20')).grid(column=1, row=0)
-toolButton3 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3), bg='green',font=('Arial', '20')).grid(column=2, row=0)
-toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4), bg='green',font=('Arial', '20')).grid(column=3, row=0)
+toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
+toolButton2 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
+toolButton3 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3,'LEFT'), bg='green',font=('Arial', '20')).grid(column=2, row=0)
+toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=3, row=0)
 
 Calculator()
 Calculator2()
