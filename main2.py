@@ -12,8 +12,8 @@ from tkinter import simpledialog
 
 
 USB_PORT = "/dev/ttyACM0"
-usb = serial.Serial(USB_PORT, 115200)
-#usb = 0
+#usb = serial.Serial(USB_PORT, 115200)
+usb = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -278,7 +278,7 @@ class Calculator2(tk.Tk):
             moveStepperInput.insert(0, currentText + label)
 
 
-
+"""
 class YScrolledFrame(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -300,7 +300,8 @@ class YScrolledFrame(tk.Frame):
     def on_configure(self, event):
         bbox = self.content.bbox('ALL')
         self.canvas.config(scrollregion=bbox)
-
+"""
+"""
 class Notebook(ttk.Notebook):
     def __init__(self, parent, tab_labels):
         super().__init__(parent)
@@ -313,7 +314,7 @@ class Notebook(ttk.Notebook):
 
     def tab(self, key):
         return self._tab[key].content
-
+"""
 class ResizingCanvas(Canvas):
     def __init__(self,parent,**kwargs):
         Canvas.__init__(self,parent,**kwargs)
@@ -422,8 +423,8 @@ def initEmptyCombo():
 
     i = 3
     for var in dbvars:
-        tk.Label(canvas_tab2, text=var, font=text_font,anchor='w', width=25).grid(row=i, column=0)
-        e1 = Entry(canvas_tab2, font=text_font, width=10)
+        tk.Label(canvas_tab2, text=var, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        e1 = Entry(canvas_tab2, font=etext_font, width=10)
         e1.grid(row=i, column=1)
         settingsList[var] = e1
         i += 1
@@ -502,14 +503,12 @@ main = tk.Tk()
 main.geometry("1024x600")
 app=FullScreenApp(main)
 
-"""
-notebook = Notebook(main, ['Vrtalka', 'Nastavitve', 'Page 3'])
-notebook.grid(row=0, column=0, sticky='nsew')
-tab1 = notebook.tab('Vrtalka')
-tab2 = notebook.tab('Nastavitve')
-tab3 = notebook.tab('Page 3')
-"""
+text_font = ('Arial', '26')
+etext_font = ('Arial', '18')
 
+s = ttk.Style()
+s.configure('TNotebook.Tab', font=('Arial' ,'18'))
+s.configure('TNotebook.Tab', padding=(30 ,10))
 
 notebook = ttk.Notebook(main, width=1000, height=600)
 
@@ -536,11 +535,13 @@ numpad.pack(expand=True, anchor='e')
 canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
 canvas_tab3.pack(side=LEFT, expand=True, anchor='w')
 
+
 numpad2 = ttk.Frame(tab3, width=310, height=500)
 numpad2.pack(expand=True, anchor='e')
 
 button = tk.Button(tab1,
                    text="QUIT",
+                   font=text_font,
                    fg="red",
                    command=quit).grid(column=0,
                                row=0,
@@ -548,6 +549,7 @@ button = tk.Button(tab1,
                                pady=30)
 drill = tk.Button(tab1,
                    text="Drill",
+                   font=text_font,
                    command=drill).grid(column=1,
                                row=0,
                                padx=30,
@@ -555,6 +557,7 @@ drill = tk.Button(tab1,
 
 homing = tk.Button(tab1,
                    text="Homing",
+                   font=text_font,
                    command=home).grid(column=2,
                                row=0,
                                padx=30,
@@ -566,16 +569,16 @@ profilList = dict(res)
 
 n = tk.StringVar()
 n.trace("w", callback)
-text_font = ('Courier New', '18')
 
-monthchoosen = ttk.Combobox(canvas_tab2, width=27,textvariable=n,font=text_font)
+
+monthchoosen = ttk.Combobox(canvas_tab2, width=15,textvariable=n,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
 monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
-stepperchoosen = ttk.Combobox(canvas_tab3, width=27,textvariable=n,font=text_font)
+stepperchoosen = ttk.Combobox(canvas_tab3, width=15,textvariable=n,font=text_font)
 # Adding combobox drop down list
 stepperchoosen['values'] = [1,2,3,4,5,6,7]
 stepperchoosen.grid(column=0, row=0)
@@ -586,7 +589,7 @@ moveStepperInput = Entry(canvas_tab3, font=text_font)
 moveStepperInput.grid(row=1, column=1)
 
 stepperButton = Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white').grid(column=1, row=2)
-saveSett = Button(canvas_tab2, text='Submit', command=saveSettings, width=20,bg='brown',fg='white').grid(column=1, row=0)
+saveSett = Button(canvas_tab2, text='Submit', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
 toggle_button = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle).grid(column=1, row=6)
 toggle_button2 = Button(canvas_tab3,text="ON", width=10, command=Simpletoggle2).grid(column=1, row=7)
 
