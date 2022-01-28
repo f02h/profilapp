@@ -369,6 +369,10 @@ def callback(*args):
         e1.insert(0,dbvars[var])
         i+=1"""
 
+def setStepperValue(*args):
+    moveStepperInput.delete(0, END)
+    moveStepperInput.insert(0,str(stepperList[int(stepperchoosen.get())]))
+
 def saveSettings():
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
     idProfil = int(res[0])
@@ -443,6 +447,17 @@ def toggleAllOn():
     }
 
     spindleList = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1}
+    print(json.dumps(data).encode())
+    usb.write(json.dumps(data).encode())
+    hearv = hear()
+    label.config(text=str(hearv))
+
+def changeTool(idTool):
+    data = {
+        "A": "CT",
+        "T": int(idTool),
+    }
+
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
@@ -525,6 +540,9 @@ def moveStepper():
         "IDS": int(stepperchoosen.get()),
         "MS": int(moveStepperInput.get()) * 160,
     }
+
+    stepperList[int(stepperchoosen.get())] = int(moveStepperInput.get())
+
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
@@ -563,12 +581,19 @@ numpad = ttk.Frame(tab2, width=310, height=500)
 numpad.pack(expand=True, anchor='e')
 
 
-canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
-canvas_tab3.pack(side=LEFT, expand=True, anchor='w')
+#canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
+canvas_tab3 = ttk.Frame(tab3, height=500, width=690)
+#canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
+canvas_tab3.grid(column=0, row=0)
+
+tool_tab3 = ttk.Frame(tab3, height=50, width=300)
+#tool_tab3.pack(side=LEFT, expand=False, anchor='w')
+tool_tab3.grid(column=0, row=1)
 
 
-numpad2 = ttk.Frame(tab3, width=310, height=500)
-numpad2.pack(expand=True, anchor='e')
+numpad2 = ttk.Frame(tab3, width=310, height=500,borderwidth=1)
+#numpad2.pack(expand=True, anchor='e')
+numpad2.grid(column=1, row=0)
 
 button = tk.Button(tab1,
                    text="QUIT",
@@ -611,8 +636,11 @@ initEmptyCombo()
 
 saveSett = Button(canvas_tab2, text='Submit', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
 
+n1 = tk.StringVar()
+n1.trace("w", setStepperValue)
+
 tk.Label(canvas_tab3, text="Izberi stepper: ", font=text_font,anchor='w', width=15).grid(column=0, row=0,pady=(15,0))
-stepperchoosen = ttk.Combobox(canvas_tab3, width=5,textvariable=n,font=('Arial', '30'))
+stepperchoosen = ttk.Combobox(canvas_tab3, width=5,textvariable=n1,font=('Arial', '30'))
 # Adding combobox drop down list
 stepperchoosen['values'] = [1,2,3,4,5,6,7]
 stepperchoosen.grid(column=1, row=0)
@@ -637,10 +665,15 @@ toggle_button = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle, b
 toggle_button2 = Button(canvas_tab3,text="ON", width=10, command=Simpletoggle2, bg='green',font=('Arial', '20')).grid(column=1, row=7)
 
 tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=8)
-tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=9)
 
-toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllOff, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=10)
-toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=10)
+toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllOff, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=9)
+toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=9)
+tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
+
+toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1), bg='green',font=('Arial', '20')).grid(column=0, row=0)
+toolButton2 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2), bg='green',font=('Arial', '20')).grid(column=1, row=0)
+toolButton3 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3), bg='green',font=('Arial', '20')).grid(column=2, row=0)
+toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4), bg='green',font=('Arial', '20')).grid(column=3, row=0)
 
 Calculator()
 Calculator2()
