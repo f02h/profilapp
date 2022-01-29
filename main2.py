@@ -6,7 +6,6 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 import os
-from tkinter import simpledialog
 
 
 
@@ -229,7 +228,7 @@ class Calculator(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        btn_list = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', 'Del']
+        btn_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'Del']
         # create and position all buttons with a for-loop
         btn = []
         # Use custom generator to give us row/column positions
@@ -257,7 +256,7 @@ class Calculator2(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        btn_list = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', 'Del']
+        btn_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'Del']
         # create and position all buttons with a for-loop
         btn = []
         # Use custom generator to give us row/column positions
