@@ -537,9 +537,8 @@ def home():
     }
 
     usb.write(json.dumps(data).encode())
-    hearv = hear()
-    print(hearv)
-    if str(hearv).strip() == "done":
+    hearv = hearJson()
+    if str(hearv["status"]).strip() == "done":
         homing.config(state=ACTIVE, bg='green')
     else:
         homing.config(state=ACTIVE, bg='red')
@@ -559,11 +558,10 @@ def moveStepper():
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
-    y = json.loads(hearv)
-    if y["status"] == "done":
-        stepperList[int(stepperchoosen.get())] = int(y["stepperPosition"])
+    if str(hearv["status"]).strip() == "done":
+        stepperList[int(stepperchoosen.get())] = int(hearv["stepperPosition"])
 
-    label.config(text=str(hearv))
+    label.config(text=str(hearv["status"]))
 
 main = tk.Tk()
 main.geometry("1024x600")
