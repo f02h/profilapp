@@ -561,7 +561,10 @@ def moveStepper():
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() == "done":
-        stepperList[int(stepperchoosen.get())] = int(hearv["stepperPosition"])
+        listInt = 1
+        for stepperData in hearv["data"]:
+            stepperList[listInt] = int(stepperData)
+
 
     label.config(text=str(hearv["status"]))
 
