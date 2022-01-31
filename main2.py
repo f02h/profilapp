@@ -533,7 +533,8 @@ def home():
 
     usb.write(json.dumps(data).encode())
     hearv = hear()
-    if hearv == "done":
+    print(hearv)
+    if str(hearv) == "done":
         homing.config(state=ACTIVE, bg='green')
     else:
         homing.config(state=ACTIVE, bg='red')
