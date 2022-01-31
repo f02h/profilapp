@@ -349,6 +349,11 @@ def hear():
     mystring = msg.decode('ascii')  # decode n return
     return mystring
 
+def hearJson():
+    msg = usb.read_until() # read until a new line
+    mystring = json.loads(str(msg).strip())
+    return mystring
+
 def callback(*args):
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
     idProfil = int(res[0])
@@ -534,7 +539,7 @@ def home():
     usb.write(json.dumps(data).encode())
     hearv = hear()
     print(hearv)
-    if str(hearv) == "done":
+    if str(hearv).strip() == "done":
         homing.config(state=ACTIVE, bg='green')
     else:
         homing.config(state=ACTIVE, bg='red')
@@ -553,7 +558,7 @@ def moveStepper():
 
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
-    hearv = hear()
+    hearv = hearJson()
     y = json.loads(hearv)
     if y["status"] == "done":
         stepperList[int(stepperchoosen.get())] = int(y["stepperPosition"])
