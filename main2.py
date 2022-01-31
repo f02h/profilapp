@@ -11,8 +11,8 @@ import os
 
 
 USB_PORT = "/dev/ttyACM0"
-usb = serial.Serial(USB_PORT, 115200)
-#usb = 0
+#usb = serial.Serial(USB_PORT, 115200)
+usb = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -526,12 +526,17 @@ def drill():
 
 def home():
 
+    homing.config(state=DISABLED,fg='white',bg='#e69225')
     data = {
         "action": "home",
     }
 
     usb.write(json.dumps(data).encode())
     hearv = hear()
+    if hearv == "done":
+        homing.config(state=ACTIVE, bg='green')
+    else:
+        homing.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 
 
@@ -548,6 +553,10 @@ def moveStepper():
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
+    y = json.loads(hearv)
+    if y["status"] == "done":
+        stepperList[int(stepperchoosen.get())] = int(y["stepperPosition"])
+
     label.config(text=str(hearv))
 
 main = tk.Tk()
@@ -613,13 +622,8 @@ drill = tk.Button(tab1,
                                padx=30,
                                pady=30)
 
-homing = tk.Button(tab1,
-                   text="Homing",
-                   font=text_font,
-                   command=home).grid(column=2,
-                               row=0,
-                               padx=30,
-                               pady=30)
+homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
+homing.grid(column=2,row=0,padx=30,pady=30)
 
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
@@ -673,8 +677,8 @@ toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn
 tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
 
 toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
-toolButton2 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
-toolButton3 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3,'LEFT'), bg='green',font=('Arial', '20')).grid(column=2, row=0)
+toolButton2 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3,'LEFT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
+toolButton3 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=2, row=0)
 toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=3, row=0)
 
 Calculator()
