@@ -538,6 +538,7 @@ def home():
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
+    print(hearv)
     if str(hearv["status"]).strip() == "done":
         homing.config(state=ACTIVE, bg='green')
     else:
@@ -558,6 +559,7 @@ def moveStepper():
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
+    print(hearv)
     if str(hearv["status"]).strip() == "done":
         stepperList[int(stepperchoosen.get())] = int(hearv["stepperPosition"])
 
