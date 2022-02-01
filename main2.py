@@ -562,7 +562,7 @@ def moveStepper():
     if str(hearv["status"]).strip() == "done":
         listInt = 1
         for stepperData in hearv["data"]:
-            stepperList[listInt] = int(stepperData)
+            stepperList[listInt] = int(stepperData) / 160
             listInt+=1
 
     label.config(text=str(hearv["status"]))
