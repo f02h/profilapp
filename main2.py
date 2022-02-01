@@ -557,18 +557,13 @@ def moveStepper():
 
     stepperList[int(stepperchoosen.get())] = int(moveStepperInput.get())
 
-    print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
-    print(hearv)
     if str(hearv["status"]).strip() == "done":
         listInt = 1
-        print("stepper data")
         for stepperData in hearv["data"]:
-            print("stepper data")
-            print(stepperData)
             stepperList[listInt] = int(stepperData)
-
+            listInt+=1
 
     label.config(text=str(hearv["status"]))
 
