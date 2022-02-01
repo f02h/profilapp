@@ -562,7 +562,10 @@ def moveStepper():
     print(hearv)
     if str(hearv["status"]).strip() == "done":
         listInt = 1
+        print("stepper data")
         for stepperData in hearv["data"]:
+            print("stepper data")
+            print(stepperData)
             stepperList[listInt] = int(stepperData)
 
 
