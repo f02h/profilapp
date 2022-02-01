@@ -350,10 +350,8 @@ def hear():
     return mystring
 
 def hearJson():
-    print("test")
     msg = usb.read_until()# read until a new line
-    print(msg)
-    mystring = json.loads(str(msg).strip())
+    mystring = json.loads(str(msg.decode("utf-8")).strip())
     return mystring
 
 def callback(*args):
