@@ -548,6 +548,7 @@ def home():
 
 def moveStepper():
 
+    global stepperList
     data = {
         "A": "moveS",
         "IDS": int(stepperchoosen.get()),
