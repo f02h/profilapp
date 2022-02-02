@@ -385,6 +385,7 @@ def saveSettings():
 
     for key in settingsList:
         print(key,idProfil,settingsList[key].get())
+        c.execute("INSERT OR IGNORE INTO vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
         c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
         conn.commit()
 
