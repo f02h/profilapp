@@ -384,7 +384,7 @@ def saveSettings():
         idProfil = 1
 
     for key in settingsList:
-        print(settingsList)
+        print(settingsList[key])
         c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
         conn.commit()
 
@@ -481,6 +481,7 @@ def initEmptyCombo():
         e1 = Entry(canvas_tab2, font=etext_font, width=10)
         e1.grid(row=i, column=1)
         settingsList[var] = e1
+        settingsList[var].insert(0, 0)
         i += 1
 
 def drill():
