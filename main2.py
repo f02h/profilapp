@@ -236,7 +236,7 @@ class Calculator():
             # partial takes care of function and argument
             cmd = lambda x=label: self.click(x)
             # create the button
-            cur = Button(numpad, text=label, width=6, height=6, command=cmd)
+            cur = Button(numpad, text=label, width=5, height=4, command=cmd)
             # position the button
             cur.grid(row=r, column=c)
             btn.append(cur)
@@ -264,7 +264,7 @@ class Calculator2():
             # partial takes care of function and argument
             cmd = lambda x=label: self.click(x)
             # create the button
-            cur = Button(numpad2, text=label, width=6, height=6, command=cmd)
+            cur = Button(numpad2, text=label, width=5, height=4, command=cmd)
             # position the button
             cur.grid(row=r, column=c)
             btn.append(cur)
