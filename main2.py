@@ -223,7 +223,7 @@ class ScrollableFrame(tk.Frame):
     fit = resize
 
 
-class Calculator(tk.Tk):
+class Calculator():
 
     def __init__(self):
         super().__init__()
@@ -236,7 +236,7 @@ class Calculator(tk.Tk):
             # partial takes care of function and argument
             cmd = lambda x=label: self.click(x)
             # create the button
-            cur = Button(numpad, text=label, width=5, height=4, command=cmd)
+            cur = Button(numpad, text=label, width=9, height=7, command=cmd)
             # position the button
             cur.grid(row=r, column=c)
             btn.append(cur)
@@ -251,7 +251,7 @@ class Calculator(tk.Tk):
             settingsList[currentSetting].delete(0, END)
             settingsList[currentSetting].insert(0, currentText + label)
 
-class Calculator2(tk.Tk):
+class Calculator2():
 
     def __init__(self):
         super().__init__()
@@ -264,7 +264,7 @@ class Calculator2(tk.Tk):
             # partial takes care of function and argument
             cmd = lambda x=label: self.click(x)
             # create the button
-            cur = Button(numpad2, text=label, width=5, height=4, command=cmd)
+            cur = Button(numpad2, text=label, width=9, height=7, command=cmd)
             # position the button
             cur.grid(row=r, column=c)
             btn.append(cur)
@@ -483,7 +483,15 @@ def initEmptyCombo():
         i += 1
 
 def drill():
-    res = c.execute("SELECT name,value FROM vars").fetchall()
+
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    print(idProfil)
+
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -595,11 +603,11 @@ notebook.add(tab3, text='Ročno upravljanje')
 notebook.pack(side=TOP)
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=500, width=590, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=500, width=530, hscroll=False, vscroll=True)
 canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
 
-numpad = ttk.Frame(tab2, width=310, height=500)
-numpad.pack(expand=True, anchor='e')
+numpad = ttk.Frame(tab2, width=470, height=500)
+numpad.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
 
 #canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
@@ -614,7 +622,7 @@ tool_tab3.grid(column=0, row=1)
 
 numpad2 = ttk.Frame(tab3, width=310, height=500,borderwidth=1)
 #numpad2.pack(expand=True, anchor='e')
-numpad2.grid(column=1, row=0)
+numpad2.grid(column=1, row=0,sticky="ew",padx=40, pady=40)
 
 button = tk.Button(tab1,
                    text="QUIT",
@@ -638,6 +646,10 @@ homing.grid(column=2,row=0,padx=30,pady=30)
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
 
+profilChooser = ttk.Combobox(tab1, width=15,font=text_font, style='my.TCombobox')
+# Adding combobox drop down list
+profilChooser['values'] = list(profilList.values())
+profilChooser.grid(column=1, row=2, columnspan=3)
 
 n = tk.StringVar()
 n.trace("w", callback)
