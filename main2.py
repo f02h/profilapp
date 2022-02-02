@@ -603,7 +603,7 @@ notebook.add(tab3, text='Ročno upravljanje')
 notebook.pack(side=TOP)
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=450, width=530, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=400, width=530, hscroll=False, vscroll=True)
 canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
 
 numpad = ttk.Frame(tab2, width=470, height=500)
