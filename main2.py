@@ -384,6 +384,7 @@ def saveSettings():
         idProfil = 1
 
     for key in settingsList:
+        print(settingsList[key].get())
         c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
         conn.commit()
 
