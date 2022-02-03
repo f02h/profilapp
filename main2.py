@@ -664,7 +664,7 @@ monthchoosen.grid(column=0, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 initEmptyCombo()
 
-saveSett = Button(canvas_tab2, text='Submit', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
+saveSett = Button(canvas_tab2, text='Shrani', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
 
 n1 = tk.StringVar()
 n1.trace("w", setStepperValue)
