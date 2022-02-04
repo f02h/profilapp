@@ -554,8 +554,8 @@ def cut():
 
     data = {
         "A": "cut",
-        "MZ": dbvars["pozicijaZaga"] * 160,
-        "PHZ": dbvars["pocasnejePredKoncemHodaZaga"] * 160,
+        "MZ": dbvars["pozicijaZaga"] * 80,
+        "PHZ": dbvars["pocasnejePredKoncemHodaZaga"] * 80,
         "PHZH": dbvars["hitrostPredKoncemHodaZaga"],
     }
 
