@@ -11,8 +11,8 @@ import os
 
 
 USB_PORT = "/dev/ttyACM0"
-usb = serial.Serial(USB_PORT, 115200)
-#usb = 0
+#usb = serial.Serial(USB_PORT, 115200)
+usb = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -539,6 +539,22 @@ def drill():
     hearv = hear()
     label.config(text=str(hearv))
 
+def cut():
+
+    data = {
+        "action": "cut",
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    """print(hearv)
+    if str(hearv["status"]).strip() == "done":
+        #cut.config(state=ACTIVE, bg='green')
+    else:
+        #cut.config(state=ACTIVE, bg='red')
+    label.config(text=str(hearv))
+"""
+
 def home():
 
     global stepperList
@@ -634,13 +650,15 @@ button = tk.Button(tab1,
                                row=0,
                                padx=30,
                                pady=30)
-drill = tk.Button(tab1,
-                   text="Drill",
-                   font=text_font,
-                   command=drill).grid(column=1,
-                               row=0,
-                               padx=30,
-                               pady=30)
+
+tk.Label(tab1, text='     \n   ').grid(column=0,row=2)
+tk.Label(tab1, text='     \n   ').grid(column=0,row=3)
+
+drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=drill)\
+    .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+
+cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
+    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
 homing.grid(column=2,row=0,padx=30,pady=30)
