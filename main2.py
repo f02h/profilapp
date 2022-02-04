@@ -540,9 +540,23 @@ def drill():
     label.config(text=str(hearv))
 
 def cut():
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    print(idProfil)
+
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    dictionary = {}
+    # dbvars = (Convert(res, dictionary))
+    dbvars = dict(res)
 
     data = {
-        "action": "cut",
+        "A": "cut",
+        "MZ": dbvars["pozicijaZaga"] * 160,
+        "PHZ": dbvars["pocasnejePredKoncemHodaZaga"] * 160,
+        "PHZH": dbvars["hitrostPredKoncemHodaZaga"],
     }
 
     usb.write(json.dumps(data).encode())
