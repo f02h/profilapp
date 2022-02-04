@@ -11,8 +11,8 @@ import os
 
 
 USB_PORT = "/dev/ttyACM0"
-#usb = serial.Serial(USB_PORT, 115200)
-usb = 0
+usb = serial.Serial(USB_PORT, 115200)
+#usb = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
