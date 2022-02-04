@@ -593,7 +593,7 @@ def moveStepper():
     global stepperList
 
     stepRatio = 160
-    if int(moveStepperInput.get()) == 6:
+    if int(stepperchoosen.get()) == 7:
         stepRatio = 80
 
     data = {
