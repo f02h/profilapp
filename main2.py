@@ -591,10 +591,15 @@ def home():
 def moveStepper():
 
     global stepperList
+
+    stepRatio = 160
+    if int(moveStepperInput.get()) == 7:
+        stepRatio = 80
+
     data = {
         "A": "moveS",
         "IDS": int(stepperchoosen.get()),
-        "MS": int(moveStepperInput.get()) * 160,
+        "MS": int(moveStepperInput.get()) * stepRatio,
     }
 
     stepperList[int(stepperchoosen.get())] = int(moveStepperInput.get())
