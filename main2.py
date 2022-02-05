@@ -599,7 +599,7 @@ def moveStepper():
     data = {
         "A": "moveS",
         "IDS": int(stepperchoosen.get()),
-        "MS": int(moveStepperInput.get()) * stepRatio,
+        "MS": float(moveStepperInput.get()) * stepRatio,
     }
 
     stepperList[int(stepperchoosen.get())] = int(moveStepperInput.get())
