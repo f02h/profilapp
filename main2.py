@@ -602,14 +602,14 @@ def moveStepper():
         "MS": float(moveStepperInput.get()) * stepRatio,
     }
 
-    stepperList[int(stepperchoosen.get())] = int(moveStepperInput.get())
+    stepperList[int(stepperchoosen.get())] = float(moveStepperInput.get())
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
     if str(hearv["status"]).strip() == "done":
         listInt = 1
         for stepperData in hearv["data"]:
-            stepperList[listInt] = int(stepperData) / 160
+            stepperList[listInt] = float(stepperData) / stepRatio
             listInt+=1
 
     label.config(text=str(hearv["status"]))
