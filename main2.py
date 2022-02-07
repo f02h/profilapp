@@ -628,7 +628,7 @@ cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
 homing.grid(column=2,row=0,padx=30,pady=30)
 
-homingf = tk.Button(tab1,text="Homing F",font=text_font,command=home)
+homingf = tk.Button(tab1,text="Homing F",font=text_font,command=homeFeeder)
 homingf.grid(column=3,row=0,padx=30,pady=30)
 
 
