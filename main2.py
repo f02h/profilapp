@@ -11,8 +11,11 @@ import os
 
 
 USB_PORT = "/dev/ttyACM0"
+USB_PORT_FEEDER = "/dev/ttyACM1"
 usb = serial.Serial(USB_PORT, 115200)
+usbf = serial.Serial(USB_PORT_FEEDER, 115200)
 #usb = 0
+#usbf = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -31,65 +34,6 @@ def enumerate_row_column(iterable, num_cols):
         col = idx % num_cols
         yield row, col, item
 
-"""
-class NumpadEntry(Entry):
-    def __init__(self, parent=None, **kw):
-        Entry.__init__(self, parent, **kw)
-        self.bind('<FocusIn>', self.numpadEntry)
-        self.bind('<FocusOut>', self.numpadExit)
-        self.edited = False
-
-    def numpadEntry(self, event):
-        if self.edited == False:
-            print("You Clicked on me")
-            self['bg'] = '#ffffcc'
-            self.edited = True
-            new = numPad(self)
-        else:
-            self.edited = False
-
-    def numpadExit(self, event):
-        self['bg'] = '#ffffff'
-
-
-class numPad(simpledialog.Dialog):
-    def __init__(self, master=None, textVariable=None):
-        self.top = Toplevel(master=master)
-        self.top.protocol("WM_DELETE_WINDOW", self.ok)
-        self.createWidgets()
-        self.master = master
-
-    def createWidgets(self):
-        btn_list = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', 'Close', 'Del']
-        # create and position all buttons with a for-loop
-        btn = []
-        # Use custom generator to give us row/column positions
-        for r, c, label in enumerate_row_column(btn_list, 3):
-            # partial takes care of function and argument
-            cmd = lambda x=label: self.click(x)
-            # create the button
-            cur = Button(self.top, text=label, width=10, height=5, command=cmd)
-            # position the button
-            cur.grid(row=r, column=c)
-            btn.append(cur)
-
-    def click(self, label):
-        print(label)
-        if label == 'Del':
-            currentText = self.master.get()
-            self.master.delete(0, END)
-            self.master.insert(0, currentText[:-1])
-        elif label == 'Close':
-            self.ok()
-        else:
-            currentText = self.master.get()
-            self.master.delete(0, END)
-            self.master.insert(0, currentText + label)
-
-    def ok(self):
-        self.top.destroy()
-        self.top.master.focus()
-"""
 class FullScreenApp(object):
     def __init__(self, master, **kwargs):
         self.master=master
@@ -279,44 +223,6 @@ class Calculator2():
             moveStepperInput.delete(0, END)
             moveStepperInput.insert(0, currentText + label)
 
-
-"""
-class YScrolledFrame(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_columnconfigure(0, weight=1)
-
-        self.canvas = canvas = tk.Canvas(self, bg='white', relief='raised')
-        canvas.grid(row=0, column=0, sticky='nsew')
-
-        scroll = tk.Scrollbar(self, command=canvas.yview, orient=tk.VERTICAL)
-        canvas.config(yscrollcommand=scroll.set, width=1024)
-        scroll.grid(row=0, column=1, sticky='nsew')
-
-        self.content = tk.Frame(canvas)
-        self.canvas.create_window(0, 0, window=self.content, anchor="nw")
-
-        self.bind('<Configure>', self.on_configure)
-
-    def on_configure(self, event):
-        bbox = self.content.bbox('ALL')
-        self.canvas.config(scrollregion=bbox)
-"""
-"""
-class Notebook(ttk.Notebook):
-    def __init__(self, parent, tab_labels):
-        super().__init__(parent)
-
-        self._tab = {}
-        for text in tab_labels:
-            self._tab[text] = YScrolledFrame(self)
-            # layout by .add defaults to fill=tk.BOTH, expand=True
-            self.add(self._tab[text], text=text, compound=tk.TOP)
-
-    def tab(self, key):
-        return self._tab[key].content
-"""
 class ResizingCanvas(Canvas):
     def __init__(self,parent,**kwargs):
         Canvas.__init__(self,parent,**kwargs)
@@ -351,6 +257,11 @@ def hear():
 
 def hearJson():
     msg = usb.read_until()# read until a new line
+    mystring = json.loads(str(msg.decode("utf-8")).strip())
+    return mystring
+
+def hearJsonf():
+    msg = usbf.read_until()# read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
     return mystring
 
@@ -569,6 +480,41 @@ def cut():
     label.config(text=str(hearv))
 """
 
+def moveFeeder(dir, step):
+
+    data = {
+        "A": str(dir),
+        "M": float(step) * 160,
+        "P": profilChooser.get()
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    """print(hearv)
+    if str(hearv["status"]).strip() == "done":
+        #cut.config(state=ACTIVE, bg='green')
+    else:
+        #cut.config(state=ACTIVE, bg='red')
+    label.config(text=str(hearv))
+"""
+
+
+def homeFeeder():
+
+    homingf.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "home"
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    if str(hearv["status"]).strip() == "done":
+        homingf.config(state=ACTIVE, bg='green')
+    else:
+        homingf.config(state=ACTIVE, bg='red')
+
+
 def home():
 
     global stepperList
@@ -681,6 +627,10 @@ cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 
 homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
 homing.grid(column=2,row=0,padx=30,pady=30)
+
+homingf = tk.Button(tab1,text="Homing F",font=text_font,command=home)
+homingf.grid(column=3,row=0,padx=30,pady=30)
+
 
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
