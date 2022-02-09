@@ -400,7 +400,7 @@ def initEmptyCombo():
 def runCycle():
 
     global sensorToDrill
-    cut = float(runLength.text())
+    cut = float(runLength.get())
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
     fromStart = sensorToDrill + (120 - rem)
