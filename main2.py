@@ -28,6 +28,8 @@ currentSetting = None
 stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
+sensorToDrill = 100
+
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
         row = idx // num_cols
@@ -395,6 +397,33 @@ def initEmptyCombo():
         settingsList[var].insert(0, 0)
         i += 1
 
+def runCycle():
+
+    global sensorToDrill
+    cut = float(runLength.get())
+    nbrOfHoles = int(cut // 120)
+    rem = cut % 120
+    fromStart = sensorToDrill + (120 - rem)
+    if rem == 0:
+        nbrOfHoles-=1
+    else:
+        tmpCut = (int(cut // 120) +1) * 120
+        rem = (tmpCut - cut) / 2
+        fromStart = sensorToDrill + (120 - rem)
+
+    print(fromStart)
+    moveFeeder(1, fromStart*160)
+
+    #drill()
+
+    moveTo = fromStart
+    for x in range(1, nbrOfHoles-1):
+        moveTo += 120
+        print(moveTo)
+        moveFeeder(1, moveTo*160)
+        #drill()
+
+
 def drill():
 
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
@@ -624,6 +653,14 @@ drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=drill)\
 
 cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
     .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+
+runLength = Entry(tab1, font=etext_font, width=10)
+runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
+
+
+runCycle = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=runCycle())\
+    .grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+
 
 homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
 homing.grid(column=2,row=0,padx=30,pady=30)
