@@ -511,12 +511,11 @@ def cut():
 
 def moveFeeder(dir, step):
 
-    global profilChooser
 
     data = {
         "A": str(dir),
         "M": float(step) * 160,
-        "P": profilChooser.get()
+        "P": str(profilChooser.get())
     }
 
     usbf.write(json.dumps(data).encode())
