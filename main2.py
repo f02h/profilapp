@@ -12,10 +12,10 @@ import os
 
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB0"
-usb = serial.Serial(USB_PORT, 115200)
-usbf = serial.Serial(USB_PORT_FEEDER, 115200)
-#usb = 0
-#usbf = 0
+#usb = serial.Serial(USB_PORT, 115200)
+#usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+usb = 0
+usbf = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -397,32 +397,6 @@ def initEmptyCombo():
         settingsList[var].insert(0, 0)
         i += 1
 
-def runCycle():
-
-    global sensorToDrill
-    cut = float(runLength.get())
-    nbrOfHoles = int(cut // 120)
-    rem = cut % 120
-    fromStart = sensorToDrill + (120 - rem)
-    if rem == 0:
-        nbrOfHoles-=1
-    else:
-        tmpCut = (int(cut // 120) +1) * 120
-        rem = (tmpCut - cut) / 2
-        fromStart = sensorToDrill + (120 - rem)
-
-    print(fromStart)
-    moveFeeder(1, fromStart*160)
-
-    #drill()
-
-    moveTo = fromStart
-    for x in range(1, nbrOfHoles-1):
-        moveTo += 120
-        print(moveTo)
-        moveFeeder(1, moveTo*160)
-        #drill()
-
 
 def drill():
 
@@ -509,8 +483,35 @@ def cut():
     label.config(text=str(hearv))
 """
 
-def moveFeeder(dir, step):
 
+def runCycle():
+
+    global sensorToDrill
+    cut = float(runLength.get())
+    nbrOfHoles = int(cut // 120)
+    rem = cut % 120
+    fromStart = sensorToDrill + (120 - rem)
+    if rem == 0:
+        nbrOfHoles-=1
+    else:
+        tmpCut = (int(cut // 120) +1) * 120
+        rem = (tmpCut - cut) / 2
+        fromStart = sensorToDrill + (120 - rem)
+
+    print(fromStart)
+    moveFeeder(1, fromStart*160)
+
+    #drill()
+
+    moveTo = fromStart
+    for x in range(1, nbrOfHoles-1):
+        moveTo += 120
+        print(moveTo)
+        moveFeeder(1, moveTo*160)
+        #drill()
+
+
+def moveFeeder(dir, step):
 
     data = {
         "A": str(dir),
@@ -659,8 +660,7 @@ runLength = Entry(tab1, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runCycle = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=runCycle())\
-    .grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle).grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
 
 
 homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
