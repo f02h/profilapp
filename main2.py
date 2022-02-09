@@ -400,7 +400,7 @@ def initEmptyCombo():
 def runCycle():
 
     global sensorToDrill
-    cut = float(runLength.get())
+    cut = float(runLength.text())
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
     fromStart = sensorToDrill + (120 - rem)
@@ -656,7 +656,7 @@ cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 
 runLength = Entry(tab1, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
-
+runLength.insert(0, 0.0)
 
 runCycle = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=runCycle())\
     .grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
