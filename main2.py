@@ -512,11 +512,15 @@ def runCycle():
 
 
 def moveFeeder(dir, step):
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
 
     data = {
         "A": str(dir),
         "M": int(float(step) * 160),
-        "P": str(profilChooser.get())
+        "P": idProfil
     }
 
     print(json.dumps(data))
