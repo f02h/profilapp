@@ -523,6 +523,7 @@ def moveFeeder(dir, step):
         "P": idProfil
     }
 
+    print(json.dumps(data))
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     """print(hearv)
