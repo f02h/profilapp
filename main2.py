@@ -499,7 +499,7 @@ def runCycle():
         fromStart = sensorToDrill + (120 - rem)
 
     print("Prva: "+str(fromStart))
-    moveFeeder("moveFwd", int(fromStart*160))
+    moveFeeder("moveFwd", int(fromStart))
 
     #drill()
 
@@ -507,7 +507,7 @@ def runCycle():
     for x in range(1, nbrOfHoles-1):
         moveTo += 120
         print(str(x)+" : "+str(moveTo))
-        moveFeeder("moveFwd", moveTo*160)
+        moveFeeder("moveFwd", moveTo)
         #drill()
 
 
