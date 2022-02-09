@@ -499,7 +499,7 @@ def runCycle():
         fromStart = sensorToDrill + (120 - rem)
 
     print(fromStart)
-    moveFeeder(1, fromStart*160)
+    moveFeeder(1, int(fromStart*160))
 
     #drill()
 
