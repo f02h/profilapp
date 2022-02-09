@@ -501,14 +501,14 @@ def runCycle():
     print("Prva: "+str(fromStart))
     moveFeeder("moveFwd", int(fromStart))
 
-    #drill()
+    drill()
 
     moveTo = fromStart
     for x in range(1, nbrOfHoles-1):
         moveTo += 120
         print(str(x)+" : "+str(moveTo))
         moveFeeder("moveFwd", moveTo)
-        #drill()
+        drill()
 
 
 def moveFeeder(dir, step):
