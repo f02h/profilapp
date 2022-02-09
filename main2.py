@@ -498,7 +498,7 @@ def runCycle():
         rem = (tmpCut - cut) / 2
         fromStart = sensorToDrill + (120 - rem)
 
-    print(fromStart)
+    print("Prva: "+fromStart)
     moveFeeder("moveFwd", int(fromStart*160))
 
     #drill()
@@ -506,7 +506,7 @@ def runCycle():
     moveTo = fromStart
     for x in range(1, nbrOfHoles-1):
         moveTo += 120
-        print(moveTo)
+        print(x+" : "+moveTo)
         moveFeeder("moveFwd", moveTo*160)
         #drill()
 
@@ -523,7 +523,6 @@ def moveFeeder(dir, step):
         "P": idProfil
     }
 
-    print(json.dumps(data))
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     """print(hearv)
