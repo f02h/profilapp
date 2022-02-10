@@ -492,7 +492,7 @@ def runCycle():
     rem = cut % 120
     fromStart = sensorToDrill + (120 - rem)
     if rem == 0:
-        nbrOfHoles-=1
+        nbrOfHoles -= 1
     else:
         tmpCut = (int(cut // 120) +1) * 120
         rem = (tmpCut - cut) / 2
@@ -505,6 +505,7 @@ def runCycle():
 
     moveTo = fromStart
     for x in range(1, nbrOfHoles-1):
+        print(x)
         moveTo += 120
         print(str(x)+" : "+str(moveTo))
         moveFeeder("moveFwd", moveTo)
