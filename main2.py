@@ -504,7 +504,7 @@ def runCycle():
     #drill()
 
     moveTo = fromStart
-    for x in range(1, nbrOfHoles-1):
+    for x in range(1, nbrOfHoles):
         print(x)
         moveTo += 120
         print(str(x)+" : "+str(moveTo))
