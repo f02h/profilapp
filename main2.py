@@ -28,7 +28,7 @@ currentSetting = None
 stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
-sensorToDrill = 100
+sensorToDrill = 0
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
