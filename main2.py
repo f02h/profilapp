@@ -505,7 +505,6 @@ def runCycle():
 
     moveTo = fromStart
     for x in range(1, nbrOfHoles):
-        print(x)
         moveTo += 120
         print(str(x)+" : "+str(moveTo))
         moveFeeder("moveFwd", moveTo)
@@ -524,7 +523,6 @@ def moveFeeder(dir, step):
         "P": idProfil
     }
 
-    print(json.dumps(data))
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     """print(hearv)
