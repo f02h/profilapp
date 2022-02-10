@@ -260,6 +260,9 @@ def hear():
 def hearJson():
     msg = usb.read_until()# read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
+
+    if str(mystring["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
     return mystring
 
 def hearJsonf():
@@ -665,6 +668,8 @@ runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
 runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle).grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+errorBox = tk.Button(tab1,text="",font=text_font,bg="green",).grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30,pady=30)
+
 
 
 homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
