@@ -493,7 +493,7 @@ def runCycle():
 
     global sensorToDrill
     cut = float(runLength.get())
-    moveFeeder("moveRev", int(cut))
+    moveFeeder("moveRev", int(cut), 1)
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
     fromStart = sensorToDrill + (120 - rem)
@@ -517,7 +517,9 @@ def runCycle():
         #drill()
 
 
-def moveFeeder(dir, step):
+# abs = 1 => move to absolute position
+# abs = 0 => relative move
+def moveFeeder(dir, step, abs = 0):
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
     if not idProfil:
@@ -526,6 +528,7 @@ def moveFeeder(dir, step):
     data = {
         "A": str(dir),
         "M": str(int(float(step)) *160),
+        "M2": abs,
         "P": idProfil
     }
 
