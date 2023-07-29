@@ -486,8 +486,10 @@ def cut():
     label.config(text=str(hearv))
 """
 
-
 def runCycle():
+    moveFeeder("moveRev", int(1000))
+
+def runCycle1():
 
     global sensorToDrill
     cut = float(runLength.get())
