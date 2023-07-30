@@ -494,6 +494,7 @@ def runCycle():
     global sensorToDrill
     cut = float(runLength.get())
     moveFeeder("moveRev", int(cut), 1)
+    """"
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
     fromStart = sensorToDrill + (120 - rem)
@@ -515,7 +516,7 @@ def runCycle():
         print(str(x)+" : "+str(moveTo))
         moveFeeder("moveFwd", moveTo)
         #drill()
-
+    """
 
 # abs = 1 => move to absolute position
 # abs = 0 => relative move
