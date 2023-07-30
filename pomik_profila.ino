@@ -83,6 +83,7 @@ void loop()
       String action = doc["A"];
       int profile = doc["P"];
       long int moveStep = doc["M"];
+      int absMove = doc["M2"];
 /*
       StaticJsonDocument<500> doc3;
        doc3["status"] = "done";
@@ -95,13 +96,13 @@ void loop()
       // read command from serial port
       if (action == "moveFwd") {
          while(!waitForProfile(profile)) {}  
-         moveFwd(moveStep);
+         moveFwd(moveStep, absMove);
          StaticJsonDocument<200> doc2;
          doc2["status"] = "done";
          serializeJson(doc2, Serial);
          Serial.println();
       } else if (action == "moveRev") {  // turn on LED
-         moveRev(moveStep);
+         moveRev(moveStep, absMove);
          StaticJsonDocument<200> doc2;
          doc2["status"] = "done";
          serializeJson(doc2, Serial);
@@ -152,15 +153,25 @@ int waitForProfile1(int profileSize) {
   }
 }
 
-boolean moveFwd(int moveSteps) {  
-  stepper1.moveTo(moveSteps);
+boolean moveFwd(int moveSteps, int absMove) {  
+  if (absMove == 1) {
+    stepper1.moveTo(moveSteps);  
+  } else {
+    stepper1.move(moveSteps);
+  }
+  
   stepper1.runToPosition();
   return true;
   
 }
 
-boolean moveRev(int moveSteps) {
-  stepper1.moveTo(moveSteps * -1);
+boolean moveRev(int moveSteps, int absMove) {
+  if (absMove == 1) {
+    stepper1.moveTo(moveSteps * -1);  
+  } else {
+    stepper1.move(moveSteps * -1);
+  }
+  
   stepper1.runToPosition();
   return true;
 }
