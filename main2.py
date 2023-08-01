@@ -514,7 +514,7 @@ def runCycle():
     for x in range(1, nbrOfHoles):
         moveTo += 120
         print(str(x)+" : "+str(moveTo))
-        moveFeeder("moveFwd", moveTo)
+        moveFeeder("moveFwd", 120)
         #drill()
 
 
