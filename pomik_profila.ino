@@ -8,8 +8,11 @@
 int stepsPerMM = 160;
 
 // init motors
-GPIO<BOARD::D38> startSenzorMali;
-GPIO<BOARD::D37> startSenzorVeliki;
+//GPIO<BOARD::D38> startSenzorMali;
+//GPIO<BOARD::D37> startSenzorVeliki;
+int startSenzorMali = 38;
+int startSenzorVeliki = 37;
+
 
 GPIO<BOARD::D39> hommingSenzor1;
 GPIO<BOARD::D53> directionPin1;
@@ -21,8 +24,11 @@ int maxHod = 97309;
 
 void setup() {
   Serial.begin(115200);
-  startSenzorMali.input();
-  startSenzorVeliki.input();
+  //startSenzorMali.input();
+  //startSenzorVeliki.input();
+  pinMode(startSenzorMali, INPUT);
+  pinMode(startSenzorVeliki, INPUT);
+
  
   stepPin1.output();
   stepPin1 = LOW;
@@ -38,11 +44,10 @@ void setup() {
 
   //180,25
 
-    moveRev(12000);
+    moveRev(12000,0);
  /*
   stepper1.moveTo(-97309);
-  stepper1.runToPosition();*/
-
+  stepper1.runToPosition();*/  
 }
 
 
@@ -84,18 +89,27 @@ void loop()
       int profile = doc["P"];
       long int moveStep = doc["M"];
       int absMove = doc["M2"];
+
+      
 /*
       StaticJsonDocument<500> doc3;
        doc3["status"] = "done";
        doc3["A"] = action;
        doc3["M"] = moveStep;
+       doc3["F"] = firstMove;
        doc3["com"] = command;
        serializeJson(doc3, Serial);
        Serial.println();
   */    
       // read command from serial port
-      if (action == "moveFwd") {
+      if (action == "moveFwdF") {
          while(!waitForProfile(profile)) {}  
+         moveFwd(moveStep, absMove);
+         StaticJsonDocument<200> doc2;
+         doc2["status"] = "done";
+         serializeJson(doc2, Serial);
+         Serial.println();
+      } else if (action == "moveFwd") {
          moveFwd(moveStep, absMove);
          StaticJsonDocument<200> doc2;
          doc2["status"] = "done";
@@ -122,38 +136,50 @@ void loop()
 
 boolean waitForProfile(int profileSize) {
 
-  startSenzorMali.input();
-  startSenzorVeliki.input();
+  //startSenzorMali.input();
+  int senzorMali = digitalRead(startSenzorMali);
+  delay(300);
+  int senzorVeliki = digitalRead(startSenzorVeliki);
+  if (senzorMali) {
+    senzorMali = digitalRead(startSenzorMali);
+  }
   
-  if (profileSize == 0) {
-    while(startSenzorMali && !startSenzorVeliki) {};
-    return true;
-  } else if (profileSize == 1) {
-    while(startSenzorMali && startSenzorVeliki) {};
-    return true;
-  } else {
-    return false;
+  
+/*
+  Serial.println();
+  
+  if (startSenzorMali) {
+    Serial.println("mali profil");
   }
+
+  if (startSenzorVeliki) {
+     Serial.println("veliki profil");
+  }
+
+  Serial.println();
+
+  return false;
+  
+*/
+  
+  if (profileSize == 1) {
+    if (senzorMali == HIGH  && senzorVeliki == LOW) {
+      return true;
+    }
+  } 
+  
+  if (profileSize == 2) {
+    if (senzorMali == HIGH && senzorVeliki == HIGH) {
+        return true;
+    }
+  } 
+  
+  return false;
 }
 
 
-int waitForProfile1(int profileSize) {
 
-  startSenzorMali.input();
-  startSenzorVeliki.input();
-
-  if (profileSize == 0) {
-    while(!startSenzorMali && startSenzorVeliki) {};
-    return 1;
-  } else if (profileSize == 1) {
-    while(!startSenzorMali && !startSenzorVeliki) {};
-    return 2;
-  } else {
-    return 3;
-  }
-}
-
-boolean moveFwd(int moveSteps, int absMove) {  
+boolean moveFwd(long int moveSteps, int absMove) {  
   if (absMove == 1) {
     stepper1.moveTo(moveSteps);  
   } else {
@@ -165,7 +191,7 @@ boolean moveFwd(int moveSteps, int absMove) {
   
 }
 
-boolean moveRev(int moveSteps, int absMove) {
+boolean moveRev(long int moveSteps, int absMove) {
   if (absMove == 1) {
     stepper1.moveTo(moveSteps * -1);  
   } else {
