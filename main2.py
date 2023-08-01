@@ -494,7 +494,7 @@ def runCycle():
     global sensorToDrill
     cut = float(runLength.get())
     moveFeeder("moveRev", cut, 1)
-    """"
+
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
     fromStart = sensorToDrill + (120 - rem)
@@ -535,8 +535,8 @@ def moveFeeder(dir, step, abs = 0):
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    """print(hearv)
-    if str(hearv["status"]).strip() == "done":
+    print(hearv)
+    """if str(hearv["status"]).strip() == "done":
         #cut.config(state=ACTIVE, bg='green')
     else:
         #cut.config(state=ACTIVE, bg='red')
