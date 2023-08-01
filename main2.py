@@ -516,7 +516,7 @@ def runCycle():
         print(str(x)+" : "+str(moveTo))
         moveFeeder("moveFwd", moveTo)
         #drill()
-    """
+
 
 # abs = 1 => move to absolute position
 # abs = 0 => relative move
