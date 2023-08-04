@@ -494,8 +494,8 @@ def runCycle():
 
     global sensorToDrill
     global refExtension
-    cut = float(runLength.get()) + sensorToDrill + refExtension
-    moveFeeder("moveRev", cut, 1, 1)
+    cut = float(runLength.get())
+    moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
