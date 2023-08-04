@@ -530,7 +530,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
 
     data = {
         "A": str(dir),
-        "M": str(int(step * 22.2)),
+        "M": str(int(step * 44.44)),
         "M2": abs,
         "P": idProfil,
         "F": firstMove
