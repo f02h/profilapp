@@ -28,7 +28,8 @@ currentSetting = None
 stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
-sensorToDrill = 0
+sensorToDrill = 200
+refExtension = 190
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -492,18 +493,19 @@ def runCycle1():
 def runCycle():
 
     global sensorToDrill
-    cut = float(runLength.get())
+    global refExtension
+    cut = float(runLength.get() + sensorToDrill + refExtension)
     moveFeeder("moveRev", cut, 1, 1)
 
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
-    fromStart = sensorToDrill + (120 - rem)
+    fromStart = refExtension + (120 - rem)
     if rem == 0:
         nbrOfHoles -= 1
     else:
         tmpCut = (int(cut // 120) +1) * 120
         rem = (tmpCut - cut) / 2
-        fromStart = sensorToDrill + (120 - rem)
+        fromStart = refExtension + (120 - rem)
 
     print("Prva: "+str(fromStart))
     moveFeeder("moveFwdF", int(fromStart))
