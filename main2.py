@@ -5,7 +5,7 @@ import sqlite3
 from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
-import os
+import os, time
 
 
 
@@ -30,6 +30,7 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
 sensorToDrill = 200
 refExtension = 190
+currentCutLen = 0
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -267,9 +268,19 @@ def hearJson():
     return mystring
 
 def hearJsonf():
-    msg = usbf.read_until()# read until a new line
+    while (True):
+        if (usbf.in_waiting > 0):
+            data_str = usbf.read(usbf.in_waiting)
+            mystring = json.loads(str(data_str.decode("utf-8")).strip())
+            return mystring
+
+        # Put the rest of your code you want here
+
+        time.sleep(0.01)
+
+    """msg = usbf.read_until()# read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
-    return mystring
+    return mystring"""
 
 def callback(*args):
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
@@ -494,7 +505,16 @@ def runCycle():
 
     global sensorToDrill
     global refExtension
+    global currentCutLen
+
     cut = float(runLength.get())
+    if currentCutLen == 0:
+        currentCutLen = cut
+
+    if currentCutLen != cut and false:
+        changeLength()
+        currentCutLen = cut
+
     moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
     nbrOfHoles = int(cut // 120)
@@ -534,6 +554,21 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
         "M2": abs,
         "P": idProfil,
         "F": firstMove
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    print(hearv)
+    """if str(hearv["status"]).strip() == "done":
+        #cut.config(state=ACTIVE, bg='green')
+    else:
+        #cut.config(state=ACTIVE, bg='red')
+    label.config(text=str(hearv))
+"""
+
+def changeLength():
+    data = {
+        "A": "changeLength",
     }
 
     usbf.write(json.dumps(data).encode())
