@@ -13,7 +13,7 @@ import os
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
-usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+usbf = serial.Serial(USB_PORT_FEEDER, 9600)
 #usb = 0
 #usbf = 0
 path = os.path.dirname(os.path.abspath(__file__))
