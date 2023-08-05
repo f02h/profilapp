@@ -268,7 +268,7 @@ def hearJson():
     return mystring
 
 def hearJsonf():
-    while (True):
+    """while (True):
         if (usbf.in_waiting > 0):
             data_str = usbf.read_until()
             mystring = json.loads(str(data_str.decode("utf-8")).strip())
@@ -277,10 +277,10 @@ def hearJsonf():
         # Put the rest of your code you want here
 
         time.sleep(0.01)
-
-    """msg = usbf.read_until()# read until a new line
+"""
+    msg = usbf.read_until()# read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
-    return mystring"""
+    return mystring
 
 def callback(*args):
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
@@ -511,7 +511,7 @@ def runCycle():
     if currentCutLen == 0:
         currentCutLen = cut
 
-    if currentCutLen != cut and false:
+    if currentCutLen != cut and 0:
         changeLength()
         currentCutLen = cut
 
@@ -559,9 +559,9 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     print(hearv)
-    """if str(hearv["status"]).strip() == "done":
-        #cut.config(state=ACTIVE, bg='green')
-    else:
+    if str(hearv["status"]).strip() == "failed":
+        cut.config(state=ACTIVE, bg='green')
+    """else:
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 """
