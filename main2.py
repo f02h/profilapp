@@ -566,7 +566,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     hearv = hearJsonf()
     print(hearv)
     if str(hearv["status"]).strip() == "failed":
-        cut.config(state=ACTIVE, bg='green')
+        runCyc.config(state=ACTIVE, bg='green')
     """else:
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
