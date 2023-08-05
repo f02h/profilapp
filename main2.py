@@ -268,7 +268,7 @@ def hearJson():
     return mystring
 
 def hearJsonf():
-    """while (True):
+    while (True):
         if (usbf.in_waiting > 0):
             data_str = usbf.read_until()
             mystring = json.loads(str(data_str.decode("utf-8")).strip())
@@ -277,11 +277,11 @@ def hearJsonf():
         # Put the rest of your code you want here
 
         time.sleep(0.01)
-"""
-    msg = usbf.read_until()# read until a new line
+
+"""    msg = usbf.read_until()# read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
     return mystring
-
+"""
 def callback(*args):
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
     idProfil = int(res[0])
