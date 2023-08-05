@@ -267,7 +267,13 @@ def hearJson():
         errorBox.config(state=DISABLED, fg='white', bg='red')
     return mystring
 
+
 def hearJsonf():
+    msg = usbf.read_until()# read until a new line
+    mystring = json.loads(str(msg.decode("utf-8")).strip())
+    return mystring
+
+def hearJsonf1():
     """while (True):
         if (usbf.in_waiting > 0):
             data_str = usbf.read_until()
