@@ -10,20 +10,16 @@
 */
 #include <ArduinoJson.h>
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);  // Initialize the LED_BUILTIN pin as an output
-}
-
-// the loop function runs over and over again forever
-void loop() {
-  digitalWrite(LED_BUILTIN, LOW);  // Turn the LED on (Note that LOW is the voltage level
-  // but actually the LED is on; this is because
-  // it is active low on the ESP-01)
-  delay(1000);                      // Wait for a second
-  digitalWrite(LED_BUILTIN, HIGH);  // Turn the LED off by making the voltage HIGH
-  delay(2000);
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(115200);
   while (!Serial) continue;
+  digitalWrite(LED_BUILTIN, HIGH); // Initialize the LED_BUILTIN pin as an output
+}
 
+void loop() {
+
+
+/*
   DynamicJsonDocument doc(1024);
 
   doc["sensor"] = "gps";
@@ -31,5 +27,88 @@ void loop() {
   doc["data"][0] = 48.756080;
   doc["data"][1] = 2.302038;
 
-  serializeJson(doc, Serial);                    // Wait for two seconds (to demonstrate the active low LED)
+  serializeJson(doc, Serial);
+ */
+
+  if (Serial.available())
+  {
+    digitalWrite(LED_BUILTIN, LOW);
+    // Allocate the JSON document
+    // This one must be bigger than the sender's because it must store the strings
+    String command = Serial.readString();
+    StaticJsonDocument<500> doc;
+    int str_len = command.length() + 3;
+    char char_array[str_len];
+    command.toCharArray(char_array, str_len);
+
+      DeserializationError error = deserializeJson(doc, char_array);
+
+    // Read the JSON document from the "link" serial port
+   // DeserializationError err = deserializeJson(doc, Serial);
+
+    if (error) {
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.f_str());
+        return;
+      }
+    else
+    {
+        DynamicJsonDocument doc2(1024);
+        doc2["R"] = doc["A"];
+        serializeJson(doc2, Serial);
+        Serial.println();
+    }
+    digitalWrite(LED_BUILTIN, HIGH);
+
+
+  }
+                      // Wait for two seconds (to demonstrate the active low LED)
+}
+
+// the loop function runs over and over again forever
+void loop1() {
+
+  Serial.begin(115200);
+  while (!Serial) continue;
+
+                     // Wait for two seconds (to demonstrate the active low LED)
+   DynamicJsonDocument doc(1024);
+
+  doc["sensor"] = "gps";
+  doc["time"]   = 1351824120;
+  doc["data"][0] = 48.756080;
+  doc["data"][1] = 2.302038;
+  while(1) {
+  serializeJson(doc, Serial);
+  delay(1000);
+  }
+
+
+   if (Serial.available())
+  {
+
+    // Allocate the JSON document
+    // This one must be bigger than the sender's because it must store the strings
+    StaticJsonDocument<300> doc;
+
+    // Read the JSON document from the "link" serial port
+    DeserializationError err = deserializeJson(doc, Serial);
+
+    if (err == DeserializationError::Ok)
+    {
+
+    }
+    else
+    {
+      digitalWrite(LED_BUILTIN, LOW);
+        Serial.println("test");
+        DynamicJsonDocument doc(1024);
+        doc["R"] = doc["A"];
+        serializeJson(doc, Serial);
+        digitalWrite(LED_BUILTIN, HIGH);
+    }
+
+
+  }
+
 }
