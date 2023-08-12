@@ -13,7 +13,10 @@ import os, time
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
-usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+#usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+usbf = serial.Serial(
+    port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
+)
 #usb = 0
 #usbf = 0
 path = os.path.dirname(os.path.abspath(__file__))
@@ -269,9 +272,25 @@ def hearJson():
 
 
 def hearJsonf():
-    msg = usbf.read_until()# read until a new line
-    mystring = json.loads(str(msg.decode("utf-8")).strip())
-    return mystring
+
+    #msg = usbf.read_until()# read until a new line
+    #mystring = json.loads(str(msg.decode("utf-8")).strip())
+    #return mystring
+    if usbf.in_waiting > 0:
+
+        # Read data out of the buffer until a carraige return / new line is found
+        serialString = usbf.readline()
+
+        # Print the contents of the serial data
+        try:
+           # print(serialString.decode("Ascii"))
+            mystring = json.loads(str(serialString.decode("Ascii")).strip())
+            print(mystring)
+            return mystring
+        except:
+            print("fail")
+            pass
+
 
 def hearJsonf1():
     """while (True):
@@ -567,7 +586,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     print(hearv)
-    if str(hearv["status"]).strip() == "failed":
+    if str(hearv["status"]).strip() == "waitingForProfile":
         runCyc.config(state=ACTIVE, bg='green')
     """else:
         #cut.config(state=ACTIVE, bg='red')
