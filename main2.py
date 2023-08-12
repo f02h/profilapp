@@ -594,6 +594,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     print(hearv)
     if str(hearv["status"]).strip() == "waitingForProfile":
         runCyc.config(state=ACTIVE, bg='green')
+        print("Enabled")
     """else:
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
