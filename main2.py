@@ -544,9 +544,11 @@ def runCycle():
         currentCutLen = cut
 
     tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
-    while tmpStatus == "waitingForProfile":
+    if tmpStatus == "waitingForProfile":
         print("waiting")
-        time.sleep(1)
+        runCyc.config(state=ACTIVE, bg='green')
+        return
+
 
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
