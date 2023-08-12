@@ -273,9 +273,9 @@ def hearJson():
 
 def hearJsonf():
 
-    #msg = usbf.read_until()# read until a new line
-    #mystring = json.loads(str(msg.decode("utf-8")).strip())
-    #return mystring
+    msg = usbf.read_until()# read until a new line
+    mystring = json.loads(str(msg.decode("utf-8")).strip())
+    return mystring
     if usbf.in_waiting > 0:
 
         # Read data out of the buffer until a carraige return / new line is found
