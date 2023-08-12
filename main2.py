@@ -283,9 +283,9 @@ def hearJsonf():
 
         # Print the contents of the serial data
         try:
-            print(serialString.decode("utf-8"))
+            print(serialString.decode("Ascii"))
 
-            mystring = json.loads(str(serialString.decode("utf-8")).strip())
+            mystring = json.loads(str(serialString.decode("Ascii")).strip())
             print(mystring)
             return mystring
         except:
@@ -584,7 +584,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
         "F": firstMove
     }
 
-    usbf.write(json.dumps(data).encode("utf-8"))
+    usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     print(hearv)
     if str(hearv["status"]).strip() == "waitingForProfile":
