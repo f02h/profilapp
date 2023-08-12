@@ -274,7 +274,7 @@ def hearJson():
 def hearJsonf():
 
     msg = usbf.read_until()# read until a new line
-    mystring = json.loads(str(msg.decode("utf-8")).strip())
+    mystring = json.loads(str(msg.decode("Ascii")).strip())
     return mystring
     if usbf.in_waiting > 0:
 
