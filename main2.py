@@ -739,7 +739,8 @@ runLength = Entry(tab1, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle).grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle)
+runCyc.grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
 errorBox = tk.Button(tab1,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30)
 
