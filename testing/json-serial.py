@@ -2,7 +2,7 @@ import serial
 import time, json
 
 serialPort = serial.Serial(
-    port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
+    port="/dev/ttyUSB0", baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
 )
 serialString = ""  # Used to hold data coming over UART
 
