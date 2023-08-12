@@ -283,8 +283,9 @@ def hearJsonf():
 
         # Print the contents of the serial data
         try:
-           # print(serialString.decode("Ascii"))
-            mystring = json.loads(str(serialString.decode("Ascii")).strip())
+            print(serialString.decode("Ascii"))
+
+            mystring = json.loads(str(serialString.decode()).strip())
             print(mystring)
             return mystring
         except:
