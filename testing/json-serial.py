@@ -8,6 +8,14 @@ serialString = ""  # Used to hold data coming over UART
 
 data = {"A": "test5"}
 
+data = {
+        "A": "moveRev",
+        "M": str(int(900 * 44.44)),
+        "M2": 1,
+        "P": 1,
+        "F":1
+    }
+
 serialPort.write(json.dumps(data).encode())
 while 1:
     if serialPort.in_waiting > 0:
