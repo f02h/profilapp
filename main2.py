@@ -273,24 +273,26 @@ def hearJson():
 
 def hearJsonf():
 
-    msg = usbf.read_until()# read until a new line
-    mystring = json.loads(str(msg.decode("Ascii")).strip())
-    return mystring
-    if usbf.in_waiting > 0:
+    #msg = usbf.read_until()# read until a new line
+    #mystring = json.loads(str(msg.decode("Ascii")).strip())
+    #return mystring
 
-        # Read data out of the buffer until a carraige return / new line is found
-        serialString = usbf.readline()
+    while 1:
+        if usbf.in_waiting > 0:
 
-        # Print the contents of the serial data
-        try:
-            print(serialString.decode("Ascii"))
+            # Read data out of the buffer until a carraige return / new line is found
+            serialString = usbf.readline()
 
-            mystring = json.loads(str(serialString.decode("Ascii")).strip())
-            print(mystring)
-            return mystring
-        except:
-            print("fail")
-            pass
+            # Print the contents of the serial data
+            try:
+                print(serialString.decode("Ascii"))
+
+                mystring = json.loads(str(serialString.decode("Ascii")).strip())
+                print(mystring)
+                return mystring
+            except:
+                print("fail")
+                pass
 
 
 def hearJsonf1():
