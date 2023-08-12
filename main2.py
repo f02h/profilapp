@@ -543,7 +543,10 @@ def runCycle():
         changeLength()
         currentCutLen = cut
 
-    moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
+    tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
+    while tmpStatus == "waitingForProfile":
+        print("waiting")
+        time.sleep(1)
 
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
@@ -595,6 +598,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 """
+    return hearv["status"]
 
 def changeLength():
     data = {
