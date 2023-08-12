@@ -30,7 +30,7 @@ while 1:
 
             mystring = json.loads(str(serialString.decode("Ascii")).strip())
             print(mystring)
-            print(mystring["R"])
+            print(mystring["status"])
         except:
             print("fail")
             pass
