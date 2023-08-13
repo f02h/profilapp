@@ -13,7 +13,10 @@ import os, time
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
-usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+#usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+usbf = serial.Serial(
+    port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
+)
 #usb = 0
 #usbf = 0
 path = os.path.dirname(os.path.abspath(__file__))
@@ -269,9 +272,28 @@ def hearJson():
 
 
 def hearJsonf():
-    msg = usbf.read_until()# read until a new line
-    mystring = json.loads(str(msg.decode("utf-8")).strip())
-    return mystring
+
+    #msg = usbf.read_until()# read until a new line
+    #mystring = json.loads(str(msg.decode("Ascii")).strip())
+    #return mystring
+
+    while 1:
+        if usbf.in_waiting > 0:
+
+            # Read data out of the buffer until a carraige return / new line is found
+            serialString = usbf.readline()
+
+            # Print the contents of the serial data
+            try:
+                print(serialString.decode("Ascii"))
+
+                mystring = json.loads(str(serialString.decode("Ascii")).strip())
+                print(mystring)
+                return mystring
+            except:
+                print("fail")
+                pass
+
 
 def hearJsonf1():
     """while (True):
@@ -521,7 +543,12 @@ def runCycle():
         changeLength()
         currentCutLen = cut
 
-    moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
+    tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
+    if tmpStatus == "waitingForProfile":
+        print("waiting")
+        runCyc.config(state=ACTIVE, bg='green')
+        return
+
 
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
@@ -567,12 +594,14 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
     print(hearv)
-    if str(hearv["status"]).strip() == "failed":
+    if str(hearv["status"]).strip() == "waitingForProfile":
         runCyc.config(state=ACTIVE, bg='green')
+        print("Enabled")
     """else:
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 """
+    return hearv["status"]
 
 def changeLength():
     data = {
@@ -720,7 +749,8 @@ runLength = Entry(tab1, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle).grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle)
+runCyc.grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
 errorBox = tk.Button(tab1,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30)
 

@@ -2,11 +2,19 @@ import serial
 import time, json
 
 serialPort = serial.Serial(
-    port="COM3", baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
+    port="/dev/ttyUSB0", baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
 )
 serialString = ""  # Used to hold data coming over UART
 
 data = {"A": "test5"}
+
+data = {
+        "A": "moveRev",
+        "M": str(int(900 * 44.44)),
+        "M2": 1,
+        "P": 1,
+        "F":1
+    }
 
 serialPort.write(json.dumps(data).encode())
 while 1:
@@ -22,7 +30,7 @@ while 1:
 
             mystring = json.loads(str(serialString.decode("Ascii")).strip())
             print(mystring)
-            print(mystring["R"])
+            print(mystring["status"])
         except:
             print("fail")
             pass
