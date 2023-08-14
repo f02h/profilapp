@@ -539,12 +539,13 @@ def runCycle():
     print("Run cycle")
 
     cut = float(runLength.get())
-    if currentCutLen == 0:
-        currentCutLen = cut
+    print(cut)
+    #if currentCutLen == 0:
+    #    currentCutLen = cut
 
-    if currentCutLen != cut and 0:
-        changeLength()
-        currentCutLen = cut
+    #if currentCutLen != cut and 0:
+    #    changeLength()
+    #    currentCutLen = cut
 
     print("Rev move to load profile")
     tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
