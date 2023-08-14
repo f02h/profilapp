@@ -546,9 +546,10 @@ def runCycle():
         changeLength()
         currentCutLen = cut
 
+    print("Rev move to load profile")
     tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
-    print("load profile")
+    print("Load profile")
     tmpStatus = waitForProfile()
     while tmpStatus != "done":
         #wait for profile
@@ -557,7 +558,7 @@ def runCycle():
             runCyc.config(state=ACTIVE, bg='green')
             return
 
-        print("waiting for profile")
+        print("Waiting for profile")
         time.sleep(1)
         tmpStatus = waitForProfile()
 
