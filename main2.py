@@ -641,7 +641,7 @@ def stop_thread():
     global cycleThread
     global changingLen
     changingLen = True
-    changeLength()
+    #changeLength()
     cycleThread.join()
 
 
