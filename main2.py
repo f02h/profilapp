@@ -552,6 +552,7 @@ def runCycle():
         #wait for profile
         print("waiting for profile")
         time.sleep(1)
+        tmpStatus = waitForProfile()
         if changingLen == True:
             return
 
