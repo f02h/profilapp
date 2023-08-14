@@ -6,9 +6,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 import os, time
-
-
-
+from threading import Thread
 
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB0"
@@ -35,6 +33,7 @@ sensorToDrill = 200
 refExtension = 190
 currentCutLen = 0
 changeLen = False
+cycleThread = None
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -559,11 +558,6 @@ def runCycle():
 
     print("Prva: "+str(fromStart))
     tmpStatus = moveFeeder("moveFwdF", int(fromStart))
-    while tmpStatus == "waitingForProfile":
-        if changeLen == True:
-            print("Return from cycle")
-            changeLen = False
-            break
 
     #drill()
 
@@ -604,6 +598,22 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     label.config(text=str(hearv))
 """
     return hearv["status"]
+
+def start_thread():
+    # Assign global variable and initialize value
+    global changeLen
+    global cycleThread
+    changeLen = 0
+
+    # Create and launch a thread
+    cycleThread = Thread(target=runCycle)
+    cycleThread.start()
+
+def stop_thread():
+    # Assign global variable and set value to stop
+    global cycleThread
+    cycleThread.stop()
+
 
 def changeLength():
     data = {
@@ -753,9 +763,9 @@ runLength = Entry(tab1, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle)
+runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=start_thread)
 runCyc.grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
-changeLen = tk.Button(tab1,text="ChangeLen",font=text_font,bg="green",command=changeLen())
+changeLen = tk.Button(tab1,text="ChangeLen",font=text_font,bg="green",command=stop_thread)
 changeLen.grid(column=6,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
 
 errorBox = tk.Button(tab1,text="",font=text_font,bg="green",)
