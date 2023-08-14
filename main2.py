@@ -32,7 +32,7 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 sensorToDrill = 200
 refExtension = 190
 currentCutLen = 0
-changeLen = False
+changingLen = False
 cycleThread = None
 
 def enumerate_row_column(iterable, num_cols):
@@ -534,7 +534,7 @@ def runCycle():
     global sensorToDrill
     global refExtension
     global currentCutLen
-    global changeLen
+    global changingLen
 
     cut = float(runLength.get())
     if currentCutLen == 0:
@@ -562,7 +562,7 @@ def runCycle():
         #wait for profile
         print("waiting for profile")
         time.sleep(1)
-        if changeLen == 1:
+        if changingLen == True:
             return
 
     #drill()
@@ -607,9 +607,9 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
 
 def start_thread():
     # Assign global variable and initialize value
-    global changeLen
+    global changingLen
     global cycleThread
-    changeLen = 0
+    changingLen = False
 
     # Create and launch a thread
     cycleThread = Thread(target=runCycle)
@@ -618,8 +618,8 @@ def start_thread():
 def stop_thread():
     # Assign global variable and set value to stop
     global cycleThread
-    global changeLen
-    changeLen = 1
+    global changingLen
+    changingLen = True
     changeLength()
     cycleThread.join()
 
