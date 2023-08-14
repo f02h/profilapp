@@ -535,6 +535,7 @@ def runCycle():
     global sensorToDrill
     global refExtension
     global currentCutLen
+    global changeLen
 
     cut = float(runLength.get())
     if currentCutLen == 0:
@@ -559,8 +560,10 @@ def runCycle():
     print("Prva: "+str(fromStart))
     tmpStatus = moveFeeder("moveFwdF", int(fromStart))
     while tmpStatus == "waitingForProfile":
-        print("waiting")
-        runCyc.config(state=ACTIVE, bg='green')
+        if changeLen == True:
+            print("Return from cycle")
+            changeLen = False
+            break
 
     #drill()
 
