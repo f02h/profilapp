@@ -546,6 +546,7 @@ def runCycle():
 
     tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
+    print("load profile")
     tmpStatus = waitForProfile()
     while tmpStatus != "done":
         #wait for profile
