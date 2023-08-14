@@ -536,6 +536,8 @@ def runCycle():
     global currentCutLen
     global changingLen
 
+    print("Run cycle")
+
     cut = float(runLength.get())
     if currentCutLen == 0:
         currentCutLen = cut
