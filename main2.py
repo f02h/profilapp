@@ -20,7 +20,7 @@ usbf = serial.Serial(
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
-conn = sqlite3.connect(db)
+conn = sqlite3.connect(db, check_same_thread=False)
 c = conn.cursor()
 
 settingsList = dict()
