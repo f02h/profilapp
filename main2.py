@@ -612,7 +612,7 @@ def start_thread():
 def stop_thread():
     # Assign global variable and set value to stop
     global cycleThread
-    cycleThread.stop()
+    cycleThread.join()
 
 
 def changeLength():
