@@ -288,7 +288,7 @@ def hearJsonf():
                 print(serialString.decode("Ascii"))
 
                 mystring = json.loads(str(serialString.decode("Ascii")).strip())
-                print(mystring)
+                #print(mystring)
                 return mystring
             except:
                 print("fail")
@@ -606,7 +606,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    print(hearv)
+    #print(hearv)
     if str(hearv["status"]).strip() == "waitingForProfile":
         runCyc.config(state=ACTIVE, bg='green')
         #print("Enabled")
