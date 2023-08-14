@@ -285,7 +285,7 @@ def hearJsonf():
 
             # Print the contents of the serial data
             try:
-                print(serialString.decode("Ascii"))
+                #print(serialString.decode("Ascii"))
 
                 mystring = json.loads(str(serialString.decode("Ascii")).strip())
                 #print(mystring)
@@ -536,55 +536,57 @@ def runCycle():
     global currentCutLen
     global changingLen
 
-    print("Run cycle")
+    while 1:
 
-    cut = float(runLength.get())
-    print(cut)
-    #if currentCutLen == 0:
-    #    currentCutLen = cut
+        print("Run cycle")
 
-    #if currentCutLen != cut and 0:
-    #    changeLength()
-    #    currentCutLen = cut
+        cut = float(runLength.get())
+        print(cut)
+        #if currentCutLen == 0:
+        #    currentCutLen = cut
 
-    print("Rev move to load profile")
-    tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
+        #if currentCutLen != cut and 0:
+        #    changeLength()
+        #    currentCutLen = cut
 
-    print("Load profile")
-    tmpStatus = waitForProfile()
-    while tmpStatus != "done":
-        #wait for profile
-        if changingLen == True:
-            print("Drop cycle")
-            runCyc.config(state=ACTIVE, bg='green')
-            return
+        print("Rev move to load profile")
+        tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
-        print("Waiting for profile")
-        time.sleep(1)
+        print("Load profile")
         tmpStatus = waitForProfile()
+        while tmpStatus != "done":
+            #wait for profile
+            if changingLen == True:
+                print("Drop cycle")
+                runCyc.config(state=ACTIVE, bg='green')
+                return
+
+            print("Waiting for profile")
+            time.sleep(1)
+            tmpStatus = waitForProfile()
 
 
-    nbrOfHoles = int(cut // 120)
-    rem = cut % 120
-    fromStart = refExtension + (120 - rem)
-    if rem == 0:
-        nbrOfHoles -= 1
-    else:
-        tmpCut = (int(cut // 120) +1) * 120
-        rem = (tmpCut - cut) / 2
+        nbrOfHoles = int(cut // 120)
+        rem = cut % 120
         fromStart = refExtension + (120 - rem)
+        if rem == 0:
+            nbrOfHoles -= 1
+        else:
+            tmpCut = (int(cut // 120) +1) * 120
+            rem = (tmpCut - cut) / 2
+            fromStart = refExtension + (120 - rem)
 
-    print("Prva: "+str(fromStart))
-    tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+        print("Prva: "+str(fromStart))
+        tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
-    #drill()
-
-    moveTo = fromStart
-    for x in range(1, nbrOfHoles):
-        moveTo += 120
-        print(str(x)+" : "+str(moveTo))
-        moveFeeder("moveFwd", 120)
         #drill()
+
+        moveTo = fromStart
+        for x in range(1, nbrOfHoles):
+            moveTo += 120
+            print(str(x)+" : "+str(moveTo))
+            moveFeeder("moveFwd", 120)
+            #drill()
 
 
 # abs = 1 => move to absolute position
