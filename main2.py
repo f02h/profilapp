@@ -546,6 +546,15 @@ def runCycle():
 
     tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
+    tmpStatus = waitForProfile()
+    while tmpStatus != "done":
+        #wait for profile
+        print("waiting for profile")
+        time.sleep(1)
+        if changingLen == True:
+            return
+
+
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
     fromStart = refExtension + (120 - rem)
@@ -558,12 +567,6 @@ def runCycle():
 
     print("Prva: "+str(fromStart))
     tmpStatus = moveFeeder("moveFwdF", int(fromStart))
-    while tmpStatus != "done":
-        #wait for profile
-        print("waiting for profile")
-        time.sleep(1)
-        if changingLen == True:
-            return
 
     #drill()
 
@@ -604,6 +607,23 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     label.config(text=str(hearv))
 """
     return hearv["status"]
+
+def waitForProfile():
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    data = {
+        "A": "waitForProfile",
+        "P": idProfil
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    print(hearv)
+    return hearv["status"]
+
 
 def start_thread():
     # Assign global variable and initialize value
