@@ -552,6 +552,7 @@ def runCycle():
         #wait for profile
         if changingLen == True:
             print("Drop cycle")
+            runCyc.config(state=ACTIVE, bg='green')
             return
 
         print("waiting for profile")
