@@ -550,12 +550,13 @@ def runCycle():
     tmpStatus = waitForProfile()
     while tmpStatus != "done":
         #wait for profile
-        print("waiting for profile")
-        time.sleep(1)
-        tmpStatus = waitForProfile()
         if changingLen == True:
             print("Drop cycle")
             return
+
+        print("waiting for profile")
+        time.sleep(1)
+        tmpStatus = waitForProfile()
 
 
     nbrOfHoles = int(cut // 120)
