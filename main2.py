@@ -554,6 +554,7 @@ def runCycle():
         time.sleep(1)
         tmpStatus = waitForProfile()
         if changingLen == True:
+            print("Drop cycle")
             return
 
 
@@ -643,7 +644,7 @@ def stop_thread():
     global changingLen
     changingLen = True
     #changeLength()
-    cycleThread.join()
+    #cycleThread.join()
 
 
 def changeLength():
