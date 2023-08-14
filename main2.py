@@ -558,6 +558,10 @@ def runCycle():
 
     print("Prva: "+str(fromStart))
     tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+    while tmpStatus != "done":
+        #wait for profile
+        print("waiting for profile")
+        time.sleep(1)
 
     #drill()
 
