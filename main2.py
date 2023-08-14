@@ -592,7 +592,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     print(hearv)
     if str(hearv["status"]).strip() == "waitingForProfile":
         runCyc.config(state=ACTIVE, bg='green')
-        print("Enabled")
+        #print("Enabled")
     """else:
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
@@ -612,6 +612,7 @@ def start_thread():
 def stop_thread():
     # Assign global variable and set value to stop
     global cycleThread
+    changeLength()
     cycleThread.join()
 
 
