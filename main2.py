@@ -34,6 +34,7 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 sensorToDrill = 200
 refExtension = 190
 currentCutLen = 0
+changeLen = False
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -544,11 +545,6 @@ def runCycle():
         currentCutLen = cut
 
     tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
-    if tmpStatus == "waitingForProfile":
-        print("waiting")
-        runCyc.config(state=ACTIVE, bg='green')
-        return
-
 
     nbrOfHoles = int(cut // 120)
     rem = cut % 120
@@ -561,7 +557,10 @@ def runCycle():
         fromStart = refExtension + (120 - rem)
 
     print("Prva: "+str(fromStart))
-    moveFeeder("moveFwdF", int(fromStart))
+    tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+    while tmpStatus == "waitingForProfile":
+        print("waiting")
+        runCyc.config(state=ACTIVE, bg='green')
 
     #drill()
 
@@ -634,6 +633,8 @@ def homeFeeder():
     else:
         homingf.config(state=ACTIVE, bg='red')
 
+def changeLen():
+    changeLen = True
 
 def home():
 
@@ -751,6 +752,9 @@ runLength.insert(0, 0.0)
 
 runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=runCycle)
 runCyc.grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+changeLen = tk.Button(tab1,text="ChangeLen",font=text_font,bg="green",command=changeLen())
+changeLen.grid(column=6,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+
 errorBox = tk.Button(tab1,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30)
 
