@@ -562,6 +562,8 @@ def runCycle():
         #wait for profile
         print("waiting for profile")
         time.sleep(1)
+        if changeLen == 1:
+            return
 
     #drill()
 
@@ -616,6 +618,8 @@ def start_thread():
 def stop_thread():
     # Assign global variable and set value to stop
     global cycleThread
+    global changeLen
+    changeLen = 1
     changeLength()
     cycleThread.join()
 
