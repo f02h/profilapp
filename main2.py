@@ -579,14 +579,14 @@ def runCycle():
         print("Prva: "+str(fromStart))
         tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
-        #drill()
+        drill()
 
         moveTo = fromStart
         for x in range(1, nbrOfHoles):
             moveTo += 120
             print(str(x)+" : "+str(moveTo))
             moveFeeder("moveFwd", 120)
-            #drill()
+            drill()
 
 
 # abs = 1 => move to absolute position
