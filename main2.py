@@ -441,7 +441,7 @@ def initEmptyCombo():
         i += 1
 
 
-def drill():
+def executeDrill():
 
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -579,14 +579,14 @@ def runCycle():
         print("Prva: "+str(fromStart))
         tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
-        drill()
+        executeDrill()
 
         moveTo = fromStart
         for x in range(1, nbrOfHoles):
             moveTo += 120
             print(str(x)+" : "+str(moveTo))
             moveFeeder("moveFwd", 120)
-            drill()
+            executeDrill()
 
 
 # abs = 1 => move to absolute position
