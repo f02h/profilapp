@@ -494,7 +494,7 @@ def executeDrill():
 
     usb.write(json.dumps(data).encode())
     hearv = hear()
-    label.config(text=str(hearv))
+    #label.config(text=str(hearv))
 
 def cut():
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
