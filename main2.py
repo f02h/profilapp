@@ -494,6 +494,12 @@ def executeDrill():
 
     usb.write(json.dumps(data).encode())
     hearv = hear()
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+
     #label.config(text=str(hearv))
 
 def cut():
@@ -579,14 +585,22 @@ def runCycle():
         print("Prva: "+str(fromStart))
         tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
-        executeDrill()
+        print("Drill prva")
+        drillRes = executeDrill()
+        if drillRes != True:
+            print("Drill error")
+            return
 
         moveTo = fromStart
         for x in range(1, nbrOfHoles):
             moveTo += 120
             print(str(x)+" : "+str(moveTo))
             moveFeeder("moveFwd", 120)
-            executeDrill()
+            print("Drill "+str(x) + ".")
+            drillRes = executeDrill()
+            if drillRes != True:
+                print("Drill error")
+                return
 
 
 # abs = 1 => move to absolute position
