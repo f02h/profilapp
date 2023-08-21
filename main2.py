@@ -260,7 +260,7 @@ def write_slogan():
 def hear():
     msg = usb.read_until() # read until a new line
     #mystring = msg.decode('ascii')  # decode n return
-    mystring = json.loads(str(msg.decode("utf-8")).strip())
+    mystring = json.loads(str(msg.decode("ascii")).strip())
     return mystring
 
 def hearJson():
