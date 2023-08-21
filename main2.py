@@ -494,7 +494,7 @@ def executeDrill():
     }
 
     usb.write(json.dumps(data).encode())
-    hearv = hear()
+    hearv = hearJson()
     if str(hearv["status"]).strip() != "done":
         errorBox.config(state=DISABLED, fg='white', bg='red')
         return False

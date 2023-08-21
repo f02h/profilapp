@@ -328,7 +328,10 @@ void loop()
          povrtavanjeD = doc["POVD"];
          
          drill();
-         Serial.println("done");
+         StaticJsonDocument<200> doc2;
+         doc2["status"] = "done";
+         serializeJson(doc2, Serial);
+         Serial.println();
       } else if (action == "home") {  // turn on LED
         homming();
         StaticJsonDocument<200> doc2;
