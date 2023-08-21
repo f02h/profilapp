@@ -588,7 +588,7 @@ def runCycle():
 
         print("Drill prva")
         drillRes = executeDrill()
-        if drillRes != True:
+        if not drillRes:
             print("Drill error")
             return
 
@@ -599,7 +599,7 @@ def runCycle():
             moveFeeder("moveFwd", 120)
             print("Drill "+str(x) + ".")
             drillRes = executeDrill()
-            if drillRes != True:
+            if not drillRes:
                 print("Drill error")
                 return
 
