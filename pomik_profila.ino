@@ -46,7 +46,7 @@ void setup() {
   stepper1.setMaxSpeed(5000000);
   stepper1.setAcceleration(10000.0);
 
-  homming();
+  //homming();
 
   stepper1.setCurrentPosition(0);
 

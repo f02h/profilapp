@@ -291,7 +291,7 @@ void loop()
          }
          drill();
          Serial.println("done");*/
-       if (alarmTripped) {
+       if (false && alarmTripped) {
         StaticJsonDocument<200> doc2;
         doc2["status"] = "failed";
         serializeJson(doc2, Serial);
