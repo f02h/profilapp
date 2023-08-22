@@ -449,8 +449,6 @@ def executeDrill():
     if not idProfil:
         idProfil = 1
 
-    print(idProfil)
-
     res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
@@ -495,6 +493,7 @@ def executeDrill():
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
+    print(hearv)
     if str(hearv["status"]).strip() != "done":
         errorBox.config(state=DISABLED, fg='white', bg='red')
         return False
