@@ -34,6 +34,7 @@ refExtension = 190
 currentCutLen = 0
 changingLen = False
 cycleThread = None
+currentProfileId = None
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -545,16 +546,26 @@ def runCycle():
     global refExtension
     global currentCutLen
     global changingLen
+    global currentProfileId
 
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
-    dbvars = dict(res)
-    changeTool(int(dbvars["orodjeL"]), 'LEFT')
-    changeTool(int(dbvars["orodjeD"]), 'RIGHT')
+    toolSetup = False
+    if currentProfileId is None:
+        currentProfileId = idProfil
+        toolSetup = True
+    elif currentProfileId != idProfil:
+        currentProfileId = idProfil
+        toolSetup = True
+
+    if toolSetup:
+        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        dbvars = dict(res)
+        changeTool(int(dbvars["orodjeL"]), 'LEFT')
+        changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
     while 1:
 
