@@ -554,7 +554,7 @@ def runCycle():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
     changeTool(int(dbvars["orodjeL"]), 'LEFT')
-    changeTool(int(dbvars["orodjeD"]), 'LEFT')
+    changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
     while 1:
 
