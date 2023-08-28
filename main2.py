@@ -571,6 +571,15 @@ def runCycle():
             time.sleep(1)
             tmpStatus = waitForProfile()
 
+        res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+        idProfil = int(res[0])
+        if not idProfil:
+            idProfil = 1
+
+        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        dbvars = dict(res)
+        changeTool(int(dbvars["orodjeL"]), 'LEFT')
+        changeTool(int(dbvars["orodjeD"]), 'LEFT')
 
         nbrOfHoles = int(cut // 120)
         rem = cut % 120

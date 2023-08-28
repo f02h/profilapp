@@ -65,7 +65,7 @@ GPIO<BOARD::D24> pneumatikaVentil4;
 GPIO<BOARD::D23> pneumatikaVentilPrijemalo;
 
 GPIO<BOARD::D22> mazalkaL;
-GPIO<BOARD::D21> mazalkaD;
+GPIO<BOARD::D10> mazalkaD;
 GPIO<BOARD::D20> mazalkaZaga;
 
 GPIO<BOARD::D9> mazalkaProfil;
@@ -254,9 +254,9 @@ void loop()
 {
 
   if (Serial.available()) {  // check for incoming serial data
-      String command = Serial.readString(); 
+      String command = Serial.readString();
       StaticJsonDocument<200> doc;
-      int str_len = command.length() + 1; 
+      int str_len = command.length() + 1;
       char char_array[str_len];
       command.toCharArray(char_array, str_len);
 
@@ -268,14 +268,14 @@ void loop()
         Serial.println(error.f_str());
         return;
       }
-    
+
       // Fetch values.
       //
       // Most of the time, you can rely on the implicit casts.
       // In other case, you can do doc["time"].as<long>();
       String action = doc["action"];
       String action2 = doc["A"];
-      
+
       // read command from serial port
       /*if (action2 == "drill") {
          changePositionL(doc["PL"]);
@@ -283,11 +283,11 @@ void loop()
 
          hodL = doc["HL"];
          if (hodL > tmpHodL) {
-            hodL = tmpHodL; 
+            hodL = tmpHodL;
          }
          hodD = doc["HD"];
          if (hodD > tmpHodD) {
-            hodD = tmpHodD; 
+            hodD = tmpHodD;
          }
          drill();
          Serial.println("done");*/
@@ -298,7 +298,7 @@ void loop()
         Serial.println();
        }
 
-         
+
        if (action2 == "drill") {
          changePositionL(doc["PL"]);
          changePositionD(doc["PD"]);
@@ -306,13 +306,13 @@ void loop()
          hodL = doc["HL"];
          hodL = checkMove(1,hodL);
          if (hodL > tmpHodL) {
-            hodL = tmpHodL; 
+            hodL = tmpHodL;
          }
 
          hodD = doc["HD"];
          hodD = checkMove(2, hodD);
          if (hodD > tmpHodD) {
-            hodD = tmpHodD; 
+            hodD = tmpHodD;
          }
 
          drillToolL = doc["OL"];
@@ -326,7 +326,7 @@ void loop()
 
          povrtavanjeL = doc["POVL"];
          povrtavanjeD = doc["POVD"];
-         
+
          drill();
          StaticJsonDocument<200> doc2;
          doc2["status"] = "done";
@@ -377,7 +377,7 @@ void loop()
 }
 
 boolean homming11() {
-  digitalWrite(LED_BUILTIN, HIGH); 
+  digitalWrite(LED_BUILTIN, HIGH);
   delay(5000);
   digitalWrite(LED_BUILTIN, LOW);
   return true;
@@ -438,8 +438,8 @@ boolean drill() {
   stepper7.runToPosition();
 
   pneumatikaVentilPrijemalo = LOW;
-  
-  setupBothTool();
+
+  //setupBothTool();
 
   stepper1.moveTo(hodL-slowHodL);
   stepper2.moveTo(hodD-slowHodD);
@@ -454,7 +454,7 @@ boolean drill() {
   stepper1.moveTo(hodL);
   stepper1.setAcceleration(slowHodLSpeed);
   stepper1.setMaxSpeed(slowHodLSpeed);
-  
+
   stepper2.moveTo(hodD);
   stepper2.setAcceleration(slowHodDSpeed);
   stepper2.setMaxSpeed(slowHodDSpeed);
@@ -474,7 +474,7 @@ boolean drill() {
   stepper1.setMaxSpeed(12000);
   stepper2.setAcceleration(6000.0);
   stepper2.setMaxSpeed(12000);
-  
+
   stepper1.moveTo((hodL-slowHodL));
   stepper2.moveTo((hodD-slowHodD));
   stepper1R = false;
@@ -511,7 +511,7 @@ boolean cut() {
 
   stepper1.moveTo(0);
   stepper5.moveTo(0);
-  
+
   bool stepper1R,stepper5R;
   do {
     stepper1R = stepper5.run();
@@ -521,7 +521,7 @@ boolean cut() {
   int hodZ = checkMove(7,hodZaga);
 
   runSpindle(7,0);
-  delay(4000);  
+  delay(4000);
 
   stepper7.moveTo(hodZ-slowHodZaga);
   stepper7.runToPosition();
@@ -561,8 +561,8 @@ boolean drill2() {
 
   stepper1.moveTo(hodL);
   stepper2.moveTo(hodD);
-  
-  
+
+
   bool stepper1R,stepper2R;
   do {
     stepper1R = stepper1.run();
@@ -578,19 +578,19 @@ boolean drill2() {
     stepper2R = stepper2.run();
   } while (stepper1R || stepper2R);
 
-  
+
   stepper5.moveTo(povrtavanjeL);
   stepper5.runToPosition();
   stepper5.moveTo(pozicijaL);
   stepper5.runToPosition();
-  
+
   stepper6.moveTo(povrtavanjeD);
   stepper6.runToPosition();
   stepper6.moveTo(pozicijaD);
   stepper6.runToPosition();
 
   pneumatikaVentilPrijemalo = HIGH;
-    
+
 }
 
 
@@ -614,7 +614,7 @@ boolean changePositionL(int pozicija3) {
         tmpHodL = 14400;
       }
   }
- 
+
   pozicijaL = pozicija3;
   stepper3.moveTo(pozicijaL);
   bool stepper3R;
@@ -646,7 +646,7 @@ boolean changePositionD(int pozicija4) {
   }
 
   pozicijaD = pozicija4;
-  
+
   stepper4.moveTo(pozicijaD);
   bool stepper4R;
   do {
@@ -671,11 +671,11 @@ int checkMove(int idStepper, int steps) {
     case 3:
     case 4:
       if (steps > maxPozicija) {
-        return maxPozicija; 
+        return maxPozicija;
       }
       break;
     case 5:
-    case 6: 
+    case 6:
     case 7:
       if (steps > 13680 ) {
         return 13680;
@@ -684,41 +684,41 @@ int checkMove(int idStepper, int steps) {
   }
 
   return steps;
-  
+
 }
 boolean moveStepper(int idStepper, int moveToStep) {
 
   int safeMove = checkMove(idStepper, moveToStep);
 
   switch(idStepper) {
-    case 1: 
+    case 1:
       stepper1.moveTo(safeMove);
       stepper1.runToPosition();
       break;
-    case 2: 
+    case 2:
       stepper2.moveTo(safeMove);
       stepper2.runToPosition();
-      break;  
-    case 3: 
+      break;
+    case 3:
       changePositionL(safeMove);
       /*stepper3.moveTo(safeMove);
       stepper3.runToPosition();*/
       break;
-    case 4: 
+    case 4:
       changePositionD(safeMove);
       /*
       stepper4.moveTo(safeMove);
       stepper4.runToPosition();*/
       break;
-    case 5: 
+    case 5:
       stepper5.moveTo(safeMove);
       stepper5.runToPosition();
       break;
-    case 6: 
+    case 6:
       stepper6.moveTo(safeMove);
       stepper6.runToPosition();
       break;
-    case 7: 
+    case 7:
       stepper7.moveTo(safeMove);
       stepper7.runToPosition();
       break;
@@ -729,19 +729,19 @@ boolean moveStepper(int idStepper, int moveToStep) {
 int returnStepperPosition(int idStepper) {
 
   switch(idStepper) {
-    case 1: 
+    case 1:
       return stepper1.currentPosition();
-    case 2: 
-      return stepper2.currentPosition();  
-    case 3: 
+    case 2:
+      return stepper2.currentPosition();
+    case 3:
       return stepper3.currentPosition();
-    case 4: 
+    case 4:
       return stepper4.currentPosition();
-    case 5: 
+    case 5:
       return stepper5.currentPosition();
-    case 6: 
+    case 6:
       return stepper6.currentPosition();
-    case 7: 
+    case 7:
       return stepper7.currentPosition();
   }
   return 0;
@@ -753,19 +753,19 @@ int returnStepperPosition(int idStepper) {
 boolean runSpindle(int idSpindle, int toggle) {
 
   switch(idSpindle) {
-    case 1: 
+    case 1:
       digitalWrite(spindel1, toggle == 0 ? LOW : HIGH);break;
-    case 2: 
-      digitalWrite(spindel2, toggle == 0 ? LOW : HIGH);break;  
-    case 3: 
+    case 2:
+      digitalWrite(spindel2, toggle == 0 ? LOW : HIGH);break;
+    case 3:
       digitalWrite(spindel3, toggle == 0 ? LOW : HIGH);break;
-    case 4: 
+    case 4:
       digitalWrite(spindel4, toggle == 0 ? LOW : HIGH);break;
-    case 5: 
+    case 5:
       digitalWrite(spindel5, toggle == 0 ? LOW : HIGH);break;
-    case 6: 
+    case 6:
       digitalWrite(spindel6, toggle == 0 ? LOW : HIGH);break;
-    case 7: 
+    case 7:
       digitalWrite(zaga, toggle == 0 ? LOW : HIGH);break;
   }
   return true;
@@ -789,7 +789,7 @@ boolean homming() {
   if (!homming5()) {
     while (1) {};
   }
-  
+
   if (!homming6()) {
     while (1) {};
   }
@@ -810,8 +810,8 @@ boolean homming() {
     while (1) {};
   }
 
-  
-  //hommingPneu();
+
+  hommingPneu();
 
   stepper1.setCurrentPosition(0);
   stepper2.setCurrentPosition(0);
