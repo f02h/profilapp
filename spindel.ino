@@ -64,9 +64,9 @@ GPIO<BOARD::D25> pneumatikaVentil3;
 GPIO<BOARD::D24> pneumatikaVentil4;
 GPIO<BOARD::D23> pneumatikaVentilPrijemalo;
 
-GPIO<BOARD::D22> mazalkaL;
+GPIO<BOARD::D20> mazalkaL;
 GPIO<BOARD::D10> mazalkaD;
-GPIO<BOARD::D20> mazalkaZaga;
+GPIO<BOARD::D22> mazalkaZaga;
 
 GPIO<BOARD::D9> mazalkaProfil;
 
@@ -132,7 +132,7 @@ void setup() {
 
   pinMode(18, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(18), triggerAlarm,CHANGE);
-  
+
  /* hommingSenzor1.input();
   hommingSenzor2.input();
   hommingSenzor3.input();
@@ -140,7 +140,7 @@ void setup() {
   */
 
   if (hodL > tmpHodL) {
-     hodL = tmpHodL; 
+     hodL = tmpHodL;
   }
   if (hodD > tmpHodD) {
      hodD = tmpHodD;
@@ -161,7 +161,7 @@ void setup() {
   digitalWrite(6, HIGH);
   digitalWrite(7, HIGH);
   digitalWrite(8, HIGH);
-  
+
   pneumatikaVentil1.output();
   pneumatikaVentil1 = HIGH;
 
@@ -185,7 +185,7 @@ void setup() {
   mazalkaZaga = HIGH;
   mazalkaProfil.output();
   mazalkaProfil = HIGH;
-  
+
   stepPin1.output();
   stepPin1 = LOW;
   directionPin1.output();
@@ -222,9 +222,9 @@ void setup() {
   directionPin7 = HIGH;
   Serial.begin(115200);
 
-  stepper1.setMaxSpeed(12000);
-  stepper1.setAcceleration(6000.0);
-  
+  stepper1.setMaxSpeed(24000);
+  stepper1.setAcceleration(12000.0);
+
   stepper2.setMaxSpeed(12000);
   stepper2.setAcceleration(6000.0);
 
@@ -250,7 +250,7 @@ void setup() {
 
 
 
-void loop() 
+void loop()
 {
 
   if (Serial.available()) {  // check for incoming serial data
@@ -367,7 +367,10 @@ void loop()
           drillToolR = doc["T"];
         }
         setupBothTool();
-        Serial.println("done");
+        StaticJsonDocument<200> doc2;
+         doc2["status"] = "done";
+         serializeJson(doc2, Serial);
+         Serial.println();
       } else if (doc["A"] == "spindleA") {
         allSpindle(doc["T"]);
         Serial.println("done");
@@ -461,6 +464,8 @@ boolean drill() {
 
   runSpindle(drillToolL,0);
   runSpindle(drillToolR,0);
+  mazalkaL = LOW;
+  mazalkaD = LOW;
 
   stepper1R = false;
   stepper2R = false;
@@ -469,6 +474,8 @@ boolean drill() {
     stepper2R = stepper2.run();
   } while (stepper1R || stepper2R);
 
+  mazalkaL = HIGH;
+  mazalkaD = HIGH;
 
   stepper1.setAcceleration(6000.0);
   stepper1.setMaxSpeed(12000);
