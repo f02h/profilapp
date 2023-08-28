@@ -423,10 +423,14 @@ def changeTool(idTool, dir):
         "T": int(idTool),
     }
 
-    print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
-    hearv = hear()
-    label.config(text=str(hearv))
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
 
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
