@@ -176,6 +176,7 @@ void loop()
           Serial.println();
         } else if (action == "home") {  // turn on LED
           homming();
+          stepper1.setCurrentPosition(0);
           DynamicJsonDocument doc2(1024);
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
@@ -240,7 +241,6 @@ boolean moveRev(long int moveSteps, int absMove) {
 boolean homming() {
 
   if (!homming1()) {
-    yield();
     while (1) {};
   }
 
@@ -250,6 +250,7 @@ boolean homming() {
 
 boolean homming1() {
 
+  yield();
   //directionPin1 = HIGH;
   digitalWrite(directionPin1, HIGH);
 
@@ -259,6 +260,7 @@ boolean homming1() {
     boolean limitSwitchFlag = false;
     while (1)
     {
+      yield();
       hommingSenzorState = digitalRead(hommingSenzor1);
       if (hommingSenzorState == HIGH)
       {
@@ -283,6 +285,7 @@ boolean homming1() {
     boolean limitSwitchFlag = false;
     while (1)
     {
+      yield();
       hommingSenzorState = digitalRead(hommingSenzor1);
       if (hommingSenzorState == LOW)
       {

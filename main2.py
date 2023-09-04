@@ -638,9 +638,10 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
     #44.44
+    # 0.005 koraka cca 0.5mm
     data = {
         "A": str(dir),
-        "M": str(int(step * 44.34)),
+        "M": str(int(step * 44.385)),
         "M2": abs,
         "P": idProfil,
         "F": firstMove
