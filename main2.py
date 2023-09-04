@@ -637,9 +637,10 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
 
     runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
+    #44.44
     data = {
         "A": str(dir),
-        "M": str(int(step * 44.44)),
+        "M": str(int(step * 44.34)),
         "M2": abs,
         "P": idProfil,
         "F": firstMove
