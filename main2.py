@@ -29,7 +29,7 @@ currentSetting = None
 stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
-sensorToDrill = 200
+sensorToDrill = 197.2
 refExtension = 190
 currentCutLen = 0
 changingLen = False
