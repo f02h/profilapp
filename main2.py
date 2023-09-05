@@ -836,11 +836,11 @@ button = tk.Button(tab1,
 tk.Label(tab1, text='     \n   ').grid(column=0,row=2)
 tk.Label(tab1, text='     \n   ').grid(column=0,row=3)
 
-drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
-    .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+#drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
+#    .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
-    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+#cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
+#    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 runLength = Entry(tab1, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
@@ -873,6 +873,9 @@ profilChooser = ttk.Combobox(tab1, width=15,font=text_font, style='my.TCombobox'
 # Adding combobox drop down list
 profilChooser['values'] = list(profilList.values())
 profilChooser.grid(column=1, row=2, columnspan=3)
+
+style = ttk.Style() #If you dont have a class, put your root in the()
+style.configure('TCombobox', arrowsize=30)
 
 n = tk.StringVar()
 n.trace("w", callback)
