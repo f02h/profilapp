@@ -732,7 +732,7 @@ def changeLen():
 def home():
 
     global stepperList
-    homing.config(state=DISABLED,fg='white',bg='#e69225')
+    homingd.config(state=DISABLED,fg='white',bg='#e69225')
     data = {
         "action": "home",
     }
@@ -741,10 +741,10 @@ def home():
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() == "done":
-        homing.config(state=ACTIVE, bg='green')
+        homingd.config(state=ACTIVE, bg='green')
         stepperList = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
     else:
-        homing.config(state=ACTIVE, bg='red')
+        homingd.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 
 def homeAll():
