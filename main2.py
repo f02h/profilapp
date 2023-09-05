@@ -872,10 +872,10 @@ profilList = dict(res)
 profilChooser = ttk.Combobox(tab1, width=15,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 profilChooser['values'] = list(profilList.values())
-profilChooser.grid(column=1, row=2, columnspan=3)
+profilChooser.grid(column=0, row=2, columnspan=3)
 
 style = ttk.Style() #If you dont have a class, put your root in the()
-style.configure('TCombobox', arrowsize=30)
+style.configure('TCombobox', arrowsize=50)
 
 n = tk.StringVar()
 n.trace("w", callback)
