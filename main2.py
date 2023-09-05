@@ -747,6 +747,9 @@ def home():
         homing.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 
+def homeAll():
+    home()
+    homeFeeder()
 
 def moveStepper():
 
@@ -853,12 +856,15 @@ errorBox.grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30)
 
 
 
-homing = tk.Button(tab1,text="Homing",font=text_font,command=home)
-homing.grid(column=2,row=0,padx=30,pady=30)
+homingd = tk.Button(tab1,text="Homing d",font=text_font,command=home)
+homingd.grid(column=2,row=0,padx=30,pady=30)
 
 homingf = tk.Button(tab1,text="Homing F",font=text_font,command=homeFeeder)
 homingf.grid(column=3,row=0,padx=30,pady=30)
 
+
+homingA = tk.Button(tab1,text="Homing",font=text_font,command=homeAll)
+homingA.grid(column=4,row=0,padx=30,pady=30)
 
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
