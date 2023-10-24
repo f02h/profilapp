@@ -10,13 +10,18 @@ from threading import Thread
 
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB0"
+USB_PORT_LOADER = "/dev/ttyUSB1"
 usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
 usbf = serial.Serial(
     port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
 )
+usbl = serial.Serial(
+    port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
+)
 #usb = 0
 #usbf = 0
+#usbl = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -296,6 +301,30 @@ def hearJsonf():
             except:
                 print("fail")
                 pass
+
+def hearJsonl():
+
+    #msg = usbf.read_until()# read until a new line
+    #mystring = json.loads(str(msg.decode("Ascii")).strip())
+    #return mystring
+
+    while 1:
+        if usbl.in_waiting > 0:
+
+            # Read data out of the buffer until a carraige return / new line is found
+            serialString = usbl.readline()
+
+            # Print the contents of the serial data
+            try:
+                #print(serialString.decode("Ascii"))
+
+                mystring = json.loads(str(serialString.decode("Ascii")).strip())
+                #print(mystring)
+                return mystring
+            except:
+                print("fail")
+                pass
+
 
 
 def hearJsonf1():
@@ -584,6 +613,8 @@ def runCycle():
         print("Rev move to load profile")
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
+        tmpStatus = extensionE()
+
         print("Load profile")
         tmpStatus = waitForProfile()
         while tmpStatus != "done":
@@ -659,6 +690,37 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     label.config(text=str(hearv))
 """
     return hearv["status"]
+
+def extensionE():
+    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "extensionE"
+    }
+
+    usbl.write(json.dumps(data).encode())
+    hearv = hearJsonl()
+    #print(hearv)
+    if str(hearv["status"]).strip() == "done":
+        runCyc.config(state=ACTIVE, bg='green')
+
+    return hearv["status"]
+
+def extensionF():
+    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "extensionF"
+    }
+
+    usbl.write(json.dumps(data).encode())
+    hearv = hearJsonl()
+
+    if str(hearv["status"]).strip() == "done":
+        runCyc.config(state=ACTIVE, bg='green')
+
+    return hearv["status"]
+
 
 def waitForProfile():
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
