@@ -902,10 +902,10 @@ tk.Label(tab1, text='     \n   ').grid(column=0,row=3)
 drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
     .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-exst = tk.Button(tab1,text="T",font=text_font,bg="green",command=extensionE)\
+exst = tk.Button(tab1,text="P ON",font=text_font,bg="green",command=extensionE)\
     .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-exst2 = tk.Button(tab1,text="T",font=text_font,bg="green",command=extensionF)\
+exst2 = tk.Button(tab1,text="P OFF",font=text_font,bg="green",command=extensionF)\
     .grid(column=4,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
