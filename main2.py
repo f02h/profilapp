@@ -610,9 +610,18 @@ def runCycle():
         #    changeLength()
         #    currentCutLen = cut
 
+        print("Fold extension in extended")
+        tmpStatus = extensionF()
+
         print("Rev move to load profile")
+        tmpStatus = moveFeeder("moveRev", float(runLength.get()) + refExtension, 1, 1)
+
+        tmpStatus = loadProfile(0)
+        tmpStatus = unloadProfile()
+
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
+        print("Extend extension")
         tmpStatus = extensionE()
 
         print("Load profile")
@@ -711,6 +720,37 @@ def extensionF():
 
     data = {
         "A": "extensionF"
+    }
+
+    usbl.write(json.dumps(data).encode())
+    hearv = hearJsonl()
+
+    if str(hearv["status"]).strip() == "done":
+        runCyc.config(state=ACTIVE, bg='green')
+
+    return hearv["status"]
+
+def loadProfile(idBay = 0):
+    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "load",
+        "B": idBay
+    }
+
+    usbl.write(json.dumps(data).encode())
+    hearv = hearJsonl()
+
+    if str(hearv["status"]).strip() == "done":
+        runCyc.config(state=ACTIVE, bg='green')
+
+    return hearv["status"]
+
+def unloadProfile():
+    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "unload"
     }
 
     usbl.write(json.dumps(data).encode())
