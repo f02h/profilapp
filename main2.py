@@ -905,6 +905,8 @@ drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=executeDri
 exst = tk.Button(tab1,text="T",font=text_font,bg="green",command=extensionE)\
     .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
+exst2 = tk.Button(tab1,text="T",font=text_font,bg="green",command=extensionF)\
+    .grid(column=4,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 #    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
