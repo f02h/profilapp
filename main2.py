@@ -36,7 +36,9 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
 #sensorToDrill = 197.4
 sensorToDrill = 30.9
-refExtension = 190
+#refExtension = 190
+refExtension = 260
+extensionLength = 330
 currentCutLen = 0
 changingLen = False
 cycleThread = None
@@ -614,7 +616,7 @@ def runCycle():
         tmpStatus = extensionF()
 
         print("Rev move to load profile")
-        tmpStatus = moveFeeder("moveRev", float(runLength.get()) + refExtension, 1, 1)
+        tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension - extensionLength, 1, 1)
 
         tmpStatus = loadProfile(0)
         tmpStatus = unloadProfile()
