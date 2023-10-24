@@ -38,7 +38,9 @@ GPIO<BOARD::D37> profileLoaderPickup;
 
 void setup() {
 
-  Serial.begin(9600);
+  Serial.begin(115200);
+  while (!Serial) continue;
+
   profileLoaderSwitch.output();
   profileFixedSwitch.output();
   profileLoaderSwitchArm.output();
@@ -137,13 +139,13 @@ void loop()
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "extensionE") {
-        extension = LOW;
+        extension = HIGH;
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "extensionF") {
-        extension = HIGH;
+        extension = LOW;
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
