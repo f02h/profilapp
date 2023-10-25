@@ -907,6 +907,12 @@ notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Ročno upravljanje')
 notebook.pack(side=TOP)
 
+vrtalkaL = ttk.Frame(tab1, width=1200, height=950)
+vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
+
+vrtalkaD = ttk.Frame(tab1, width=700, height=950)
+vrtalkaD.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
+
 
 canvas_tab2 = ScrollableFrame(tab2, height=950, width=900, hscroll=False, vscroll=True)
 canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
@@ -929,7 +935,7 @@ numpad2 = ttk.Frame(tab3, width=900, height=950,borderwidth=1)
 #numpad2.pack(expand=True, anchor='e')
 numpad2.grid(column=1, row=0,sticky="ew",padx=40, pady=40)
 
-button = tk.Button(tab1,
+button = tk.Button(vrtalkaL,
                    text="QUIT",
                    font=text_font,
                    fg="red",
@@ -938,49 +944,49 @@ button = tk.Button(tab1,
                                padx=30,
                                pady=30)
 
-tk.Label(tab1, text='     \n   ').grid(column=0,row=2)
-tk.Label(tab1, text='     \n   ').grid(column=0,row=3)
+tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=2)
+tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 
-drill = tk.Button(tab1,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
+drill = tk.Button(vrtalkaL,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
     .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-exst = tk.Button(tab1,text="P ON",font=text_font,bg="green",command=extensionE)\
+exst = tk.Button(vrtalkaL,text="P ON",font=text_font,bg="green",command=extensionE)\
     .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-exst2 = tk.Button(tab1,text="P OFF",font=text_font,bg="green",command=extensionF)\
+exst2 = tk.Button(vrtalkaL,text="P OFF",font=text_font,bg="green",command=extensionF)\
     .grid(column=4,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 #    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-runLength = Entry(tab1, font=etext_font, width=10)
+runLength = Entry(vrtalkaL, font=etext_font, width=10)
 runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runCyc = tk.Button(tab1,text="Cikel",font=text_font,bg="green",command=start_thread)
+runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
 runCyc.grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
-changeLen = tk.Button(tab1,text="ChangeLen",font=text_font,bg="green",command=stop_thread)
+changeLen = tk.Button(vrtalkaL,text="ChangeLen",font=text_font,bg="green",command=stop_thread)
 changeLen.grid(column=6,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
 
-errorBox = tk.Button(tab1,text="",font=text_font,bg="green",)
+errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30)
 
 
 
-homingd = tk.Button(tab1,text="Homing d",font=text_font,command=home)
+homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
 homingd.grid(column=2,row=0,padx=30,pady=30)
 
-homingf = tk.Button(tab1,text="Homing F",font=text_font,command=homeFeeder)
+homingf = tk.Button(vrtalkaL,text="Homing F",font=text_font,command=homeFeeder)
 homingf.grid(column=3,row=0,padx=30,pady=30)
 
 
-homingA = tk.Button(tab1,text="Homing",font=text_font,command=homeAll)
+homingA = tk.Button(vrtalkaL,text="Homing",font=text_font,command=homeAll)
 homingA.grid(column=4,row=0,padx=30,pady=30)
 
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
 
-profilChooser = ttk.Combobox(tab1, width=15,font=text_font, style='my.TCombobox')
+profilChooser = ttk.Combobox(vrtalkaL, width=15,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 profilChooser['values'] = list(profilList.values())
 profilChooser.grid(column=0, row=2, columnspan=3)
