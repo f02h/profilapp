@@ -9,8 +9,8 @@ import os, time
 from threading import Thread
 
 USB_PORT = "/dev/ttyACM0"
-USB_PORT_FEEDER = "/dev/ttyUSB0"
-USB_PORT_LOADER = "/dev/ttyUSB1"
+USB_PORT_FEEDER = "/dev/ttyUSB1"
+USB_PORT_LOADER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
 usbf = serial.Serial(
