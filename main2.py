@@ -893,12 +893,12 @@ s = ttk.Style()
 s.configure('TNotebook.Tab', font=('Arial' ,'18'))
 s.configure('TNotebook.Tab', padding=(30 ,10))
 
-notebook = ttk.Notebook(main, width=1000, height=600)
+notebook = ttk.Notebook(main, width=1900, height=1000)
 
 # create frames
-tab1 = ttk.Frame(notebook, width=1000, height=550)
-tab2 = ttk.Frame(notebook, width=1000, height=550)
-tab3 = ttk.Frame(notebook, width=1000, height=550)
+tab1 = ttk.Frame(notebook, width=1900, height=950)
+tab2 = ttk.Frame(notebook, width=1900, height=950)
+tab3 = ttk.Frame(notebook, width=1900, height=950)
 
 # add frames to notebook
 
