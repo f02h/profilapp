@@ -30,7 +30,7 @@ GPIO<BOARD::D29> fingersFixed;
 //GPIO<BOARD::D33> ;
 //GPIO<BOARD::D34> ;
 //GPIO<BOARD::D35> ;
-//GPIO<BOARD::D36> ;
+GPIO<BOARD::D36> pnevmatikaOn;
 GPIO<BOARD::D37> profileLoaderPickup;
 //GPIO<BOARD::D38> ;
 //GPIO<BOARD::D39> ;
@@ -40,6 +40,9 @@ void setup() {
 
   Serial.begin(115200);
   while (!Serial) continue;
+
+  pnevmatikaOn.output();
+  pnevmatikaOn = HIGH;
 
   profileLoaderSwitch.output();
   profileFixedSwitch.output();
@@ -63,11 +66,18 @@ void setup() {
   extension.output();
 
   extension = LOW;
-  delay(2000);
   profileLoaderPickup = HIGH;
   profileFixedPickup = HIGH;
+  delay(2000);
+  pnevmatikaOn = LOW;
 
-  //while(1) {
+/*
+  while(1) {
+    pnevmatikaOn = LOW;
+    delay(1000);
+    pnevmatikaOn = HIGH;
+    delay(1000);
+  }*/
   /*loadLoader(1);
   delay(3000);
   unloadLoader();
@@ -157,11 +167,11 @@ void loop()
 
 bool loadLoader(int profileSwitch) {
   if (profileSwitch == 1) {
-    profileLoaderSwitch = HIGH;
-    profileFixedSwitch = HIGH;
+    profileLoaderSwitch = LOW;
+    profileFixedSwitch = LOW;
     delay(500);
-    profileLoaderSwitchArm = HIGH;
-    profileFixedSwitchArm = HIGH;
+    profileLoaderSwitchArm = LOW;
+    profileFixedSwitchArm = LOW;
     delay(2000);
     fingersFixed = HIGH;
     fingersLoader = HIGH;
@@ -192,11 +202,11 @@ bool loadLoader(int profileSwitch) {
 
 
   } else {
-    profileLoaderSwitch = LOW;
-    profileFixedSwitch = LOW;
+    profileLoaderSwitch = HIGH;
+    profileFixedSwitch = HIGH;
     delay(500);
-    profileLoaderSwitchArm = HIGH;
-    profileFixedSwitchArm = HIGH;
+    profileLoaderSwitchArm = LOW;
+    profileFixedSwitchArm = LOW;
     delay(2000);
     fingersFixed = HIGH;
     fingersLoader = HIGH;
@@ -234,8 +244,8 @@ bool unloadLoader() {
       if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
         profileLoadingFail = 1;
       } else {
-        profileLoaderSwitch = LOW;
-        profileFixedSwitch = LOW;
+        profileLoaderSwitch = HIGH;
+        profileFixedSwitch = HIGH;
         delay(500);
       }
     }
@@ -244,8 +254,8 @@ bool unloadLoader() {
       if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
         profileLoadingFail = 1;
       } else {
-        profileLoaderSwitchArm = LOW;
-        profileFixedSwitchArm = LOW;
+        profileLoaderSwitchArm = HIGH;
+        profileFixedSwitchArm = HIGH;
         delay(2000);
       }
     }
@@ -278,8 +288,8 @@ bool unloadLoader() {
 
       while(1) {
         if (profileFixedPickupSensor == HIGH && profileLoaderPickupSensor == HIGH) {
-          profileLoaderSwitch = HIGH;
-          profileFixedSwitch = HIGH;
+          profileLoaderSwitch = LOW;
+          profileFixedSwitch = LOW;
           break;
         }
       }

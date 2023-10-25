@@ -883,7 +883,7 @@ def moveStepper():
     label.config(text=str(hearv["status"]))
 
 main = tk.Tk()
-main.geometry("1024x600")
+main.geometry("1920x1080")
 app=FullScreenApp(main)
 
 text_font = ('Arial', '26')
