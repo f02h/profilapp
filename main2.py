@@ -908,15 +908,15 @@ notebook.add(tab3, text='Ročno upravljanje')
 notebook.pack(side=TOP)
 
 
-canvas_tab2 = ScrollableFrame(tab2, height=400, width=530, hscroll=False, vscroll=True)
+canvas_tab2 = ScrollableFrame(tab2, height=950, width=900, hscroll=False, vscroll=True)
 canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
 
-numpad = ttk.Frame(tab2, width=470, height=500)
+numpad = ttk.Frame(tab2, width=900, height=950)
 numpad.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
 
 #canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
-canvas_tab3 = ttk.Frame(tab3, height=450, width=690)
+canvas_tab3 = ttk.Frame(tab3, height=950, width=900)
 #canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
 canvas_tab3.grid(column=0, row=0)
 
