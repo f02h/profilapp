@@ -294,8 +294,8 @@ bool unloadLoader() {
 
       while(1) {
         if (profileFixedPickupSensor == HIGH && profileLoaderPickupSensor == HIGH) {
-          profileLoaderSwitch = LOW;
-          profileFixedSwitch = LOW;
+          profileLoaderSwitch = HIGH;
+          profileFixedSwitch = HIGH;
           break;
         }
       }
