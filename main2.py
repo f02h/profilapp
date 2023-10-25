@@ -986,7 +986,7 @@ homingA.grid(column=4,row=0,padx=30,pady=30)
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
 
-profilChooser = ttk.Combobox(vrtalkaL, width=15,font=text_font, style='my.TCombobox')
+profilChooser = ttk.Combobox(vrtalkaL, width=25,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 profilChooser['values'] = list(profilList.values())
 profilChooser.grid(column=0, row=2, columnspan=3)
