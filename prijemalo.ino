@@ -45,13 +45,19 @@ void setup() {
   pnevmatikaOn = HIGH;
 
   profileLoaderSwitch.output();
+  profileLoaderSwitch = HIGH;
   profileFixedSwitch.output();
+  profileFixedSwitch = HIGH;
   profileLoaderSwitchArm.output();
+  profileLoaderSwitchArm = HIGH;
   profileFixedSwitchArm.output();
+  profileFixedSwitchArm = HIGH;
   profileLoaderPickup.output();
   profileFixedPickup.output();
   fingersLoader.output();
+  fingersLoader = HIGH;
   fingersFixed.output();
+  fingersFixed = HIGH;
 
 
   profileFixedPickupSensor.input();
@@ -65,7 +71,7 @@ void setup() {
 
   extension.output();
 
-  extension = LOW;
+  extension = HIGH;
   profileLoaderPickup = HIGH;
   profileFixedPickup = HIGH;
   delay(2000);
@@ -149,13 +155,13 @@ void loop()
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "extensionE") {
-        extension = HIGH;
+        extension = LOW;
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "extensionF") {
-        extension = LOW;
+        extension = HIGH;
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
