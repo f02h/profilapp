@@ -910,7 +910,7 @@ notebook.pack(side=TOP)
 vrtalkaL = ttk.Frame(tab1, width=1200, height=950)
 vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
-vrtalkaD = ScrollableFrame(tab2, height=950, width=700, hscroll=False, vscroll=True)
+vrtalkaD = ScrollableFrame(tab1, height=950, width=700, hscroll=False, vscroll=True)
 vrtalkaD.pack(side=LEFT, expand=True, anchor='w')
 
 
