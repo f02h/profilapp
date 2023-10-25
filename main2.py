@@ -925,7 +925,7 @@ tool_tab3 = ttk.Frame(tab3, height=50, width=300)
 tool_tab3.grid(column=0, row=1)
 
 
-numpad2 = ttk.Frame(tab3, width=310, height=500,borderwidth=1)
+numpad2 = ttk.Frame(tab3, width=900, height=950,borderwidth=1)
 #numpad2.pack(expand=True, anchor='e')
 numpad2.grid(column=1, row=0,sticky="ew",padx=40, pady=40)
 
