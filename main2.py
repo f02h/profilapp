@@ -998,7 +998,7 @@ n = tk.StringVar()
 n.trace("w", callback)
 
 
-monthchoosen = ttk.Combobox(canvas_tab2, width=15,textvariable=n,font=text_font, style='my.TCombobox')
+monthchoosen = ttk.Combobox(canvas_tab2, width=25,textvariable=n,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 monthchoosen['values'] = list(profilList.values())
 monthchoosen.grid(column=0, row=0)
