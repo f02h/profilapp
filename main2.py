@@ -509,16 +509,16 @@ def initEmptyCombo():
         i += 1
 
 def initJobs():
-    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done FROM job WHERE done != 1", (str(1),)).fetchall()
-    dbvars = dict(res)
+    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done FROM job WHERE done != 1").fetchall()
 
     i = 3
-    for var in dbvars:
-        tk.Label(canvas_tab2, text=var, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
-        e1 = Entry(canvas_tab2, font=etext_font, width=10)
-        e1.grid(row=i, column=1)
-        settingsList[var] = e1
-        settingsList[var].insert(0, 0)
+    for row in res:
+        print(row[0])
+        #tk.Label(canvas_tab2, text=var, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        #e1 = Entry(canvas_tab2, font=etext_font, width=10)
+        #e1.grid(row=i, column=1)
+        #settingsList[var] = e1
+        #settingsList[var].insert(0, 0)
         i += 1
 
 
