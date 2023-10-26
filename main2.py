@@ -511,8 +511,8 @@ def initEmptyCombo():
         i += 1
 
 def initJobs():
-    for widget in vrtalkaDList.winfo_children():
-        widget.destroy()
+    #for widget in vrtalkaDList.winfo_children():
+    #    widget.destroy()
 
     res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1").fetchall()
 
