@@ -524,11 +524,11 @@ def initJobs():
 
         rowQtyD = row[4]
         rowDone = row[5]
-        tk.Label(vrtalkaD, text=rowLength, font=etext_font,anchor='w', width=10).grid(row=i, column=0)
-        tk.Label(vrtalkaD, text=rowProfile, font=etext_font,anchor='w', width=25).grid(row=i, column=1)
-        tk.Label(vrtalkaD, text=rowQty, font=etext_font,anchor='w', width=5).grid(row=i, column=2)
-        tk.Label(vrtalkaD, text=rowQtyD, font=etext_font,anchor='w', width=5).grid(row=i, column=3)
-        tk.Label(vrtalkaD, text=rowDone, font=etext_font,anchor='w', width=5).grid(row=i, column=4)
+        tk.Label(vrtalkaDList, text=rowLength, font=etext_font,anchor='w', width=10).grid(row=i, column=0)
+        tk.Label(vrtalkaDList, text=rowProfile, font=etext_font,anchor='w', width=25).grid(row=i, column=1)
+        tk.Label(vrtalkaDList, text=rowQty, font=etext_font,anchor='w', width=5).grid(row=i, column=2)
+        tk.Label(vrtalkaDList, text=rowQtyD, font=etext_font,anchor='w', width=5).grid(row=i, column=3)
+        tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=5).grid(row=i, column=4)
         i += 1
 
 
@@ -963,8 +963,11 @@ notebook.pack(side=TOP)
 vrtalkaL = ttk.Frame(tab1, width=700, height=950)
 vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
-vrtalkaD = ScrollableFrame(tab1, height=950, width=1200, hscroll=False, vscroll=True)
-vrtalkaD.pack(side=LEFT, expand=True, anchor='w')
+vrtalkaD = ttk.Frame(tab1, width=950, height=1200)
+vrtalkaD.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
+
+vrtalkaDList = ScrollableFrame(vrtalkaD, height=950, width=1200, hscroll=False, vscroll=True)
+vrtalkaDList.pack(side=LEFT, expand=True, anchor='w')
 
 jobLength = Entry(vrtalkaD, font=text_font, width=10)
 jobLength.grid(row=0, column=0,columnspan=2,sticky=W+E)
