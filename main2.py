@@ -378,6 +378,20 @@ def saveSettings():
         c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
         conn.commit()
 
+def addJob():
+    return True
+    #res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    #idProfil = int(res[0])
+    #if not idProfil:
+    #    idProfil = 1
+
+    #for key in settingsList:
+    #    print(key, idProfil, settingsList[key].get())
+    #    c.execute(
+    #        "UPDATE vars SET value = ? WHERE name LIKE '" + key + "' AND idProfil = " + str(idProfil) + "",
+    #        (float(settingsList[key].get()),))
+    #    conn.commit()
+
 def handle_focus(event):
     global currentSetting
     for k in settingsList:
@@ -467,6 +481,19 @@ def changeTool(idTool, dir):
 
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
+    dbvars = dict(res)
+
+    i = 3
+    for var in dbvars:
+        tk.Label(canvas_tab2, text=var, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        e1 = Entry(canvas_tab2, font=etext_font, width=10)
+        e1.grid(row=i, column=1)
+        settingsList[var] = e1
+        settingsList[var].insert(0, 0)
+        i += 1
+
+def initJobs():
+    res = c.execute("SELECT length,qty,idProfile,qtyDone FROM jobs WHERE done != 1", (str(1),)).fetchall()
     dbvars = dict(res)
 
     i = 3
@@ -907,11 +934,34 @@ notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Ročno upravljanje')
 notebook.pack(side=TOP)
 
-vrtalkaL = ttk.Frame(tab1, width=1200, height=950)
+vrtalkaL = ttk.Frame(tab1, width=700, height=950)
 vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
-vrtalkaD = ScrollableFrame(tab1, height=950, width=700, hscroll=False, vscroll=True)
+vrtalkaD = ScrollableFrame(tab1, height=950, width=1200, hscroll=False, vscroll=True)
 vrtalkaD.pack(side=LEFT, expand=True, anchor='w')
+
+jobLength = Entry(vrtalkaD, font=text_font, width=10)
+jobLength.grid(row=0, column=0,columnspan=2,sticky=W+E)
+jobLength.insert(0, 0.0)
+
+
+n = tk.StringVar()
+n.trace("w", callback)
+res = c.execute("SELECT id,name FROM profili").fetchall()
+profilList = dict(res)
+monthchoosen = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
+# Adding combobox drop down list
+monthchoosen['values'] = list(profilList.values())
+monthchoosen.grid(column=2, row=0)
+main.option_add('*TCombobox*Listbox.font', text_font)
+
+jobQty = Entry(vrtalkaD, font=text_font, width=5)
+jobQty.grid(row=0, column=4,columnspan=2,sticky=W+E)
+jobQty.insert(0, 0)
+
+
+addJob = Button(vrtalkaD, text='Dodaj', command=addJob,bg='brown',fg='white', font=('Courier New', '24')).grid(column=6, row=0)
+
 
 
 canvas_tab2 = ScrollableFrame(tab2, height=950, width=900, hscroll=False, vscroll=True)
@@ -950,38 +1000,33 @@ tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 drill = tk.Button(vrtalkaL,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
     .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-exst = tk.Button(vrtalkaL,text="P ON",font=text_font,bg="green",command=extensionE)\
-    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
-
-exst2 = tk.Button(vrtalkaL,text="P OFF",font=text_font,bg="green",command=extensionF)\
-    .grid(column=4,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 #    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 runLength = Entry(vrtalkaL, font=etext_font, width=10)
-runLength.grid(row=6, column=2,columnspan=2,sticky=W+E)
+runLength.grid(row=6, column=0,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
-runCyc.grid(column=4,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+runCyc.grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 changeLen = tk.Button(vrtalkaL,text="ChangeLen",font=text_font,bg="green",command=stop_thread)
-changeLen.grid(column=6,columnspan=2,sticky=W+E,row=6,padx=30,pady=30)
+changeLen.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
 
 errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
-errorBox.grid(column=0,columnspan=4,sticky=W+E,row=7,padx=30)
+errorBox.grid(column=0,columnspan=4,sticky=W+E,row=8,padx=30, pady=30)
 
 
 
 homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
-homingd.grid(column=2,row=0,padx=30,pady=30)
+homingd.grid(column=2,row=9,padx=30,pady=30)
 
 homingf = tk.Button(vrtalkaL,text="Homing F",font=text_font,command=homeFeeder)
-homingf.grid(column=3,row=0,padx=30,pady=30)
+homingf.grid(column=3,row=9,padx=30,pady=30)
 
 
 homingA = tk.Button(vrtalkaL,text="Homing",font=text_font,command=homeAll)
-homingA.grid(column=4,row=0,padx=30,pady=30)
+homingA.grid(column=2,row=0,padx=30,pady=30)
 
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
