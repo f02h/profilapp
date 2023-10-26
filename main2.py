@@ -963,12 +963,11 @@ notebook.pack(side=TOP)
 vrtalkaL = ttk.Frame(tab1, width=700, height=950)
 vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
-vrtalkaDList = ScrollableFrame(tab1, height=750, width=1000, hscroll=False, vscroll=True)
-vrtalkaDList.pack(side=LEFT, expand=True, anchor='nw')
+vrtalkaD = ttk.Frame(tab1, width=1200, height=200)
+vrtalkaD.pack(expand=True, anchor='nw', side=TOP, pady=40)
 
-vrtalkaD = ttk.Frame(tab1, width=950, height=200)
-vrtalkaD.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
-
+vrtalkaDList = ScrollableFrame(tab1, height=750, width=1200, hscroll=False, vscroll=True)
+vrtalkaDList.pack(side=BOTTOM, expand=True, anchor='nw')
 
 jobLength = Entry(vrtalkaD, font=text_font, width=10)
 jobLength.grid(row=0, column=0,columnspan=2,sticky=W+E)
