@@ -524,11 +524,11 @@ def initJobs():
 
         rowQtyD = row[4]
         rowDone = row[5]
-        tk.Label(vrtalkaD, text=rowLength, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
-        tk.Label(vrtalkaD, text=rowProfile, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
-        tk.Label(vrtalkaD, text=rowQty, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
-        tk.Label(vrtalkaD, text=rowQtyD, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
-        tk.Label(vrtalkaD, text=rowDone, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        tk.Label(vrtalkaD, text=rowLength, font=etext_font,anchor='w', width=10).grid(row=i, column=0)
+        tk.Label(vrtalkaD, text=rowProfile, font=etext_font,anchor='w', width=25).grid(row=i, column=1)
+        tk.Label(vrtalkaD, text=rowQty, font=etext_font,anchor='w', width=5).grid(row=i, column=2)
+        tk.Label(vrtalkaD, text=rowQtyD, font=etext_font,anchor='w', width=5).grid(row=i, column=3)
+        tk.Label(vrtalkaD, text=rowDone, font=etext_font,anchor='w', width=5).grid(row=i, column=4)
         i += 1
 
 
