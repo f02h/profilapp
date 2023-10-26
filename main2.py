@@ -384,7 +384,7 @@ def addJob():
 
     res = c.execute("SELECT id,name,loader FROM profili WHERE name LIKE ?", (str(jobProfile.get()),)).fetchone()
     idProfil = int(res[0])
-    jobLoader = int(res[1])
+    jobLoader = int(res[2])
     if not idProfil:
         idProfil = 1
         jobLoader = 0
