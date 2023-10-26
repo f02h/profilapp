@@ -514,7 +514,7 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor='w', width=10).grid(row=2, column=0)
     tk.Label(vrtalkaDList, text="Profil", font=etext_font, anchor='w', width=25).grid(row=2, column=1)
     tk.Label(vrtalkaDList, text="Količina", font=etext_font, anchor='w', width=5).grid(row=2, column=2)
-    tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=5).grid(row=, column=3)
+    tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=5).grid(row=2, column=3)
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=5).grid(row=2, column=4)
 
     i = 3
