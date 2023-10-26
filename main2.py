@@ -549,9 +549,9 @@ def initJobs():
         tk.Label(vrtalkaDList, text=rowQtyD, font=etext_font,anchor='w', width=10).grid(row=i, column=3)
         tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=10).grid(row=i, column=4)
 
-        ctrlConfirm = Button(vrtalkaDList, text='Dodaj', image=imgConfirm, command=ctrlConfirmJob(row[6]), bg='brown', fg='white',
+        ctrlConfirm = Button(vrtalkaDList, text='Dodaj', command=ctrlConfirmJob(row[6]), bg='brown', fg='white',
                              font=('Courier New', '18')).grid(column=5, row=i)
-        ctrlDelete = Button(vrtalkaDList, text='Dodaj', image=imgDelete, command=ctrlDeleteJob(row[6]), bg='brown', fg='white',
+        ctrlDelete = Button(vrtalkaDList, text='Dodaj', command=ctrlDeleteJob(row[6]), bg='brown', fg='white',
                             font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
 def ctrlDeleteJob(idJob):
