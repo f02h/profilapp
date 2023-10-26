@@ -511,6 +511,9 @@ def initEmptyCombo():
         i += 1
 
 def initJobs():
+    for widget in vrtalkaDList.winfo_children():
+        widget.destroy()
+
     res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1").fetchall()
 
     tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor='w', width=10).grid(row=2, column=0)
