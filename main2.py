@@ -391,7 +391,7 @@ def addJob():
 
     addJobQty = int(jobQty.get())
 
-    c.execute("INSERT INTO job (length, qty,idProfile, loader, qtyD, done) VALUES ('"+str(addJobLength)+"','"+addJobQty+"','"+idProfil+"','"+jobLoader+"','0','0'")
+    c.execute("INSERT INTO job (length, qty,idProfile, loader, qtyD, done) VALUES ('"+str(addJobLength)+"','"+str(addJobQty)+"','"+str(idProfil)+"','"+str(jobLoader)+"','0','0'")
     conn.commit()
 
     initJobs()
