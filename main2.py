@@ -513,12 +513,22 @@ def initJobs():
 
     i = 3
     for row in res:
-        print(row[0])
-        #tk.Label(canvas_tab2, text=var, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
-        #e1 = Entry(canvas_tab2, font=etext_font, width=10)
-        #e1.grid(row=i, column=1)
-        #settingsList[var] = e1
-        #settingsList[var].insert(0, 0)
+
+        rowLength = row[0]
+        rowQty = row[1]
+
+        res = c.execute("SELECT id,name,loader FROM profili WHERE id LIKE ?", (str(row[2]),)).fetchone()
+        rowProfile = str(res[1])
+        if not rowProfile:
+            rowProfile = '/'
+
+        rowQtyD = row[4]
+        rowDone = row[5]
+        tk.Label(vrtalkaD, text=rowLength, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        tk.Label(vrtalkaD, text=rowProfile, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        tk.Label(vrtalkaD, text=rowQty, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        tk.Label(vrtalkaD, text=rowQtyD, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        tk.Label(vrtalkaD, text=rowDone, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
         i += 1
 
 
