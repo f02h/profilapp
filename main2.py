@@ -987,7 +987,7 @@ jobQty.insert(0, 0)
 
 
 addJob = Button(vrtalkaD, text='Dodaj', command=addJob,bg='brown',fg='white', font=('Courier New', '24')).grid(column=6, row=0)
-
+initJobs()
 
 
 canvas_tab2 = ScrollableFrame(tab2, height=950, width=900, hscroll=False, vscroll=True)
