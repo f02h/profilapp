@@ -978,7 +978,7 @@ profilList = dict(res)
 jobProfile = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 jobProfile['values'] = list(profilList.values())
-jobProfile.grid(column=2, row=0)
+jobProfile.grid(column=2,columnspan=2, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 
 jobQty = Entry(vrtalkaD, font=text_font, width=5)
