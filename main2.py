@@ -7,6 +7,8 @@ from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
 import os, time
 from threading import Thread
+from PIL import Image,ImageTk
+
 
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB1"
@@ -517,8 +519,16 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=10).grid(row=2, column=3)
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
 
-    imgConfirm = PhotoImage(file=r"confirm.png")
-    imgDelete = PhotoImage(file=r"delete.png")
+    img = Image.open("confirm.png")
+    img = img.resize((20, 20), Image.ANTIALIAS)
+    imgConfirm = ImageTk.PhotoImage(img)
+
+    img = Image.open("delete.png")
+    img = img.resize((20, 20), Image.ANTIALIAS)
+    imgDelete = ImageTk.PhotoImage(img)
+
+    #imgConfirm = PhotoImage(file=r"confirm.png")
+    #imgDelete = PhotoImage(file=r"delete.png")
 
     i = 3
     for row in res:
@@ -540,9 +550,9 @@ def initJobs():
         tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=10).grid(row=i, column=4)
 
         ctrlConfirm = Button(vrtalkaDList, text='Dodaj', image=imgConfirm, command=ctrlConfirmJob(row[6]), bg='brown', fg='white',
-                             font=('Courier New', '24')).grid(column=5, row=i)
+                             font=('Courier New', '18')).grid(column=5, row=i)
         ctrlDelete = Button(vrtalkaDList, text='Dodaj', image=imgDelete, command=ctrlDeleteJob(row[6]), bg='brown', fg='white',
-                            font=('Courier New', '24')).grid(column=6, row=i)
+                            font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
 def ctrlDeleteJob(idJob):
     sql = 'DELETE FROM job WHERE id=?'
