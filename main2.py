@@ -379,6 +379,22 @@ def saveSettings():
         conn.commit()
 
 def addJob():
+
+    addJobLength = float(jobLength.get())
+
+    res = c.execute("SELECT id,name,loader FROM profili WHERE name LIKE ?", (str(jobProfile.get()),)).fetchone()
+    idProfil = int(res[0])
+    jobLoader = int(res[1])
+    if not idProfil:
+        idProfil = 1
+        jobLoader = 0
+
+    addJobQty = int(jobQty.get())
+
+    c.execute("INSERT INTO job (length, qty, loader, qtyD, done) VALUES ('"+addJobLength+"','"+addJobQty+"','"+jobLoader+"','0','0'")
+    conn.commit()
+
+    initJobs()
     return True
     #res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
     #idProfil = int(res[0])
@@ -493,7 +509,7 @@ def initEmptyCombo():
         i += 1
 
 def initJobs():
-    res = c.execute("SELECT length,qty,idProfile,qtyDone FROM jobs WHERE done != 1", (str(1),)).fetchall()
+    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done FROM jobs WHERE done != 1", (str(1),)).fetchall()
     dbvars = dict(res)
 
     i = 3
@@ -949,10 +965,10 @@ n = tk.StringVar()
 n.trace("w", callback)
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
-monthchoosen = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
+jobProfile = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
-monthchoosen['values'] = list(profilList.values())
-monthchoosen.grid(column=2, row=0)
+jobProfile['values'] = list(profilList.values())
+jobProfile.grid(column=2, row=0)
 main.option_add('*TCombobox*Listbox.font', text_font)
 
 jobQty = Entry(vrtalkaD, font=text_font, width=5)
