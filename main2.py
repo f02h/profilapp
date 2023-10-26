@@ -509,13 +509,16 @@ def initEmptyCombo():
         i += 1
 
 def initJobs():
-    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done FROM job WHERE done != 1").fetchall()
+    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1").fetchall()
 
     tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor='w', width=10).grid(row=2, column=0)
     tk.Label(vrtalkaDList, text="Profil", font=etext_font, anchor='w', width=35).grid(row=2, column=1)
     tk.Label(vrtalkaDList, text="Količina", font=etext_font, anchor='w', width=10).grid(row=2, column=2)
     tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=10).grid(row=2, column=3)
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
+
+    imgConfirm = PhotoImage(file=r"confirm.png")
+    imgDelete = PhotoImage(file=r"delete.png")
 
     i = 3
     for row in res:
@@ -535,8 +538,25 @@ def initJobs():
         tk.Label(vrtalkaDList, text=rowQty, font=etext_font,anchor='w', width=10).grid(row=i, column=2)
         tk.Label(vrtalkaDList, text=rowQtyD, font=etext_font,anchor='w', width=10).grid(row=i, column=3)
         tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=10).grid(row=i, column=4)
-        i += 1
 
+        ctrlConfirm = Button(vrtalkaDList, text='Dodaj', image=imgConfirm, command=ctrlConfirmJob(row[6]), bg='brown', fg='white',
+                             font=('Courier New', '24')).grid(column=5, row=i)
+        ctrlDelete = Button(vrtalkaDList, text='Dodaj', image=imgDelete, command=ctrlDeleteJob(row[6]), bg='brown', fg='white',
+                            font=('Courier New', '24')).grid(column=6, row=i)
+        i += 1
+def ctrlDeleteJob(idJob):
+    sql = 'DELETE FROM job WHERE id=?'
+    cur = conn.cursor()
+    cur.execute(sql, (idJob,))
+    conn.commit()
+
+    initJobs()
+
+def ctrlConfirmJob(idJob):
+    c.execute("UPDATE job SET done = 1 WHERE id = " + str(idJob) + "",)
+    conn.commit()
+
+    initJobs()
 
 def executeDrill():
 
