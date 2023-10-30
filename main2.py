@@ -47,6 +47,7 @@ currentCutLen = 0
 changingLen = False
 cycleThread = None
 currentProfileId = None
+currentQty = 0
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -682,6 +683,7 @@ def runCycle():
     global currentCutLen
     global changingLen
     global currentProfileId
+    global currentQty
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -704,7 +706,7 @@ def runCycle():
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
-    while 1:
+    while currentQty >= 0:
 
         print("Run cycle")
 
@@ -777,6 +779,7 @@ def runCycle():
             if not drillRes:
                 print("Drill error")
                 return
+        currentQty -= 1
 
 
 # abs = 1 => move to absolute position
@@ -924,8 +927,10 @@ def start_thread():
     # Assign global variable and initialize value
     global changingLen
     global cycleThread
+    global currentQty
     changingLen = False
 
+    currentQty = int(runQty.get())
     # Create and launch a thread
     cycleThread = Thread(target=runCycle)
     cycleThread.start()
@@ -934,6 +939,8 @@ def stop_thread():
     # Assign global variable and set value to stop
     global cycleThread
     global changingLen
+    global currentQty
+    currentQty = 0
     changingLen = True
     #changeLength()
     #cycleThread.join()
@@ -1115,8 +1122,8 @@ button = tk.Button(vrtalkaL,
 tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=2)
 tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 
-drill = tk.Button(vrtalkaL,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
-    .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+#drill = tk.Button(vrtalkaL,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
+#    .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
@@ -1126,10 +1133,14 @@ runLength = Entry(vrtalkaL, font=etext_font, width=10)
 runLength.grid(row=6, column=0,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
+runQty = Entry(vrtalkaL, font=etext_font, width=10)
+runQty.grid(row=6, column=1,columnspan=2,sticky=W+E)
+runQty.insert(0, 0)
+
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
-runCyc.grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+runCyc.grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 changeLen = tk.Button(vrtalkaL,text="Ustavi cikel",font=text_font,bg="green",command=stop_thread)
-changeLen.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
+changeLen.grid(column=1,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
 errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=8,padx=30, pady=30)
