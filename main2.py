@@ -497,6 +497,20 @@ def changeTool(idTool, dir):
     else:
         return True
 
+def ctrlDeleteJob(idJob):
+    sql = 'DELETE FROM job WHERE id=?'
+    cur = conn.cursor()
+    #cur.execute(sql, (idJob,))
+    #conn.commit()
+
+    initJobs()
+
+def ctrlConfirmJob(idJob):
+    c.execute("UPDATE job SET done = 1 WHERE id = " + str(idJob) + "",)
+    conn.commit()
+
+    initJobs()
+
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
     dbvars = dict(res)
@@ -557,19 +571,6 @@ def initJobs():
         ctrlDelete = Button(vrtalkaDList, text='Izbrisi', image=imgDelete, command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',
                             font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
-def ctrlDeleteJob(idJob):
-    sql = 'DELETE FROM job WHERE id=?'
-    cur = conn.cursor()
-    #cur.execute(sql, (idJob,))
-    #conn.commit()
-
-    initJobs()
-
-def ctrlConfirmJob(idJob):
-    c.execute("UPDATE job SET done = 1 WHERE id = " + str(idJob) + "",)
-    conn.commit()
-
-    initJobs()
 
 def executeDrill():
 
