@@ -15,12 +15,8 @@ USB_PORT_FEEDER = "/dev/ttyUSB0"
 USB_PORT_LOADER = "/dev/ttyUSB2"
 usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
-usbf = serial.Serial(
-    port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
-)
-usbl = serial.Serial(
-    port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE
-)
+usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+usbl = serial.Serial(port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
 #usb = 0
 #usbf = 0
 #usbl = 0
@@ -549,14 +545,6 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Pot", font=etext_font, anchor='w', width=5).grid(row=2, column=5)
     tk.Label(vrtalkaDList, text="Izb", font=etext_font, anchor='w', width=5).grid(row=2, column=6)
 
-    img = Image.open("confirm.png")
-    img = img.resize((50, 50), Image.ANTIALIAS)
-    imgConfirm = ImageTk.PhotoImage(img)
-
-    img = Image.open("delete.png")
-    img = img.resize((50, 50), Image.ANTIALIAS)
-    imgDelete = ImageTk.PhotoImage(img)
-
     #imgConfirm = PhotoImage(file=r"confirm.png")
     #imgDelete = PhotoImage(file=r"delete.png")
 
@@ -727,8 +715,23 @@ def runCycle():
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension - extensionLength, 1, 1)
 
         #raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+
+        print("Load profile")
         tmpStatus = loadProfile(loadingBay)
-        tmpStatus = unloadProfile()
+        tmpStatus = waitForProfile()
+        while tmpStatus != "done":
+            # wait for profile
+            if changingLen == True:
+                resetLoader()
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
+            print("Waiting for profile")
+            time.sleep(1)
+            tmpStatus = waitForProfile()
+
+        #tmpStatus = unloadProfile()
 
         tmpStatus = retractLoader()
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
@@ -1028,6 +1031,13 @@ def moveStepper():
 
     label.config(text=str(hearv["status"]))
 
+def nbrOfHoles(sv):
+    nbrOfHoles = int(float(runLength.get()) // 120)
+    rem = float(runLength.get()) % 120
+    if rem == 0:
+        nbrOfHoles -= 1
+    runLengthNOH.config(text=str(nbrOfHoles))
+
 main = tk.Tk()
 main.geometry("1920x1080")
 app=FullScreenApp(main)
@@ -1111,7 +1121,7 @@ numpad2 = ttk.Frame(tab3, width=900, height=950,borderwidth=1)
 numpad2.grid(column=1, row=0,sticky="ew",padx=40, pady=40)
 
 button = tk.Button(vrtalkaL,
-                   text="QUIT",
+                   text="Zapri",
                    font=text_font,
                    fg="red",
                    command=quit).grid(column=0,
@@ -1129,21 +1139,33 @@ tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 #    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-runLength = Entry(vrtalkaL, text='Dol:', font=etext_font, width=10)
-runLength.grid(row=6, column=0,columnspan=2,sticky=W+E)
+sv = StringVar()
+sv.trace("w", lambda name, index, mode, sv=sv: nbrOfHoles(sv))
+
+runLengthL = Label(vrtalkaL, text='Dolžina:',font=text_font)
+runLengthL.grid(row=6, column=0,sticky=W+E)
+runLength = Entry(vrtalkaL, font=etext_font, width=10,textvariable=sv)
+runLength.grid(row=6, column=1,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runQty = Entry(vrtalkaL, text='Kol:', font=etext_font, width=10)
-runQty.grid(row=6, column=1,columnspan=2,sticky=W+E)
+runLengthNOHL = Label(vrtalkaL, text='Št. lukenj:',font=text_font)
+runLengthNOHL.grid(row=7, column=0,sticky=W+E)
+runLengthNOH = Label(vrtalkaL, text='',font=text_font)
+runLengthNOH.grid(row=7, column=1,sticky=W+E)
+
+runQtyL = Label(vrtalkaL, text='Količina:',font=text_font)
+runQtyL.grid(row=8, column=0,sticky=W+E)
+runQty = Entry(vrtalkaL, font=etext_font, width=10)
+runQty.grid(row=8, column=1,columnspan=2,sticky=W+E)
 runQty.insert(0, 0)
 
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
-runCyc.grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+runCyc.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
 changeLen = tk.Button(vrtalkaL,text="Ustavi cikel",font=text_font,bg="green",command=stop_thread)
-changeLen.grid(column=1,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+changeLen.grid(column=1,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
 
 errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
-errorBox.grid(column=0,columnspan=4,sticky=W+E,row=8,padx=30, pady=30)
+errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 
 
 

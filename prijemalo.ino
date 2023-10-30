@@ -147,11 +147,12 @@ void loop()
 
 
     if (action == "load") {
-        loadLoader(bay);
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
+        loadLoader(bay);
+        unloadLoader();
     } else if (action == "unload") {
         unloadLoader();
         StaticJsonDocument<200> doc2;
