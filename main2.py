@@ -1018,8 +1018,8 @@ vrtalkaD.pack(expand=True, anchor='nw', side=TOP, pady=40)
 vrtalkaDList = ScrollableFrame(tab1, height=750, width=1300, hscroll=False, vscroll=True)
 vrtalkaDList.pack(side=BOTTOM, expand=True, anchor='nw')
 
-runJobs = Button(vrtalkaD, text='Zaženi', command=runJobs,bg='green',fg='white', font=('Courier New', '24')).grid(column=0, columnspan=3, row=0, pady=30)
-stobJobs = Button(vrtalkaD, text='Stop', command=stopJobs,bg='red',fg='white', font=('Courier New', '24')).grid(column=1, columnspan=4, row=0, pady=30)
+runJobs = Button(vrtalkaD, text='Zaženi', command=runJobs,bg='green',fg='white', font=('Courier New', '32')).grid(column=0, columnspan=3, row=0, pady=30)
+stobJobs = Button(vrtalkaD, text='Stop', command=stopJobs,bg='red',fg='white', font=('Courier New', '32')).grid(column=1, columnspan=4, row=0, pady=30)
 
 
 jobLength = Entry(vrtalkaD, font=text_font, width=10)
