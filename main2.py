@@ -536,7 +536,7 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=10).grid(row=2, column=3)
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
     tk.Label(vrtalkaDList, text="Pot", font=etext_font, anchor='w', width=10).grid(row=2, column=5)
-    tk.Label(vrtalkaDList, text="Izb", font=etext_font, anchor='w', width=10).grid(row=2, column=5)
+    tk.Label(vrtalkaDList, text="Izb", font=etext_font, anchor='w', width=10).grid(row=2, column=6)
 
     img = Image.open("confirm.png")
     img = img.resize((50, 50), Image.ANTIALIAS)
