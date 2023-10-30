@@ -682,10 +682,12 @@ def runCycle():
     global changingLen
     global currentProfileId
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
+    loadingBay = int(res[2])
     if not idProfil:
         idProfil = 1
+        loadingBay = 0
 
     toolSetup = False
     if currentProfileId is None:
@@ -720,7 +722,7 @@ def runCycle():
         print("Rev move to load profile")
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension - extensionLength, 1, 1)
 
-        tmpStatus = loadProfile(0)
+        tmpStatus = loadProfile(loadingBay)
         tmpStatus = unloadProfile()
 
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
