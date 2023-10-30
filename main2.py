@@ -720,11 +720,13 @@ def runCycle():
         tmpStatus = extensionF()
 
         print("Rev move to load profile")
+        tmpStatus = retractLoader()
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension - extensionLength, 1, 1)
 
         tmpStatus = loadProfile(loadingBay)
         tmpStatus = unloadProfile()
 
+        tmpStatus = retractLoader()
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
 
         print("Extend extension")
@@ -735,6 +737,7 @@ def runCycle():
         while tmpStatus != "done":
             #wait for profile
             if changingLen == True:
+                resetLoader()
                 print("Drop cycle")
                 runCyc.config(state=NORMAL, bg='green')
                 return
@@ -804,6 +807,36 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 """
+    return hearv["status"]
+
+def resetLoader():
+    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "resetLoader"
+    }
+
+    usbl.write(json.dumps(data).encode())
+    hearv = hearJsonl()
+    #print(hearv)
+    if str(hearv["status"]).strip() == "done":
+        runCyc.config(state=ACTIVE, bg='green')
+
+    return hearv["status"]
+
+def retractLoader():
+    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "retractLoader"
+    }
+
+    usbl.write(json.dumps(data).encode())
+    hearv = hearJsonl()
+    #print(hearv)
+    if str(hearv["status"]).strip() == "done":
+        runCyc.config(state=ACTIVE, bg='green')
+
     return hearv["status"]
 
 def extensionE():
