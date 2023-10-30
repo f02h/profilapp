@@ -32,6 +32,7 @@ c = conn.cursor()
 
 settingsList = dict()
 currentSetting = None
+jobsRunning = False
 
 stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
@@ -511,6 +512,14 @@ def ctrlConfirmJob(idJob):
 
     initJobs()
 
+def runJobs():
+    jobsRunning = True
+    return True
+
+def stopJobs():
+    jobsRunning = False
+    return True
+
 def initEmptyCombo():
     res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
     dbvars = dict(res)
@@ -525,8 +534,8 @@ def initEmptyCombo():
         i += 1
 
 def initJobs():
-    #for widget in vrtalkaDList.winfo_children():
-    #    widget.destroy()
+    for widget in vrtalkaDList.winfo_children():
+        widget.destroy()
 
     res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1").fetchall()
 
@@ -1009,10 +1018,13 @@ vrtalkaD.pack(expand=True, anchor='nw', side=TOP, pady=40)
 vrtalkaDList = ScrollableFrame(tab1, height=750, width=1300, hscroll=False, vscroll=True)
 vrtalkaDList.pack(side=BOTTOM, expand=True, anchor='nw')
 
-jobLength = Entry(vrtalkaD, font=text_font, width=10)
-jobLength.grid(row=0, column=0,columnspan=2,sticky=W+E)
-jobLength.insert(0, 0.0)
+runJobs = Button(vrtalkaD, text='Zaženi', command=runJobs,bg='brown',fg='white', font=('Courier New', '24')).grid(column=0, columnspan=2, row=0)
+stobJobs = Button(vrtalkaD, text='Stop', command=stopJobs,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, columnspan=2, row=0)
 
+
+jobLength = Entry(vrtalkaD, font=text_font, width=10)
+jobLength.grid(row=1, column=0,columnspan=2,sticky=W+E)
+jobLength.insert(0, 0.0)
 
 n = tk.StringVar()
 n.trace("w", callback)
@@ -1021,15 +1033,15 @@ profilList = dict(res)
 jobProfile = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
 jobProfile['values'] = list(profilList.values())
-jobProfile.grid(column=2,columnspan=2, row=0)
+jobProfile.grid(column=2,columnspan=2, row=1)
 main.option_add('*TCombobox*Listbox.font', text_font)
 
 jobQty = Entry(vrtalkaD, font=text_font, width=5)
-jobQty.grid(row=0, column=4,columnspan=2,sticky=W+E)
+jobQty.grid(row=1, column=4,columnspan=2,sticky=W+E)
 jobQty.insert(0, 0)
 
 
-addJob = Button(vrtalkaD, text='Dodaj', command=addJob,bg='brown',fg='white', font=('Courier New', '24')).grid(column=6, row=0)
+addJob = Button(vrtalkaD, text='Dodaj', command=addJob,bg='brown',fg='white', font=('Courier New', '24')).grid(column=6, row=1)
 initJobs()
 
 
