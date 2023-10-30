@@ -78,7 +78,7 @@ void setup() {
   extension = HIGH;
   profileLoaderPickup = HIGH;
   profileFixedPickup = HIGH;
-  delay(2000);
+  delay(1000);
   pnevmatikaOn = LOW;
 
 /*
@@ -172,6 +172,18 @@ void loop()
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
+    } else if (action == "resetLoader") {
+        resetLoader();
+        StaticJsonDocument<200> doc2;
+        doc2["status"] = "done";
+        serializeJson(doc2, Serial);
+        Serial.println();
+    } else if (action == "retractLoader") {
+        retractLoader();
+        StaticJsonDocument<200> doc2;
+        doc2["status"] = "done";
+        serializeJson(doc2, Serial);
+        Serial.println();
     }
    }
 }
@@ -246,6 +258,37 @@ bool loadLoader(int profileSwitch) {
     }
 
   }
+
+  return true;
+}
+
+bool retractLoader() {
+  while(1) {
+    if (profileFixedPickupSensor == HIGH && profileLoaderPickupSensor == HIGH) {
+      break;
+    }
+  }
+
+  return true;
+}
+
+bool resetLoader() {
+
+  profileLoaderPickup = HIGH;
+  profileFixedPickup = HIGH;
+  delay(2000);
+
+  profileLoaderSwitch = HIGH;
+  profileFixedSwitch = HIGH;
+
+  profileLoaderSwitchArm = HIGH;
+  profileFixedSwitchArm = HIGH;
+
+  fingersLoader = HIGH;
+  fingersFixed = HIGH;
+
+  extensionRev = HIGH;
+  extensionFwd = LOW;
 
   return true;
 }
