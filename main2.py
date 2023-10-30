@@ -994,7 +994,7 @@ def home():
     if str(hearv["status"]).strip() == "done":
         #homingd.config(state=ACTIVE, bg='green')
         stepperList = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
-    else:
+    #else:
         #homingd.config(state=ACTIVE, bg='red')
     #label.config(text=str(hearv))
 
