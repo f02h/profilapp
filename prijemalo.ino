@@ -62,7 +62,7 @@ void setup() {
   extensionRev.output();
   extensionRev = HIGH;
   extensionFwd.output();
-  extensionFwd = HIGH;
+  extensionFwd = LOW;
 
   profileFixedPickupSensor.input();
   profileLoaderPickupSensor.input();
