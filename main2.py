@@ -535,6 +535,7 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Količina", font=etext_font, anchor='w', width=10).grid(row=2, column=2)
     tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=10).grid(row=2, column=3)
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
+    tk.Label(vrtalkaDList, text="Pot/Izb", font=etext_font, anchor='w', width=10).grid(row=2, column=5)
 
     img = Image.open("confirm.png")
     img = img.resize((50, 50), Image.ANTIALIAS)
@@ -1000,13 +1001,13 @@ notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Ročno upravljanje')
 notebook.pack(side=TOP)
 
-vrtalkaL = ttk.Frame(tab1, width=700, height=950)
+vrtalkaL = ttk.Frame(tab1, width=600, height=950)
 vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
 
-vrtalkaD = ttk.Frame(tab1, width=1200, height=200)
+vrtalkaD = ttk.Frame(tab1, width=1300, height=200)
 vrtalkaD.pack(expand=True, anchor='nw', side=TOP, pady=40)
 
-vrtalkaDList = ScrollableFrame(tab1, height=750, width=1200, hscroll=False, vscroll=True)
+vrtalkaDList = ScrollableFrame(tab1, height=750, width=1300, hscroll=False, vscroll=True)
 vrtalkaDList.pack(side=BOTTOM, expand=True, anchor='nw')
 
 jobLength = Entry(vrtalkaD, font=text_font, width=10)
