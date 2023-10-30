@@ -567,10 +567,8 @@ def initJobs():
         tk.Label(vrtalkaDList, text=rowQtyD, font=etext_font,anchor='w', width=10).grid(row=i, column=3)
         tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=10).grid(row=i, column=4)
 
-        ctrlConfirm = Button(vrtalkaDList, text='Potrdi', image=imgConfirm,command=lambda :ctrlConfirmJob(row[6]), bg='brown', fg='white',
-                             font=('Courier New', '18')).grid(column=5, row=i)
-        ctrlDelete = Button(vrtalkaDList, text='Izbrisi', image=imgDelete, command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',
-                            font=('Courier New', '18')).grid(column=6, row=i)
+        ctrlConfirm = Button(vrtalkaDList, text='Potrdi', command=lambda :ctrlConfirmJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=5, row=i)
+        ctrlDelete = Button(vrtalkaDList, text='Izbrisi', command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
 
 def executeDrill():
