@@ -1091,7 +1091,7 @@ runLength.insert(0, 0.0)
 
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
 runCyc.grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
-changeLen = tk.Button(vrtalkaL,text="ChangeLen",font=text_font,bg="green",command=stop_thread)
+changeLen = tk.Button(vrtalkaL,text="Ustavi cikel",font=text_font,bg="green",command=stop_thread)
 changeLen.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
 
 errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
