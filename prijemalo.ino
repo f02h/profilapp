@@ -28,8 +28,8 @@ GPIO<BOARD::D29> fingersFixed;
 //GPIO<BOARD::D31> ;
 //GPIO<BOARD::D32> ;
 //GPIO<BOARD::D33> ;
-//GPIO<BOARD::D34> ;
-//GPIO<BOARD::D35> ;
+GPIO<BOARD::D34> extensionRev;
+GPIO<BOARD::D35> extensionFwd;
 GPIO<BOARD::D36> pnevmatikaOn;
 GPIO<BOARD::D37> profileLoaderPickup;
 //GPIO<BOARD::D38> ;
@@ -59,6 +59,10 @@ void setup() {
   fingersFixed.output();
   fingersFixed = HIGH;
 
+  extensionRev.output();
+  extensionRev = HIGH;
+  extensionFwd.output();
+  extensionFwd = HIGH;
 
   profileFixedPickupSensor.input();
   profileLoaderPickupSensor.input();
@@ -155,13 +159,15 @@ void loop()
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "extensionE") {
-        extension = LOW;
+        extensionFwd = HIGH;
+        extensionRev = LOW;
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "extensionF") {
-        extension = HIGH;
+        extensionFwd = LOW;
+        extensionRev = HIGH;
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
