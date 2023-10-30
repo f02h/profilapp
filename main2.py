@@ -523,11 +523,11 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
 
     img = Image.open("confirm.png")
-    img = img.resize((20, 20), Image.ANTIALIAS)
+    img = img.resize((50, 50), Image.ANTIALIAS)
     imgConfirm = ImageTk.PhotoImage(img)
 
     img = Image.open("delete.png")
-    img = img.resize((20, 20), Image.ANTIALIAS)
+    img = img.resize((50, 50), Image.ANTIALIAS)
     imgDelete = ImageTk.PhotoImage(img)
 
     #imgConfirm = PhotoImage(file=r"confirm.png")
