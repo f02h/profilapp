@@ -1129,11 +1129,11 @@ tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 #    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
 
-runLength = Entry(vrtalkaL, font=etext_font, width=10)
+runLength = Entry(vrtalkaL, text='Dol:', font=etext_font, width=10)
 runLength.grid(row=6, column=0,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runQty = Entry(vrtalkaL, font=etext_font, width=10)
+runQty = Entry(vrtalkaL, text='Kol:', font=etext_font, width=10)
 runQty.grid(row=6, column=1,columnspan=2,sticky=W+E)
 runQty.insert(0, 0)
 
@@ -1147,11 +1147,11 @@ errorBox.grid(column=0,columnspan=4,sticky=W+E,row=8,padx=30, pady=30)
 
 
 
-homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
-homingd.grid(column=2,row=9,padx=30,pady=30)
+#homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
+#homingd.grid(column=2,row=9,padx=30,pady=30)
 
-homingf = tk.Button(vrtalkaL,text="Homing F",font=text_font,command=homeFeeder)
-homingf.grid(column=3,row=9,padx=30,pady=30)
+#homingf = tk.Button(vrtalkaL,text="Homing F",font=text_font,command=homeFeeder)
+#homingf.grid(column=3,row=9,padx=30,pady=30)
 
 
 homingA = tk.Button(vrtalkaL,text="Homing",font=text_font,command=homeAll)
