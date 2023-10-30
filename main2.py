@@ -723,6 +723,7 @@ def runCycle():
         tmpStatus = retractLoader()
         tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension - extensionLength, 1, 1)
 
+        #raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
         tmpStatus = loadProfile(loadingBay)
         tmpStatus = unloadProfile()
 
