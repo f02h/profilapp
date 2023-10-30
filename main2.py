@@ -38,7 +38,8 @@ stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
 #sensorToDrill = 197.4
-sensorToDrill = 30.9
+## add to settings page
+sensorToDrill = 31.1
 #refExtension = 190
 refExtension = 260
 extensionLength = 370
