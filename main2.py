@@ -1036,8 +1036,8 @@ def moveStepper():
     label.config(text=str(hearv["status"]))
 
 def nbrOfHoles(sv):
-    nbrOfHoles = int(float(runLength.get().replace(',', '.')) // 120)
-    rem = float(runLength.get().replace(',', '.')) % 120
+    nbrOfHoles = int(float(runLength.get()) // 120)
+    rem = float(runLength.get()) % 120
     if rem == 0:
         nbrOfHoles -= 1
     runLengthNOH.config(text=str(nbrOfHoles))
