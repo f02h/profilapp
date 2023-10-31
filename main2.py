@@ -35,7 +35,7 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
 #sensorToDrill = 197.4
 ## add to settings page
-sensorToDrill = 31.1
+sensorToDrill = 31.9
 #refExtension = 190
 refExtension = 260
 extensionLength = 370
