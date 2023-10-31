@@ -6,6 +6,8 @@
 volatile int drillTool = 1;
 volatile int profileLoading = 0;
 volatile int profileLoadingFail = 0;
+volatile int isLoading = 0;
+volatile int pickupLowered = 0;
 
 // rele
 GPIO<BOARD::D40> fingersFixedSensor;
@@ -151,8 +153,9 @@ void loop()
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
-        loadLoader(bay);
-        unloadLoader();
+        loadLoaderStage1(bay);
+        //loadLoader(bay);
+        //unloadLoader();
     } else if (action == "unload") {
         unloadLoader();
         StaticJsonDocument<200> doc2;
@@ -186,9 +189,66 @@ void loop()
         serializeJson(doc2, Serial);
         Serial.println();
     }
+
+    if (isLoading == 1 && pickupLowered == 1) {
+      if (fingersFixedSensor == HIGH && fingerLoaderSensor == HIGH) {
+        profileLoading = 1;
+        loadLoaderStage2();
+      }
+    }
+
    }
 }
 
+bool loadLoaderStage1(int profileSwitch) {
+  isLoading = 1;
+  if (profileSwitch == 1) {
+    profileLoaderSwitch = LOW;
+    profileFixedSwitch = LOW;
+    delay(500);
+    profileLoaderSwitchArm = LOW;
+    profileFixedSwitchArm = LOW;
+    delay(2000);
+    fingersFixed = HIGH;
+    fingersLoader = HIGH;
+    profileLoaderPickup = LOW;
+    profileFixedPickup = LOW;
+    //delay(4000);
+  } else {
+    profileLoaderSwitch = HIGH;
+    profileFixedSwitch = HIGH;
+    delay(500);
+    profileLoaderSwitchArm = LOW;
+    profileFixedSwitchArm = LOW;
+    delay(2000);
+    fingersFixed = HIGH;
+    fingersLoader = HIGH;
+    profileLoaderPickup = LOW;
+    profileFixedPickup = LOW;
+    //delay(4000);
+  }
+    pickupLowered = 1;
+    return true;
+}
+
+bool loadLoaderStage2() {
+
+    fingersFixed = LOW;
+    fingersLoader = LOW;
+    delay(2000);
+    profileLoaderPickup = HIGH;
+    profileFixedPickup = HIGH;
+
+    while(1) {
+      if (profileFixedPickupSensor == HIGH && profileLoaderPickupSensor == HIGH) {
+        break;
+      }
+    }
+    pickupLowered = 0;
+    isLoading = 0;
+    unloadLoader();
+
+}
 
 bool loadLoader(int profileSwitch) {
   if (profileSwitch == 1) {
@@ -210,8 +270,6 @@ bool loadLoader(int profileSwitch) {
         break;
       }
     }
-    //while(fingersFixedSensor == LOW) {}
-    //while(fingerLoaderSensor == LOW) {}
 
     fingersFixed = LOW;
     fingersLoader = LOW;

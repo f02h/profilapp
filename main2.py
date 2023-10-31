@@ -699,8 +699,7 @@ def runCycle():
     while currentQty >= 0:
 
         print("Run cycle")
-
-        cut = float(runLength.get())
+        cut = float(runLength.get().replace(',', '.'))
         print(cut)
         #if currentCutLen == 0:
         #    currentCutLen = cut
@@ -714,7 +713,7 @@ def runCycle():
 
         print("Rev move to load profile")
         tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension - extensionLength, 1, 1)
+        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + sensorToDrill + refExtension - extensionLength, 1, 1)
 
         #raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
@@ -736,7 +735,7 @@ def runCycle():
         #tmpStatus = unloadProfile()
 
         tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev", float(runLength.get()) + sensorToDrill + refExtension, 1, 1)
+        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + sensorToDrill + refExtension, 1, 1)
 
         print("Extend extension")
         tmpStatus = extensionE()
@@ -784,7 +783,7 @@ def runCycle():
             if not drillRes:
                 print("Drill error")
                 return
-        currentQty -= 1
+        currentQty = currentQty - 1
 
 
 # abs = 1 => move to absolute position
@@ -1007,6 +1006,9 @@ def homeAll():
     home()
     homeFeeder()
 
+    runCyc.config(state=ACTIVE, bg='green')
+    changeLen.config(state=ACTIVE, bg='green')
+
 def moveStepper():
 
     global stepperList
@@ -1034,8 +1036,8 @@ def moveStepper():
     label.config(text=str(hearv["status"]))
 
 def nbrOfHoles(sv):
-    nbrOfHoles = int(float(runLength.get()) // 120)
-    rem = float(runLength.get()) % 120
+    nbrOfHoles = int(float(runLength.get().replace(',', '.')) // 120)
+    rem = float(runLength.get().replace(',', '.')) % 120
     if rem == 0:
         nbrOfHoles -= 1
     runLengthNOH.config(text=str(nbrOfHoles))
@@ -1165,8 +1167,10 @@ runQty.insert(0, 0)
 
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
 runCyc.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
+runCyc.config(state=DISABLED, fg='white', bg='red')
 changeLen = tk.Button(vrtalkaL,text="Ustavi cikel",font=text_font,bg="green",command=stop_thread)
 changeLen.grid(column=1,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
+changeLen.config(state=DISABLED, fg='white', bg='red')
 
 errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
