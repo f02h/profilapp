@@ -11,8 +11,8 @@ from PIL import Image,ImageTk
 
 
 USB_PORT = "/dev/ttyACM0"
-USB_PORT_FEEDER = "/dev/ttyUSB0"
-USB_PORT_LOADER = "/dev/ttyUSB2"
+USB_PORT_FEEDER = "/dev/ttyUSB1"
+USB_PORT_LOADER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
 usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
@@ -967,7 +967,7 @@ def changeLength():
 
 def homeFeeder():
 
-    homingf.config(state=DISABLED, fg='white', bg='#e69225')
+    #homingf.config(state=DISABLED, fg='white', bg='#e69225')
 
     data = {
         "A": "home"
@@ -975,10 +975,10 @@ def homeFeeder():
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    if str(hearv["status"]).strip() == "done":
-        homingf.config(state=ACTIVE, bg='green')
-    else:
-        homingf.config(state=ACTIVE, bg='red')
+    #if str(hearv["status"]).strip() == "done":
+        #homingf.config(state=ACTIVE, bg='green')
+    #else:
+        #homingf.config(state=ACTIVE, bg='red')
 
 def changeLen():
     changeLen = True
@@ -1141,6 +1141,11 @@ tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 
 sv = StringVar()
 sv.trace("w", lambda name, index, mode, sv=sv: nbrOfHoles(sv))
+runLengthNOHL = Label(vrtalkaL, text='Št. lukenj:',font=text_font)
+runLengthNOHL.grid(row=7, column=0,sticky=W+E)
+runLengthNOH = Label(vrtalkaL, text='',font=text_font)
+runLengthNOH.grid(row=7, column=1,sticky=W+E)
+
 
 runLengthL = Label(vrtalkaL, text='Dolžina:',font=text_font)
 runLengthL.grid(row=6, column=0,sticky=W+E)
@@ -1148,10 +1153,7 @@ runLength = Entry(vrtalkaL, font=etext_font, width=10,textvariable=sv)
 runLength.grid(row=6, column=1,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
-runLengthNOHL = Label(vrtalkaL, text='Št. lukenj:',font=text_font)
-runLengthNOHL.grid(row=7, column=0,sticky=W+E)
-runLengthNOH = Label(vrtalkaL, text='',font=text_font)
-runLengthNOH.grid(row=7, column=1,sticky=W+E)
+
 
 runQtyL = Label(vrtalkaL, text='Količina:',font=text_font)
 runQtyL.grid(row=8, column=0,sticky=W+E)
