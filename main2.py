@@ -773,8 +773,21 @@ def runCycle():
             print("Drill error")
             return
 
+        if changingLen == True:
+            resetLoader()
+            print("Drop cycle")
+            runCyc.config(state=NORMAL, bg='green')
+            return
+
         moveTo = fromStart
         for x in range(1, nbrOfHoles):
+
+            if changingLen == True:
+                resetLoader()
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
             moveTo += 120
             print(str(x)+" : "+str(moveTo))
             moveFeeder("moveFwd", 120)
