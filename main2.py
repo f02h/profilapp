@@ -35,7 +35,9 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 
 #sensorToDrill = 197.4
 ## add to settings page
-sensorToDrill = 31.9
+# + premakne prva luknja bolj naprej
+# - premakne prvo luknjo bolj nazaj
+sensorToDrill = 30.3
 #refExtension = 190
 refExtension = 260
 extensionLength = 370
