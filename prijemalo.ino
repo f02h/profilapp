@@ -189,15 +189,14 @@ void loop()
         serializeJson(doc2, Serial);
         Serial.println();
     }
+   }
 
-    if (isLoading == 1 && pickupLowered == 1) {
+   if (isLoading == 1 && pickupLowered == 1) {
       if (fingersFixedSensor == HIGH && fingerLoaderSensor == HIGH) {
         profileLoading = 1;
         loadLoaderStage2();
       }
     }
-
-   }
 }
 
 bool loadLoaderStage1(int profileSwitch) {
@@ -247,6 +246,8 @@ bool loadLoaderStage2() {
     pickupLowered = 0;
     isLoading = 0;
     unloadLoader();
+
+    return true;
 
 }
 
@@ -385,7 +386,7 @@ bool unloadLoader() {
     }
 
     if (profileLoadingFail == 0) {
-      int unloadCounter = 20;
+      int unloadCounter = 50;
       while(profileLoaded == LOW) {
         unloadCounter -= 1;
         delay(100);
