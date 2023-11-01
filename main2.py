@@ -38,6 +38,7 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 # + premakne prva luknja bolj naprej
 # - premakne prvo luknjo bolj nazaj
 sensorToDrill = 30.15
+currentSensorToDrill = 0.0
 #refExtension = 190
 refExtension = 260
 extensionLength = 370
@@ -674,6 +675,7 @@ def runCycle():
     global changingLen
     global currentProfileId
     global currentQty
+    global currentSensorToDrill
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -693,6 +695,11 @@ def runCycle():
     if toolSetup:
         res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
         dbvars = dict(res)
+        if float(dbvars['sensorToDrill']) == 0.0:
+            currentSensorToDrill = sensorToDrill
+        else:
+            currentSensorToDrill = float(dbvars['sensorToDrill'])
+
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
@@ -713,7 +720,7 @@ def runCycle():
 
         print("Rev move to load profile")
         tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + sensorToDrill + refExtension - extensionLength, 1, 1)
+        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
 
         #raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
@@ -735,7 +742,7 @@ def runCycle():
         #tmpStatus = unloadProfile()
 
         tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + sensorToDrill + refExtension, 1, 1)
+        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
 
         print("Extend extension")
         tmpStatus = extensionE()
@@ -797,6 +804,7 @@ def runCycle():
                 print("Drill error")
                 return
         currentQty = currentQty - 1
+        runQtyR.config(text=' / ' + str(currentQty))
 
 
 # abs = 1 => move to absolute position
@@ -948,6 +956,7 @@ def start_thread():
     changingLen = False
 
     currentQty = int(runQty.get())
+    runQtyR.config(text=' / '+str(currentQty))
     # Create and launch a thread
     cycleThread = Thread(target=runCycle)
     cycleThread.start()
@@ -958,6 +967,7 @@ def stop_thread():
     global changingLen
     global currentQty
     currentQty = 0
+    runQtyR.config(text=' / 0')
     changingLen = True
     #changeLength()
     #cycleThread.join()
@@ -1171,12 +1181,13 @@ runLength.grid(row=6, column=1,columnspan=2,sticky=W+E)
 runLength.insert(0, 0.0)
 
 
-
 runQtyL = Label(vrtalkaL, text='Količina:',font=text_font)
 runQtyL.grid(row=8, column=0,sticky=W+E)
 runQty = Entry(vrtalkaL, font=etext_font, width=10)
 runQty.grid(row=8, column=1,columnspan=2,sticky=W+E)
 runQty.insert(0, 0)
+runQtyR = Label(vrtalkaL, text=' / 0',font=text_font)
+runQtyR.grid(row=8, column=2,sticky=W+E)
 
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
 runCyc.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
