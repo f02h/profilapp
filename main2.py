@@ -48,6 +48,7 @@ cycleThread = None
 currentProfileId = None
 currentQty = 0
 manualLoading = False
+disableDrill = False
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -678,6 +679,7 @@ def runCycle():
     global currentQty
     global currentSensorToDrill
     global manualLoading
+    global disableDrill
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -776,10 +778,11 @@ def runCycle():
             tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
             print("Drill prva")
-            drillRes = executeDrill()
-            if not drillRes:
-                print("Drill error")
-                return
+            if not disableDrill:
+                drillRes = executeDrill()
+                if not drillRes:
+                    print("Drill error")
+                    return
 
             if changingLen == True:
                 print("Drop cycle")
@@ -798,10 +801,11 @@ def runCycle():
                 print(str(x) + " : " + str(moveTo))
                 moveFeeder("moveFwd", 120)
                 print("Drill " + str(x) + ".")
-                drillRes = executeDrill()
-                if not drillRes:
-                    print("Drill error")
-                    return
+                if not disableDrill:
+                    drillRes = executeDrill()
+                    if not drillRes:
+                        print("Drill error")
+                        return
 
     else:
         while currentQty > 0:
@@ -878,10 +882,11 @@ def runCycle():
             tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
             print("Drill prva")
-            drillRes = executeDrill()
-            if not drillRes:
-                print("Drill error")
-                return
+            if not disableDrill:
+                drillRes = executeDrill()
+                if not drillRes:
+                    print("Drill error")
+                    return
 
             if changingLen == True:
                 resetLoader()
@@ -902,10 +907,11 @@ def runCycle():
                 print(str(x) + " : " + str(moveTo))
                 moveFeeder("moveFwd", 120)
                 print("Drill " + str(x) + ".")
-                drillRes = executeDrill()
-                if not drillRes:
-                    print("Drill error")
-                    return
+                if not disableDrill:
+                    drillRes = executeDrill()
+                    if not drillRes:
+                        print("Drill error")
+                        return
             currentQty = currentQty - 1
             runQtyR.config(text=' / ' + str(currentQty))
         if currentQty == 0:
