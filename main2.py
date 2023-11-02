@@ -1324,11 +1324,11 @@ errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 
 mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font = ("Helvetica", 32))
-mlButtonLabel.grid(column=0,columnspan=4,sticky=W+E,row=11,padx=30, pady=30)
+mlButtonLabel.grid(column=0,columnspan=2,sticky=W+E,row=11,padx=30, pady=30)
 
 on = PhotoImage(file = "on.png")
 off = PhotoImage(file = "off.png")
-mlButton = Button(vrtalkaL, image = on, bd = 0,command = manualLoad)
+mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
 mlButton.grid(column=1,columnspan=4,sticky=W+E,row=11,padx=30, pady=30)
 
 
