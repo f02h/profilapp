@@ -12,7 +12,7 @@ from PIL import Image,ImageTk
 
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB1"
-USB_PORT_LOADER = "/dev/ttyUSB2"
+USB_PORT_LOADER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
 usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
@@ -703,7 +703,7 @@ def runCycle():
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
-    while currentQty >= 0:
+    while currentQty > 0:
 
         print("Run cycle")
         cut = float(runLength.get().replace(',', '.'))
@@ -715,12 +715,12 @@ def runCycle():
         #    changeLength()
         #    currentCutLen = cut
 
-        print("Fold extension in extended")
-        tmpStatus = extensionF()
-
         print("Rev move to load profile")
         tmpStatus = retractLoader()
         tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+
+        print("Fold extension in extended")
+        tmpStatus = extensionF()
 
         #raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
@@ -740,7 +740,7 @@ def runCycle():
             tmpStatus = waitForProfile()
 
         #tmpStatus = unloadProfile()
-
+        print("Profile loaded")
         tmpStatus = retractLoader()
         tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
 
@@ -805,6 +805,9 @@ def runCycle():
                 return
         currentQty = currentQty - 1
         runQtyR.config(text=' / ' + str(currentQty))
+    if currentQty == 0:
+        runCyc.config(state=ACTIVE, bg='green')
+        changeLen.config(state=ACTIVE, bg='green')
 
 
 # abs = 1 => move to absolute position
