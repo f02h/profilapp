@@ -47,6 +47,7 @@ changingLen = False
 cycleThread = None
 currentProfileId = None
 currentQty = 0
+manualLoading = False
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -676,6 +677,7 @@ def runCycle():
     global currentProfileId
     global currentQty
     global currentSensorToDrill
+    global manualLoading
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -703,111 +705,212 @@ def runCycle():
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
-    while currentQty > 0:
+    if manualLoading:
+        while 1:
 
-        print("Run cycle")
-        cut = float(runLength.get().replace(',', '.'))
-        print(cut)
-        #if currentCutLen == 0:
-        #    currentCutLen = cut
+            print("Run cycle")
+            cut = float(runLength.get().replace(',', '.'))
+            print(cut)
+            # if currentCutLen == 0:
+            #    currentCutLen = cut
 
-        #if currentCutLen != cut and 0:
-        #    changeLength()
-        #    currentCutLen = cut
+            # if currentCutLen != cut and 0:
+            #    changeLength()
+            #    currentCutLen = cut
 
-        print("Rev move to load profile")
-        tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+            print("Rev move to load profile")
+            tmpStatus = moveFeeder("moveRev", float(
+                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
 
-        print("Fold extension in extended")
-        tmpStatus = extensionF()
+            print("Fold extension")
+            tmpStatus = extensionF()
 
-        #raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+            # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
-        print("Load profile")
-        tmpStatus = loadProfile(loadingBay)
-        tmpStatus = waitForProfile()
-        while tmpStatus != "done":
-            # wait for profile
-            if changingLen == True:
-                resetLoader()
-                print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
-                return
-
-            print("Waiting for profile")
-            time.sleep(1)
+            print("Load profile")
             tmpStatus = waitForProfile()
+            while tmpStatus != "done":
+                # wait for profile
+                if changingLen == True:
+                    resetLoader()
+                    print("Drop cycle")
+                    runCyc.config(state=NORMAL, bg='green')
+                    return
 
-        #tmpStatus = unloadProfile()
-        print("Profile loaded")
-        tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev", float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+                print("Waiting for profile")
+                time.sleep(1)
+                tmpStatus = waitForProfile()
 
-        print("Extend extension")
-        tmpStatus = extensionE()
+            # tmpStatus = unloadProfile()
+            print("Profile loaded")
+            tmpStatus = moveFeeder("moveRev",
+                                   float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
 
-        print("Load profile")
-        tmpStatus = waitForProfile()
-        while tmpStatus != "done":
-            #wait for profile
-            if changingLen == True:
-                resetLoader()
-                print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
-                return
+            print("Extend extension")
+            tmpStatus = extensionE()
 
-            print("Waiting for profile")
-            time.sleep(1)
-            tmpStatus = waitForProfile()
+            #print("Wait for loading sensor")
+            #tmpStatus = waitForProfile()
+            #while tmpStatus != "done":
+                # wait for profile
+            #    if changingLen == True:
+            #        print("Drop cycle")
+            #        runCyc.config(state=NORMAL, bg='green')
+            #        return
 
-        nbrOfHoles = int(cut // 120)
-        rem = cut % 120
-        fromStart = refExtension + (120 - rem)
-        if rem == 0:
-            nbrOfHoles -= 1
-        else:
-            tmpCut = (int(cut // 120) +1) * 120
-            rem = (tmpCut - cut) / 2
+            #    print("Waiting for profile")
+            #    time.sleep(1)
+            #    tmpStatus = waitForProfile()
+
+            nbrOfHoles = int(cut // 120)
+            rem = cut % 120
             fromStart = refExtension + (120 - rem)
+            if rem == 0:
+                nbrOfHoles -= 1
+            else:
+                tmpCut = (int(cut // 120) + 1) * 120
+                rem = (tmpCut - cut) / 2
+                fromStart = refExtension + (120 - rem)
 
-        print("Prva: "+str(fromStart))
-        tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+            print("Prva: " + str(fromStart))
+            tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
-        print("Drill prva")
-        drillRes = executeDrill()
-        if not drillRes:
-            print("Drill error")
-            return
-
-        if changingLen == True:
-            resetLoader()
-            print("Drop cycle")
-            runCyc.config(state=NORMAL, bg='green')
-            return
-
-        moveTo = fromStart
-        for x in range(1, nbrOfHoles):
-
-            if changingLen == True:
-                resetLoader()
-                print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
-                return
-
-            moveTo += 120
-            print(str(x)+" : "+str(moveTo))
-            moveFeeder("moveFwd", 120)
-            print("Drill "+str(x) + ".")
+            print("Drill prva")
             drillRes = executeDrill()
             if not drillRes:
                 print("Drill error")
                 return
-        currentQty = currentQty - 1
-        runQtyR.config(text=' / ' + str(currentQty))
-    if currentQty == 0:
-        runCyc.config(state=ACTIVE, bg='green')
-        changeLen.config(state=ACTIVE, bg='green')
+
+            if changingLen == True:
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
+            moveTo = fromStart
+            for x in range(1, nbrOfHoles):
+
+                if changingLen == True:
+                    print("Drop cycle")
+                    runCyc.config(state=NORMAL, bg='green')
+                    return
+
+                moveTo += 120
+                print(str(x) + " : " + str(moveTo))
+                moveFeeder("moveFwd", 120)
+                print("Drill " + str(x) + ".")
+                drillRes = executeDrill()
+                if not drillRes:
+                    print("Drill error")
+                    return
+
+    else:
+        while currentQty > 0:
+
+            print("Run cycle")
+            cut = float(runLength.get().replace(',', '.'))
+            print(cut)
+            # if currentCutLen == 0:
+            #    currentCutLen = cut
+
+            # if currentCutLen != cut and 0:
+            #    changeLength()
+            #    currentCutLen = cut
+
+            print("Rev move to load profile")
+            tmpStatus = retractLoader()
+            tmpStatus = moveFeeder("moveRev", float(
+                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+
+            print("Fold extension in extended")
+            tmpStatus = extensionF()
+
+            # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+
+            print("Load profile")
+            tmpStatus = loadProfile(loadingBay)
+            tmpStatus = waitForProfile()
+            while tmpStatus != "done":
+                # wait for profile
+                if changingLen == True:
+                    resetLoader()
+                    print("Drop cycle")
+                    runCyc.config(state=NORMAL, bg='green')
+                    return
+
+                print("Waiting for profile")
+                time.sleep(1)
+                tmpStatus = waitForProfile()
+
+            # tmpStatus = unloadProfile()
+            print("Profile loaded")
+            tmpStatus = retractLoader()
+            tmpStatus = moveFeeder("moveRev",
+                                   float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+
+            print("Extend extension")
+            tmpStatus = extensionE()
+
+            print("Load profile")
+            tmpStatus = waitForProfile()
+            while tmpStatus != "done":
+                # wait for profile
+                if changingLen == True:
+                    resetLoader()
+                    print("Drop cycle")
+                    runCyc.config(state=NORMAL, bg='green')
+                    return
+
+                print("Waiting for profile")
+                time.sleep(1)
+                tmpStatus = waitForProfile()
+
+            nbrOfHoles = int(cut // 120)
+            rem = cut % 120
+            fromStart = refExtension + (120 - rem)
+            if rem == 0:
+                nbrOfHoles -= 1
+            else:
+                tmpCut = (int(cut // 120) + 1) * 120
+                rem = (tmpCut - cut) / 2
+                fromStart = refExtension + (120 - rem)
+
+            print("Prva: " + str(fromStart))
+            tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+
+            print("Drill prva")
+            drillRes = executeDrill()
+            if not drillRes:
+                print("Drill error")
+                return
+
+            if changingLen == True:
+                resetLoader()
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
+            moveTo = fromStart
+            for x in range(1, nbrOfHoles):
+
+                if changingLen == True:
+                    resetLoader()
+                    print("Drop cycle")
+                    runCyc.config(state=NORMAL, bg='green')
+                    return
+
+                moveTo += 120
+                print(str(x) + " : " + str(moveTo))
+                moveFeeder("moveFwd", 120)
+                print("Drill " + str(x) + ".")
+                drillRes = executeDrill()
+                if not drillRes:
+                    print("Drill error")
+                    return
+            currentQty = currentQty - 1
+            runQtyR.config(text=' / ' + str(currentQty))
+        if currentQty == 0:
+            runCyc.config(state=ACTIVE, bg='green')
+            changeLen.config(state=ACTIVE, bg='green')
 
 
 # abs = 1 => move to absolute position
@@ -1068,6 +1171,18 @@ def nbrOfHoles(sv):
         nbrOfHoles -= 1
     runLengthNOH.config(text=str(nbrOfHoles))
 
+
+def manualLoad():
+    global manualLoading
+    # Determine is on or off
+    if manualLoading:
+        mlButton.config(image=off)
+        manualLoading = False
+    else:
+        mlButton.config(image=on)
+        manualLoading = True
+
+
 main = tk.Tk()
 main.geometry("1920x1080")
 app=FullScreenApp(main)
@@ -1202,6 +1317,10 @@ changeLen.config(state=DISABLED, fg='white', bg='red')
 errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
 errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 
+on = PhotoImage(file = "on.png")
+off = PhotoImage(file = "off.png")
+mlButton = Button(vrtalkaL, image = on, bd = 0,command = manualLoad)
+mlButton.grid(column=0,columnspan=4,sticky=W+E,row=11,padx=30, pady=30)
 
 
 #homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
