@@ -261,6 +261,7 @@ bool loadLoader(int profileSwitch) {
     delay(2000);
     fingersFixed = HIGH;
     fingersLoader = HIGH;
+    delay(500);
     profileLoaderPickup = LOW;
     profileFixedPickup = LOW;
     //delay(4000);
@@ -294,6 +295,7 @@ bool loadLoader(int profileSwitch) {
     delay(2000);
     fingersFixed = HIGH;
     fingersLoader = HIGH;
+    delay(500);
     profileLoaderPickup = LOW;
     profileFixedPickup = LOW;
     //delay(4000);
@@ -355,8 +357,17 @@ bool resetLoader() {
 
 bool unloadLoader() {
 
+    bool tmpErr = false;
+    bool tmpErr2 = false;
+    if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      tmpErr = true;
+    }
+    delay(50);
+    if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      tmpErr2 = true;
+    }
     if (profileLoading == 1) {
-      if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      if (tmpErr && tmpErr2) {
         profileLoadingFail = 1;
       } else {
         profileLoaderSwitch = HIGH;
@@ -365,8 +376,19 @@ bool unloadLoader() {
       }
     }
 
-    if (profileLoading == 1) {
-      if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+    tmpErr = false;
+    tmpErr2 = false;
+    if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      tmpErr = true;
+    }
+    delay(50);
+    if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      tmpErr2 = true;
+    }
+
+
+    if (profileLoading == 1 && profileLoadingFail == 0) {
+      if (tmpErr && tmpErr2) {
         profileLoadingFail = 1;
       } else {
         profileLoaderSwitchArm = HIGH;
@@ -375,8 +397,19 @@ bool unloadLoader() {
       }
     }
 
-    if (profileLoading == 1) {
-      if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+    tmpErr = false;
+    tmpErr2 = false;
+    if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      tmpErr = true;
+    }
+    delay(50);
+    if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
+      tmpErr2 = true;
+    }
+
+
+    if (profileLoading == 1 && profileLoadingFail == 0) {
+      if (tmpErr && tmpErr2) {
         profileLoadingFail = 1;
       } else {
         profileLoaderPickup = LOW;
@@ -392,11 +425,11 @@ bool unloadLoader() {
         delay(100);
         profileLoadingFail = 1;
       }
-
+      //delay(4000);
       profileLoadingFail = 0;
       fingersFixed = HIGH;
       fingersLoader = HIGH;
-      delay(2000);
+      delay(500);
       profileLoaderPickup = HIGH;
       profileFixedPickup = HIGH;
       profileLoading = 0;
