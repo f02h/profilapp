@@ -703,6 +703,8 @@ def runCycle():
             currentSensorToDrill = sensorToDrill
         else:
             currentSensorToDrill = float(dbvars['sensorToDrill'])
+        currentSensorToDrill = sensorToDrill
+
 
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
