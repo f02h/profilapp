@@ -120,6 +120,11 @@ volatile int minPovratekProfil = 1000;
 
 volatile int povrtavanjeL = 11200; // 7cm
 volatile int povrtavanjeD = 11200;
+
+volatile int povrtavanjeLIzklop = 0;
+volatile int povrtavanjeDIzklop = 0;
+
+
 volatile int minPovratekPovrtavanjeL = 0;
 volatile int minPovratekPovrtavanjeD = 0;
 
@@ -327,6 +332,9 @@ void loop()
          povrtavanjeL = doc["POVL"];
          povrtavanjeD = doc["POVD"];
 
+         povrtavanjeLIzklop = doc["POVLI"];
+         povrtavanjeDIzklop = doc["POVDI"];
+
          drill();
          StaticJsonDocument<200> doc2;
          doc2["status"] = "done";
@@ -492,17 +500,21 @@ boolean drill() {
   } while (stepper1R || stepper2R);
 
 
-  runSpindle(5,0);
-  stepper5.moveTo(povrtavanjeL);
-  stepper5.runToPosition();
-  stepper5.moveTo(pozicijaD + 3200);
-  stepper5.runToPosition();
+  if (povrtavanjeLIzklop == 0) {
+      runSpindle(5,0);
+      stepper5.moveTo(povrtavanjeL);
+      stepper5.runToPosition();
+      stepper5.moveTo(pozicijaD + 3200);
+      stepper5.runToPosition();
+  }
 
-  runSpindle(6,0);
-  stepper6.moveTo(povrtavanjeD);
-  stepper6.runToPosition();
-  stepper6.moveTo(pozicijaL + 3200);
-  stepper6.runToPosition();
+  if (povrtavanjeDIzklop == 0) {
+      runSpindle(6,0);
+      stepper6.moveTo(povrtavanjeD);
+      stepper6.runToPosition();
+      stepper6.moveTo(pozicijaL + 3200);
+      stepper6.runToPosition();
+  }
 
   runSpindle(drillToolL,1);
   runSpindle(drillToolR,1);
