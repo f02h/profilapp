@@ -623,6 +623,8 @@ def executeDrill():
         "POD": dbvars["povratekD"] * 160,
         "POVL": dbvars["povrtavanjeL"] * 160,
         "POVD": dbvars["povrtavanjeD"] * 160,
+        "POVLI": dbvars["povrtavanjeLIzklop"],
+        "POVDI": dbvars["povrtavanjeDIzklop"],
     }
 
     usb.write(json.dumps(data).encode())
