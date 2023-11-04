@@ -198,13 +198,13 @@ boolean waitForProfile(int profileSize) {
     senzorMali = digitalRead(startSenzorMali);
   }
 
-  if (profileSize == 1) {
+  if (profileSize == 1 || profileSize == 3 || profileSize == 4 || profileSize == 5) {
     if (senzorMali == HIGH  && senzorVeliki == LOW) {
       return true;
     }
   }
 
-  if (profileSize == 2) {
+  if (profileSize == 2 || profileSize == 6) {
     if (senzorMali == HIGH && senzorVeliki == HIGH) {
         return true;
     }
