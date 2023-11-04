@@ -1287,9 +1287,6 @@ button = tk.Button(vrtalkaL,
 tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=2)
 tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 
-#drill = tk.Button(vrtalkaL,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
-#    .grid(column=0,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
-
 
 #cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
 #    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
@@ -1403,6 +1400,11 @@ tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=8)
 toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllOff, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=9)
 toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=9)
 tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
+
+drill = tk.Button(canvas_tab3,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
+    .grid(column=0,columnspan=2,sticky=W+E,row=10,padx=30,pady=30)
+
+
 
 toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
 toolButton2 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3,'LEFT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
