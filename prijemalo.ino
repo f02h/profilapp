@@ -362,7 +362,7 @@ bool unloadLoader() {
     if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
       tmpErr = true;
     }
-    delay(75);
+    delay(150);
     if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
       tmpErr2 = true;
     }
@@ -381,7 +381,7 @@ bool unloadLoader() {
     if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
       tmpErr = true;
     }
-    delay(75);
+    delay(150);
     if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
       tmpErr2 = true;
     }
@@ -402,7 +402,7 @@ bool unloadLoader() {
     if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
       tmpErr = true;
     }
-    delay(75);
+    delay(150);
     if (fingersFixedSensor != HIGH || fingerLoaderSensor != HIGH) {
       tmpErr2 = true;
     }
