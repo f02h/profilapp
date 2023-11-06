@@ -124,6 +124,7 @@ volatile int povrtavanjeD = 11200;
 volatile int povrtavanjeLIzklop = 0;
 volatile int povrtavanjeDIzklop = 0;
 
+volatile int mazalkaP = 0;
 
 volatile int minPovratekPovrtavanjeL = 0;
 volatile int minPovratekPovrtavanjeD = 0;
@@ -334,6 +335,13 @@ void loop()
 
          povrtavanjeLIzklop = doc["POVLI"];
          povrtavanjeDIzklop = doc["POVDI"];
+
+         mazalkaP = doc["MAZD"];
+         if (mazalkaP == 1) {
+            mazalkaProfil = LOW;
+         } else {
+            mazalkaProfil = HIGH;
+         }
 
          drill();
          StaticJsonDocument<200> doc2;
