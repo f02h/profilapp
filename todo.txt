@@ -1,0 +1,1 @@
+dodaj stolpec dimension v profile da se lahko ugotovi id pri uploadu boma.

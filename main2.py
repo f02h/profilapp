@@ -44,7 +44,9 @@ refExtension = 260
 extensionLength = 370
 currentCutLen = 0
 changingLen = False
+stop_auto_thread = False
 cycleThread = None
+cycleAutoThread = None
 currentProfileId = None
 currentQty = 0
 manualLoading = False
@@ -517,10 +519,12 @@ def ctrlConfirmJob(idJob):
 
 def runJobs():
     jobsRunning = True
+    start_auto_thread()
     return True
 
 def stopJobs():
     jobsRunning = False
+    stop_auto_thread()
     return True
 
 def initEmptyCombo():
@@ -923,6 +927,152 @@ def runCycle():
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
 
+def runAuto():
+
+    global sensorToDrill
+    global refExtension
+    global currentCutLen
+    global changingLen
+    global currentProfileId
+    global currentQty
+    global currentSensorToDrill
+    global manualLoading
+    global disableDrill
+
+    res = c.execute("SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0").fetchone()
+    idProfil = int(res[3])
+    loadingBay = int(res[4])
+    currJobLength = float(res[1])
+    currJobQty = int(res[2])
+
+    toolSetup = False
+    if currentProfileId is None:
+        currentProfileId = idProfil
+        toolSetup = True
+    elif currentProfileId != idProfil:
+        currentProfileId = idProfil
+        toolSetup = True
+
+    if toolSetup:
+        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        dbvars = dict(res)
+        if float(dbvars['sensorToDrill']) == 0.0:
+            currentSensorToDrill = sensorToDrill
+        else:
+            currentSensorToDrill = float(dbvars['sensorToDrill'])
+        currentSensorToDrill = sensorToDrill
+
+        changeTool(int(dbvars["orodjeL"]), 'LEFT')
+        changeTool(int(dbvars["orodjeD"]), 'RIGHT')
+
+
+    while currJobQty > 0:
+
+        print("Run cycle")
+        cut = currJobLength
+        print(cut)
+        # if currentCutLen == 0:
+        #    currentCutLen = cut
+
+        # if currentCutLen != cut and 0:
+        #    changeLength()
+        #    currentCutLen = cut
+
+        print("Rev move to load profile")
+        tmpStatus = retractLoader()
+        tmpStatus = moveFeeder("moveRev", float(
+            runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+
+        print("Fold extension in extended")
+        tmpStatus = extensionF()
+
+        # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+
+        print("Load profile")
+        tmpStatus = loadProfile(loadingBay)
+        tmpStatus = waitForProfile()
+        while tmpStatus != "done":
+            # wait for profile
+            if stop_auto_thread == True:
+                resetLoader()
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
+            print("Waiting for profile")
+            time.sleep(1)
+            tmpStatus = waitForProfile()
+
+        # tmpStatus = unloadProfile()
+        print("Profile loaded")
+        tmpStatus = retractLoader()
+        tmpStatus = moveFeeder("moveRev",
+                               float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+
+        print("Extend extension")
+        tmpStatus = extensionE()
+
+        print("Load profile")
+        tmpStatus = waitForProfile()
+        while tmpStatus != "done":
+            # wait for profile
+            if stop_auto_thread == True:
+                resetLoader()
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
+            print("Waiting for profile")
+            time.sleep(1)
+            tmpStatus = waitForProfile()
+
+        nbrOfHoles = int(cut // 120)
+        rem = cut % 120
+        fromStart = refExtension + (120 - rem)
+        if rem == 0:
+            nbrOfHoles -= 1
+        else:
+            tmpCut = (int(cut // 120) + 1) * 120
+            rem = (tmpCut - cut) / 2
+            fromStart = refExtension + (120 - rem)
+
+        print("Prva: " + str(fromStart))
+        tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+
+        print("Drill prva")
+        if not disableDrill:
+            drillRes = executeDrill()
+            if not drillRes:
+                print("Drill error")
+                return
+
+        if stop_auto_thread == True:
+            resetLoader()
+            print("Drop cycle")
+            runCyc.config(state=NORMAL, bg='green')
+            return
+
+        moveTo = fromStart
+        for x in range(1, nbrOfHoles):
+
+            if stop_auto_thread == True:
+                resetLoader()
+                print("Drop cycle")
+                runCyc.config(state=NORMAL, bg='green')
+                return
+
+            moveTo += 120
+            print(str(x) + " : " + str(moveTo))
+            moveFeeder("moveFwd", 120)
+            print("Drill " + str(x) + ".")
+            if not disableDrill:
+                drillRes = executeDrill()
+                if not drillRes:
+                    print("Drill error")
+                    return
+        currJobQty = currJobQty - 1
+
+
 
 # abs = 1 => move to absolute position
 # abs = 0 => relative move
@@ -1088,6 +1238,24 @@ def stop_thread():
     changingLen = True
     #changeLength()
     #cycleThread.join()
+
+
+def start_auto_thread():
+    # Assign global variable and initialize value
+    global changingLen
+    global cycleAutoThread
+    stop_auto_thread = False
+
+    # Create and launch a thread
+    cycleAutoThread = Thread(target=runAuto)
+    cycleAutoThread.start()
+
+def stop_auto_thread():
+    # Assign global variable and set value to stop
+    global cycleAutoThread
+    global stop_auto_thread
+
+    stop_auto_thread = True
 
 
 def changeLength():
