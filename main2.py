@@ -1483,7 +1483,7 @@ runQtyL.grid(row=8, column=0,sticky=W+E)
 runQty = Entry(vrtalkaL, font=etext_font, width=10)
 runQty.grid(row=8, column=1,columnspan=2,sticky=W+E)
 runQty.insert(0, 0)
-runQtyR = Label(vrtalkaL, text=' / 0',font=text_font)
+runQtyR = Label(vrtalkaL, text='0 / 0',font=text_font)
 runQtyR.grid(row=8, column=2,sticky=W+E)
 
 runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
