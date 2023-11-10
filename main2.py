@@ -49,6 +49,7 @@ cycleThread = None
 cycleAutoThread = None
 currentProfileId = None
 currentQty = 0
+currentQtyLabel = 0
 manualLoading = False
 disableDrill = False
 
@@ -544,7 +545,7 @@ def initJobs():
     for widget in vrtalkaDList.winfo_children():
         widget.destroy()
 
-    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1").fetchall()
+    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1 ORDER BY length ASC").fetchall()
 
     tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor='w', width=10).grid(row=2, column=0)
     tk.Label(vrtalkaDList, text="Profil", font=etext_font, anchor='w', width=25).grid(row=2, column=1)
@@ -922,7 +923,7 @@ def runCycle():
                         print("Drill error")
                         return
             currentQty = currentQty - 1
-            runQtyR.config(text=' / ' + str(currentQty))
+            runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
         if currentQty == 0:
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
@@ -1223,7 +1224,8 @@ def start_thread():
     changingLen = False
 
     currentQty = int(runQty.get())
-    runQtyR.config(text=' / '+str(currentQty))
+    currentQtyLabel = int(runQty.get())
+    runQtyR.config(text='0 / '+str(currentQtyLabel))
     # Create and launch a thread
     cycleThread = Thread(target=runCycle)
     cycleThread.start()
@@ -1234,7 +1236,8 @@ def stop_thread():
     global changingLen
     global currentQty
     currentQty = 0
-    runQtyR.config(text=' / 0')
+    currentQtyLabel = 0
+    runQtyR.config(text='0 / 0')
     changingLen = True
     #changeLength()
     #cycleThread.join()
