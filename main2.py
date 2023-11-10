@@ -722,7 +722,8 @@ def runCycle():
 
             print("Run cycle")
             cut = float(runLength.get().replace(',', '.'))
-            print(cut)
+            add_log(cut)
+            print(str(cut))
             # if currentCutLen == 0:
             #    currentCutLen = cut
 
@@ -740,6 +741,7 @@ def runCycle():
             # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
             print("Load profile")
+            add_log("Load profile")
             tmpStatus = waitForProfile()
             while tmpStatus != "done":
                 # wait for profile
@@ -784,6 +786,7 @@ def runCycle():
                 rem = (tmpCut - cut) / 2
                 fromStart = refExtension + (120 - rem)
 
+            add_log("Št. lukenj: "+nbrOfHoles)
             print("Prva: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
@@ -1366,10 +1369,10 @@ def manualLoad():
         mlButton.config(image=on)
         manualLoading = True
 
-def add_timestamp():
-    output.insert("end", time.ctime() + "\n")
+def add_log(log):
+    output.insert("end", log + "\n")
     output.see("end")
-    output.after(1000, add_timestamp)
+    #output.after(1000, add_timestamp)
 
 main = tk.Tk()
 main.geometry("1920x1080")
@@ -1507,7 +1510,6 @@ mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 
 output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
 output.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
-add_timestamp()
 
 on = PhotoImage(file = "/home/pi/profilapp/on.png")
 off = PhotoImage(file = "/home/pi/profilapp/off.png")
