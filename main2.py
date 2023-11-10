@@ -1504,9 +1504,6 @@ mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 output = tk.Text(vrtalkaL, height=6, width=200, fg = "green", font = ("Helvetica", 24))
 output.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
 
-vsb = tk.Scrollbar(vrtalkaL, orient="vertical", command=tk.Text.yview)
-output.configure(yscrollcommand=vsb.set)
-
 on = PhotoImage(file = "/home/pi/profilapp/on.png")
 off = PhotoImage(file = "/home/pi/profilapp/off.png")
 mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
