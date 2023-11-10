@@ -1351,6 +1351,8 @@ def nbrOfHoles(sv):
     rem = float(runLength.get()) % 120
     if rem == 0:
         nbrOfHoles -= 1
+    if nbrOfHoles == -1:
+        nbrOfHoles = 0
     runLengthNOH.config(text=str(nbrOfHoles))
 
 
