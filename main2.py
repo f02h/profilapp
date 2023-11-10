@@ -1366,6 +1366,10 @@ def manualLoad():
         mlButton.config(image=on)
         manualLoading = True
 
+def add_timestamp():
+    output.insert("end", time.ctime() + "\n")
+    output.see("end")
+    output.after(1000, add_timestamp)
 
 main = tk.Tk()
 main.geometry("1920x1080")
