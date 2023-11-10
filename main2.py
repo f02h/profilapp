@@ -940,7 +940,7 @@ def runAuto():
     global manualLoading
     global disableDrill
 
-    res = c.execute("SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0").fetchone()
+    res = c.execute("SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0 ORDER BY length ASC").fetchone()
     idProfil = int(res[3])
     loadingBay = int(res[4])
     currJobLength = float(res[1])
@@ -1500,6 +1500,12 @@ errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 
 mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font = ("Helvetica", 24))
 mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
+
+output = tk.Text(vrtalkaL, height=6, width=200, fg = "green", font = ("Helvetica", 24))
+output.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
+
+vsb = tk.Scrollbar(vrtalkaL, orient="vertical", command=tk.Text.yview)
+output.configure(yscrollcommand=vsb.set)
 
 on = PhotoImage(file = "/home/pi/profilapp/on.png")
 off = PhotoImage(file = "/home/pi/profilapp/off.png")
