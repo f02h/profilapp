@@ -552,8 +552,8 @@ def initJobs():
     tk.Label(vrtalkaDList, text="Količina", font=etext_font, anchor='w', width=10).grid(row=2, column=2)
     tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=10).grid(row=2, column=3)
     tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
-    tk.Label(vrtalkaDList, text="Pot", font=etext_font, anchor='w', width=5).grid(row=2, column=5)
-    tk.Label(vrtalkaDList, text="Izb", font=etext_font, anchor='w', width=5).grid(row=2, column=6)
+    tk.Label(vrtalkaDList, text="Potrdi", font=etext_font, anchor='w', width=5).grid(row=2, column=5)
+    tk.Label(vrtalkaDList, text="Izbrisi", font=etext_font, anchor='w', width=5).grid(row=2, column=6)
 
     #imgConfirm = PhotoImage(file=r"confirm.png")
     #imgDelete = PhotoImage(file=r"delete.png")
@@ -577,8 +577,8 @@ def initJobs():
         tk.Label(vrtalkaDList, text=rowQtyD, font=etext_font,anchor='w', width=10).grid(row=i, column=3)
         tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=10).grid(row=i, column=4)
 
-        ctrlConfirm = Button(vrtalkaDList, text='Pot', command=lambda :ctrlConfirmJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=5, row=i)
-        ctrlDelete = Button(vrtalkaDList, text='Izb', command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=6, row=i)
+        ctrlConfirm = Button(vrtalkaDList, text='Potrdi', command=lambda :ctrlConfirmJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=5, row=i)
+        ctrlDelete = Button(vrtalkaDList, text='Izbrisi', command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
 
 def executeDrill():
