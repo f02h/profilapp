@@ -1090,6 +1090,8 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
 
     #44.44
     # 0.005 koraka cca 0.5mm
+    # 44.385 12.12.2023
+    # zobata letev 36.5785
     data = {
         "A": str(dir),
         "M": str(int(step * 44.385)),
@@ -1319,7 +1321,6 @@ def home():
 def homeAll():
     home()
     homeFeeder()
-
     runCyc.config(state=ACTIVE, bg='green')
     changeLen.config(state=ACTIVE, bg='green')
 
@@ -1602,3 +1603,4 @@ main.bind("<FocusIn>", handle_focus)
 main.bind("<FocusOut>", handle_focus_lost)
 
 main.mainloop()
+
