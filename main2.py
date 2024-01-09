@@ -1094,7 +1094,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     # zobata letev 36.5785
     data = {
         "A": str(dir),
-        "M": str(int(step * 44.385)),
+        "M": str(int(step * 36.5785)),
         "M2": abs,
         "P": idProfil,
         "F": firstMove
