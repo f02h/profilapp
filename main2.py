@@ -40,8 +40,8 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 # razdalja žaga - sveder
 sensorToDrill = 30.85
 currentSensorToDrill = 0.0
-#refExtension = 190
-refExtension = 260
+#refExtension = 260
+refExtension = 225
 extensionLength = 370
 currentCutLen = 0
 changingLen = False
