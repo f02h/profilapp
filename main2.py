@@ -725,6 +725,11 @@ def runCycle():
             cut = float(runLength.get().replace(',', '.'))
             #add_log(cut)
             print(str(cut))
+
+            print("Extend extension")
+            tmpStatus = extensionE()
+
+
             # if currentCutLen == 0:
             #    currentCutLen = cut
 
@@ -734,10 +739,10 @@ def runCycle():
 
             print("Rev move to load profile")
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
 
-            print("Fold extension")
-            tmpStatus = extensionF()
+            #print("Fold extension")
+            #tmpStatus = extensionF()
 
             # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
@@ -760,9 +765,6 @@ def runCycle():
             print("Profile loaded")
             tmpStatus = moveFeeder("moveRev",
                                    float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
-
-            print("Extend extension")
-            tmpStatus = extensionE()
 
             #print("Wait for loading sensor")
             #tmpStatus = waitForProfile()
