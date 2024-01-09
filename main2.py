@@ -37,6 +37,7 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 ## add to settings page
 # + premakne prva luknja bolj naprej
 # - premakne prvo luknjo bolj nazaj
+# razdalja žaga - sveder
 sensorToDrill = 30.85
 currentSensorToDrill = 0.0
 #refExtension = 190
@@ -786,7 +787,7 @@ def runCycle():
                 rem = (tmpCut - cut) / 2
                 fromStart = refExtension + (120 - rem)
 
-            add_log("Št. lukenj: "+nbrOfHoles)
+            add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwdF", int(fromStart))
 
