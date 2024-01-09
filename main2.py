@@ -722,7 +722,7 @@ def runCycle():
 
             print("Run cycle")
             cut = float(runLength.get().replace(',', '.'))
-            add_log(cut)
+            #add_log(cut)
             print(str(cut))
             # if currentCutLen == 0:
             #    currentCutLen = cut
