@@ -181,6 +181,14 @@ void loop()
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
           Serial.println();
+        } else if (action == "setRef") {
+          homming();
+          moveRev(moveStep, absMove);
+          stepper1.setCurrentPosition(0);
+          DynamicJsonDocument doc2(1024);
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
         }
       }
 

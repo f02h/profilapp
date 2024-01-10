@@ -42,6 +42,7 @@ sensorToDrill = 30.85
 currentSensorToDrill = 0.0
 #refExtension = 260
 refExtension = 225
+feederRef = 225
 extensionLength = 370
 currentCutLen = 0
 changingLen = False
@@ -736,7 +737,7 @@ def runCycle():
 
             print("Rev move to load profile")
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
 
             print("Extend extension")
             tmpStatus = extensionE()
@@ -1098,7 +1099,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     # zobata letev 36.5785
     data = {
         "A": str(dir),
-        "M": str(int(float(step) * 36.5785)),
+        "M": int((float(step) * 36.5785)),
         "M2": abs,
         "P": idProfil,
         "F": firstMove
@@ -1301,6 +1302,23 @@ def homeFeeder():
     #else:
         #homingf.config(state=ACTIVE, bg='red')
 
+def refFeeder(dis):
+
+    #homingf.config(state=DISABLED, fg='white', bg='#e69225')
+
+    data = {
+        "A": "setRef"
+        "M": int((float(dis) * 36.5785))
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    #if str(hearv["status"]).strip() == "done":
+        #homingf.config(state=ACTIVE, bg='green')
+    #else:
+        #homingf.config(state=ACTIVE, bg='red')
+
+
 def changeLen():
     changeLen = True
 
@@ -1323,8 +1341,11 @@ def home():
     #label.config(text=str(hearv))
 
 def homeAll():
+    global feederRef
+
     home()
     homeFeeder()
+    refFeeder(feederRef)
     runCyc.config(state=ACTIVE, bg='green')
     changeLen.config(state=ACTIVE, bg='green')
 
