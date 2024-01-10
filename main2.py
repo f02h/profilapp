@@ -43,12 +43,14 @@ sensorToDrill = 23
 currentSensorToDrill = 0.0
 
 #refZaga
-balansRef = 21
+# + premakne prva luknja bolj nazaj
+# - premakne prvo luknjo bolj naprej
+balansRef = 18.9
 
 #
 # razdalja referenca - žaga
 #refExtension = 260
-refExtension = 220
+refExtension = 250
 feederRef = 225
 extensionLength = 370
 currentCutLen = 0
