@@ -1322,7 +1322,7 @@ def refFeeder(dis):
     #homingf.config(state=DISABLED, fg='white', bg='#e69225')
 
     data = {
-        "A": "setRef"
+        "A": "setRef",
         "M": int((float(dis) * 36.5785))
     }
 
