@@ -42,7 +42,7 @@ sensorToDrill = 30.85
 currentSensorToDrill = 0.0
 
 #refZaga
-balansRef = 22
+balansRef = 32
 
 #
 # razdalja referenca - žaga
