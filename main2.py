@@ -1359,8 +1359,8 @@ def homeAll():
     global feederRef
 
     home()
-    homeFeeder()
-    #refFeeder(feederRef)
+    #homeFeeder()
+    refFeeder(balansRef)
     runCyc.config(state=ACTIVE, bg='green')
     changeLen.config(state=ACTIVE, bg='green')
 
