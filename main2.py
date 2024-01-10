@@ -726,10 +726,7 @@ def runCycle():
             #add_log(cut)
             print(str(cut))
 
-            print("Extend extension")
-            tmpStatus = extensionE()
-
-
+        
             # if currentCutLen == 0:
             #    currentCutLen = cut
 
@@ -740,6 +737,9 @@ def runCycle():
             print("Rev move to load profile")
             tmpStatus = moveFeeder("moveRev", float(
                 runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+
+            print("Extend extension")
+            tmpStatus = extensionE()
 
             #print("Fold extension")
             #tmpStatus = extensionF()
@@ -791,7 +791,7 @@ def runCycle():
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+            tmpStatus = moveFeeder("moveFwdF", fromStart)
 
             print("Drill prva")
             if not disableDrill:
@@ -895,7 +895,7 @@ def runCycle():
                 fromStart = refExtension + (120 - rem)
 
             print("Prva: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwdF", int(fromStart))
+            tmpStatus = moveFeeder("moveFwdF", fromStart)
 
             print("Drill prva")
             if not disableDrill:
