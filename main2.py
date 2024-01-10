@@ -721,7 +721,7 @@ def runCycle():
     if manualLoading:
         while 1:
 
-            print("Run cycle")
+            print("Run cycle ročno")
             cut = float(runLength.get().replace(',', '.'))
             #add_log(cut)
             print(str(cut))
@@ -779,6 +779,7 @@ def runCycle():
             #    time.sleep(1)
             #    tmpStatus = waitForProfile()
 
+            fromStart = 0.0;
             nbrOfHoles = int(cut // 120)
             rem = cut % 120
             fromStart = refExtension + (120 - rem)
@@ -790,7 +791,7 @@ def runCycle():
                 fromStart = refExtension + (120 - rem)
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
-            print("Prva: " + str(fromStart))
+            print("Prva ročno: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwd", fromStart)
 
             print("Drill prva")
