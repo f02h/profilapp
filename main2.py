@@ -38,11 +38,12 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 # + premakne prva luknja bolj naprej
 # - premakne prvo luknjo bolj nazaj
 # razdalja žaga - sveder
-sensorToDrill = 30.85
+#sensorToDrill = 30.85
+sensorToDrill = 23
 currentSensorToDrill = 0.0
 
 #refZaga
-balansRef = 32
+balansRef = 21
 
 #
 # razdalja referenca - žaga
@@ -749,7 +750,7 @@ def runCycle():
 
             print("Rev move to load profile")
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + balansRef + saw_width + refExtension, 1, 1)
+                runLength.get().replace(',', '.')) + saw_width + refExtension - sensorToDrill, 1, 1)
 
             print("Extend extension")
             tmpStatus = extensionE()
@@ -804,7 +805,7 @@ def runCycle():
                 fromStart = refExtension + (120 - rem)
 
             fromStart += saw_width
-            fromStart += balansRef
+            fromStart += sensorToDrill
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
