@@ -763,8 +763,8 @@ def runCycle():
 
             # tmpStatus = unloadProfile()
             print("Profile loaded")
-            tmpStatus = moveFeeder("moveRev",
-                                   float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+            #tmpStatus = moveFeeder("moveRev",
+            #                       float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
 
             #print("Wait for loading sensor")
             #tmpStatus = waitForProfile()
@@ -791,7 +791,7 @@ def runCycle():
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwdF", fromStart)
+            tmpStatus = moveFeeder("moveFwdF", fromStart,1,1)
 
             print("Drill prva")
             if not disableDrill:
