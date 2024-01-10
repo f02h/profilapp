@@ -1360,7 +1360,7 @@ def homeAll():
 
     home()
     homeFeeder()
-    refFeeder(feederRef)
+    #refFeeder(feederRef)
     runCyc.config(state=ACTIVE, bg='green')
     changeLen.config(state=ACTIVE, bg='green')
 
