@@ -40,11 +40,21 @@ spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
 # razdalja žaga - sveder
 sensorToDrill = 30.85
 currentSensorToDrill = 0.0
+
+#refZaga
+balansRef = 22
+
+#
+# razdalja referenca - žaga
 #refExtension = 260
-refExtension = 225
+refExtension = 220
 feederRef = 225
 extensionLength = 370
 currentCutLen = 0
+
+#debelina zage
+saw_width = 2.5
+
 changingLen = False
 stop_auto_thread = False
 cycleThread = None
@@ -690,6 +700,8 @@ def runCycle():
     global currentSensorToDrill
     global manualLoading
     global disableDrill
+    global balansRef
+    global saw_width
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -737,7 +749,7 @@ def runCycle():
 
             print("Rev move to load profile")
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+                runLength.get().replace(',', '.')) + balansRef + saw_width + refExtension, 1, 1)
 
             print("Extend extension")
             tmpStatus = extensionE()
@@ -790,6 +802,9 @@ def runCycle():
                 tmpCut = (int(cut // 120) + 1) * 120
                 rem = (tmpCut - cut) / 2
                 fromStart = refExtension + (120 - rem)
+
+            fromStart += saw_width
+            fromStart += balansRef
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
