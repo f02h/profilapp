@@ -791,7 +791,7 @@ def runCycle():
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwdF", fromStart,1,1)
+            tmpStatus = moveFeeder("moveFwd", fromStart)
 
             print("Drill prva")
             if not disableDrill:
