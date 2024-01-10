@@ -750,7 +750,7 @@ def runCycle():
 
             print("Rev move to load profile")
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + saw_width + refExtension - sensorToDrill, 1, 1)
+                runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
 
             print("Extend extension")
             tmpStatus = extensionE()
