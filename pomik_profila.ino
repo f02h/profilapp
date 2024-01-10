@@ -109,7 +109,7 @@ void loop()
         // In other case, you can do doc["time"].as<long>();
         String action = doc["A"];
         int profile = doc["P"];
-        long int moveStep = doc["M"];
+        long moveStep = doc["M"];
         int absMove = doc["M2"];
 
       // read command from serial port

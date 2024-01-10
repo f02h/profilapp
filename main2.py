@@ -792,7 +792,7 @@ def runCycle():
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwd", fromStart)
+            tmpStatus = moveFeeder("moveFwd", float(fromStart))
 
             print("Drill prva")
             if not disableDrill:
@@ -1098,7 +1098,7 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
     # zobata letev 36.5785
     data = {
         "A": str(dir),
-        "M": str(int(step * 36.5785)),
+        "M": str(int(float(step) * 36.5785)),
         "M2": abs,
         "P": idProfil,
         "F": firstMove
