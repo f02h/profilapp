@@ -9,12 +9,14 @@ volatile int profileLoading = 0;
 volatile int profileLoadingFail = 0;
 volatile int isLoading = 0;
 volatile int pickupLowered = 0;
+volatile int currentProfile = 1;
 
-int motorBay1 = 3900;
-int motorBay2 = 6000;
-int motorVozBay1 = 3900;
-int motorVozBay2 = 6000;
+int motorBay1 = 1950;
+int motorBay2 = 3420;
+int motorVozBay1 = 1950;
+int motorVozBay2 = 3420;
 
+int maxSpust = 2850;
 /*
 motorKlesceDvig
 motorKlescePomik
@@ -184,7 +186,7 @@ void setup() {
   }
 */
   homming();
-  loadLoaderStage1(1);
+  loadLoaderStage1(2);
 }
 
 void loop()
@@ -281,22 +283,34 @@ void loop()
 
 bool loadLoaderStage1(int profileSwitch) {
   isLoading = 1;
+  currentProfile = profileSwitch;
 
   if (profileSwitch == 1) {
     motorKlescePomik.moveTo(motorBay1*-1);
     motorKlescePomikVoz.moveTo(motorVozBay1);
-    motorKlescePomik.runToPosition();
+/*  motorKlescePomik.runToPosition();
     motorKlescePomikVoz.runToPosition();
-  
+*/
+
+    bool stepper1R,stepper2R;
+    do {
+      stepper1R = motorKlescePomik.run();
+      stepper2R = motorKlescePomikVoz.run();
+    } while (stepper1R || stepper2R);
+    
     pnevmatikaVozKlesce = HIGH;
     pnevmatikaKlesce = HIGH;
 
   } else {
     motorKlescePomik.moveTo(motorBay2*-1);
     motorKlescePomikVoz.moveTo(motorVozBay2);
-    motorKlescePomik.runToPosition();
-    motorKlescePomikVoz.runToPosition();
-
+    
+    bool stepper1R,stepper2R;
+    do {
+      stepper1R = motorKlescePomik.run();
+      stepper2R = motorKlescePomikVoz.run();
+    } while (stepper1R || stepper2R);
+    
     pnevmatikaVozKlesce = HIGH;
     pnevmatikaKlesce = HIGH;
 
@@ -309,7 +323,7 @@ bool loadLoaderStage2() {
 
     pnevmatikaKlesce = LOW;
     pnevmatikaVozKlesce = LOW;
-    delay(100);
+    delay(300);
 
     digitalWrite(51, HIGH);
     digitalWrite(47, LOW);
@@ -354,14 +368,39 @@ bool unloadLoader() {
       } else {
         // motor za pomik na 0
 
+        digitalWrite(53, HIGH);
+        digitalWrite(49, LOW);
+
+        int tmpMinDelay = 100;
+        int currDelay = 350;
+        int tmpDelayInterval = 5;
+
+        int tmpBay1 = motorBay1;
+        if (currentProfile != 1) {
+          tmpBay1 = motorBay2;
+        }
+        
         while(!senzorPomik || !senzorVozPomik) {
+          if (tmpMinDelay < currDelay && tmpBay1 > 350) {
+            currDelay -= 1;
+          }
+
+          if (tmpBay1 < 500 && tmpBay1 > -1) {
+            currDelay += 1;
+          }
+
           if (!senzorPomik) {
-            moveOneStep1(52,100);
+            moveOneStep1(52,currDelay);
           }
           if (!senzorVozPomik) {
-            moveOneStep1(48,100);
+            moveOneStep1(48,currDelay);
           }
+
+          tmpBay1 -= 1;
         }
+
+        digitalWrite(53, LOW);
+        digitalWrite(49, HIGH);
 
         motorKlescePomik.setCurrentPosition(0);
         motorKlescePomikVoz.setCurrentPosition(0);
@@ -385,23 +424,33 @@ bool unloadLoader() {
     }
 
     if (profileLoadingFail == 0) {
-      while(profileLoaded == LOW) {
+      int tmpDropCnt = 0;
+      while(profileLoaded == LOW && tmpDropCnt < maxSpust) {
         moveOneStep1(50,100);
         moveOneStep1(46,100);
+        tmpDropCnt += 1;
       }
       //delay(4000);
       profileLoadingFail = 0;
 
       pnevmatikaKlesce = HIGH;
       pnevmatikaVozKlesce = HIGH;
-      delay(200);
+      delay(400);
 
-      digitalWrite(51, LOW);
-      digitalWrite(47, HIGH);
-      moveOneStep1(50,100);
-      moveOneStep1(46,100);
       digitalWrite(51, HIGH);
       digitalWrite(47, LOW);
+      
+      while(!snezorDvig || !snezorVozDvig) {
+        if (!snezorDvig) {
+          moveOneStep1(50,100);
+        }
+        if (!snezorVozDvig) {
+          moveOneStep1(46,100);
+        }
+      }
+      
+      digitalWrite(51, LOW);
+      digitalWrite(47, HIGH);
 
       profileLoading = 0;
 /*
@@ -553,9 +602,9 @@ boolean homming1(int stepPin, int dirPin, int homeSenzor, int fDir) {
         break;
       }
 
-      moveOneStep1(stepPin,40);
+      moveOneStep1(stepPin,100);
       //delayMicroseconds(20000);
-      delayMicroseconds(320);
+      delayMicroseconds(520);
     }
 
     if (limitSwitchFlag == false)
