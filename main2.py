@@ -859,7 +859,7 @@ def runCycle():
             print("Rev move to load profile")
             tmpStatus = retractLoader()
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+                runLength.get().replace(',', '.')) + saw_width + refExtension - extensionLength, 1, 1)
 
             print("Fold extension in extended")
             tmpStatus = extensionF()
@@ -885,7 +885,7 @@ def runCycle():
             print("Profile loaded")
             tmpStatus = retractLoader()
             tmpStatus = moveFeeder("moveRev",
-                                   float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+                                   float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
 
             print("Extend extension")
             tmpStatus = extensionE()
@@ -913,6 +913,9 @@ def runCycle():
                 tmpCut = (int(cut // 120) + 1) * 120
                 rem = (tmpCut - cut) / 2
                 fromStart = refExtension + (120 - rem)
+
+            fromStart += saw_width
+            fromStart += sensorToDrill
 
             print("Prva: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwdF", fromStart)
