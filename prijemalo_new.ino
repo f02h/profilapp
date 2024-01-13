@@ -187,7 +187,7 @@ void setup() {
   }
 */
   homming();
-  loadLoaderStage1(2);
+  //loadLoaderStage1(2);
 }
 
 void loop()
@@ -267,19 +267,33 @@ void loop()
    }
 
    if (isLoading == 1 && pickupLowered == 1) {
+      
+    if (singleLoader == 0) {    
+      
       if (senzorKlesce == HIGH && senzorVozKlesce == HIGH) {
         profileLoading = 1;
         loadLoaderStage2();
       } else {
-
+  
         if (!senzorKlesce) {
           moveOneStep1(50,100);
         }
-
+        
         if (!senzorVozKlesce) {
           moveOneStep1(46,100);
         }
       }
+    } else {
+      if (senzorKlesce == HIGH) {
+        profileLoading = 1;
+        loadLoaderStage2();
+      } else {
+  
+        if (!senzorKlesce) {
+          moveOneStep1(50,100);
+        }
+      }
+    }
    }
 
 }
@@ -290,7 +304,7 @@ bool loadLoaderStage1(int profileSwitch) {
 
 
   if (singleLoader == 0) {
-    if (profileSwitch == 1) {
+    if (profileSwitch == 0) {
       motorKlescePomik.moveTo(motorBay1*-1);
       motorKlescePomikVoz.moveTo(motorVozBay1);
   /*  motorKlescePomik.runToPosition();
@@ -321,7 +335,7 @@ bool loadLoaderStage1(int profileSwitch) {
 
     }
   } else {
-      if (profileSwitch == 1) {
+      if (profileSwitch == 0) {
       motorKlescePomik.moveTo(motorBay1*-1);
       bool stepper1R;
 

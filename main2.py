@@ -1010,8 +1010,9 @@ def runAuto():
 
         print("Rev move to load profile")
         tmpStatus = retractLoader()
+        
         tmpStatus = moveFeeder("moveRev", float(
-            runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - extensionLength, 1, 1)
+            runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - (0 if cut < 250 else extensionLength) , 1, 1)
 
         print("Fold extension in extended")
         tmpStatus = extensionF()
