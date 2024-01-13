@@ -867,7 +867,7 @@ def runCycle():
             # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
             print("Load profile")
-            tmpStatus = loadProfile(loadingBay)
+            tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
             tmpStatus = waitForProfile()
             while tmpStatus != "done":
                 # wait for profile
@@ -1016,7 +1016,7 @@ def runAuto():
         # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
         print("Load profile")
-        tmpStatus = loadProfile(loadingBay)
+        tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
         tmpStatus = waitForProfile()
         while tmpStatus != "done":
             # wait for profile
@@ -1195,12 +1195,13 @@ def extensionF():
 
     return hearv["status"]
 
-def loadProfile(idBay = 0):
+def loadProfile(idBay = 0, singleLoader = 0):
     runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
     data = {
         "A": "load",
-        "B": idBay
+        "B": idBay,
+        "L": singleLoader
     }
 
     usbl.write(json.dumps(data).encode())

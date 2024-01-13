@@ -10,6 +10,7 @@ volatile int profileLoadingFail = 0;
 volatile int isLoading = 0;
 volatile int pickupLowered = 0;
 volatile int currentProfile = 1;
+volatile int singleLoader = 0;
 
 int motorBay1 = 1950;
 int motorBay2 = 3420;
@@ -210,16 +211,17 @@ void loop()
       String action = doc["A"];
       int bay = doc["B"];
 
-
     if (action == "load") {
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
+        singleLoader = doc["L"];
         loadLoaderStage1(bay);
         //loadLoader(bay);
         //unloadLoader();
     } else if (action == "unload") {
+        unloadLoader();
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
@@ -239,12 +241,13 @@ void loop()
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "resetLoader") {
+        resetLoader();
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
         Serial.println();
     } else if (action == "retractLoader") {
-
+        retractLoader();
         StaticJsonDocument<200> doc2;
         doc2["status"] = "done";
         serializeJson(doc2, Serial);
@@ -285,35 +288,59 @@ bool loadLoaderStage1(int profileSwitch) {
   isLoading = 1;
   currentProfile = profileSwitch;
 
-  if (profileSwitch == 1) {
-    motorKlescePomik.moveTo(motorBay1*-1);
-    motorKlescePomikVoz.moveTo(motorVozBay1);
-/*  motorKlescePomik.runToPosition();
-    motorKlescePomikVoz.runToPosition();
-*/
 
-    bool stepper1R,stepper2R;
-    do {
-      stepper1R = motorKlescePomik.run();
-      stepper2R = motorKlescePomikVoz.run();
-    } while (stepper1R || stepper2R);
-    
-    pnevmatikaVozKlesce = HIGH;
-    pnevmatikaKlesce = HIGH;
+  if (singleLoader == 0) {
+    if (profileSwitch == 1) {
+      motorKlescePomik.moveTo(motorBay1*-1);
+      motorKlescePomikVoz.moveTo(motorVozBay1);
+  /*  motorKlescePomik.runToPosition();
+      motorKlescePomikVoz.runToPosition();
+  */
 
+      bool stepper1R,stepper2R;
+      do {
+        stepper1R = motorKlescePomik.run();
+        stepper2R = motorKlescePomikVoz.run();
+      } while (stepper1R || stepper2R);
+      
+      pnevmatikaVozKlesce = HIGH;
+      pnevmatikaKlesce = HIGH;
+
+    } else {
+      motorKlescePomik.moveTo(motorBay2*-1);
+      motorKlescePomikVoz.moveTo(motorVozBay2);
+      
+      bool stepper1R,stepper2R;
+      do {
+        stepper1R = motorKlescePomik.run();
+        stepper2R = motorKlescePomikVoz.run();
+      } while (stepper1R || stepper2R);
+      
+      pnevmatikaVozKlesce = HIGH;
+      pnevmatikaKlesce = HIGH;
+
+    }
   } else {
-    motorKlescePomik.moveTo(motorBay2*-1);
-    motorKlescePomikVoz.moveTo(motorVozBay2);
-    
-    bool stepper1R,stepper2R;
-    do {
-      stepper1R = motorKlescePomik.run();
-      stepper2R = motorKlescePomikVoz.run();
-    } while (stepper1R || stepper2R);
-    
-    pnevmatikaVozKlesce = HIGH;
-    pnevmatikaKlesce = HIGH;
+      if (profileSwitch == 1) {
+      motorKlescePomik.moveTo(motorBay1*-1);
+      bool stepper1R;
 
+      do {
+        stepper1R = motorKlescePomik.run();
+      } while (stepper1R);
+      
+      pnevmatikaKlesce = HIGH;
+
+    } else {
+      motorKlescePomik.moveTo(motorBay2*-1);
+      bool stepper1R;
+
+      do {
+        stepper1R = motorKlescePomik.run();
+      } while (stepper1R);
+      
+      pnevmatikaKlesce = HIGH;
+    }
   }
     pickupLowered = 1;
     return true;
@@ -321,24 +348,41 @@ bool loadLoaderStage1(int profileSwitch) {
 
 bool loadLoaderStage2() {
 
-    pnevmatikaKlesce = LOW;
-    pnevmatikaVozKlesce = LOW;
-    delay(300);
+    if (singleLoader == 0) {
+      pnevmatikaKlesce = LOW;
+      pnevmatikaVozKlesce = LOW;
+      delay(300);
 
-    digitalWrite(51, HIGH);
-    digitalWrite(47, LOW);
+      digitalWrite(51, HIGH);
+      digitalWrite(47, LOW);
 
-    while(!snezorDvig || !snezorVozDvig) {
-      if (!snezorDvig) {
-        moveOneStep1(50,100);
+      while(!snezorDvig || !snezorVozDvig) {
+        if (!snezorDvig) {
+          moveOneStep1(50,100);
+        }
+        if (!snezorVozDvig) {
+          moveOneStep1(46,100);
+        }
       }
-      if (!snezorVozDvig) {
-        moveOneStep1(46,100);
+
+      digitalWrite(51, LOW);
+      digitalWrite(47, HIGH);
+
+    } else {
+      pnevmatikaKlesce = LOW;
+      delay(300);
+
+      digitalWrite(51, HIGH);
+
+      while(!snezorDvig) {
+        if (!snezorDvig) {
+          moveOneStep1(50,100);
+        }
       }
+
+      digitalWrite(51, LOW);
+
     }
-
-    digitalWrite(51, LOW);
-    digitalWrite(47, HIGH);
 
     pickupLowered = 0;
     isLoading = 0;
@@ -352,123 +396,237 @@ bool unloadLoader() {
 
     bool tmpErr = false;
     bool tmpErr2 = false;
-    if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
-      tmpErr = true;
-    }
 
-    delay(350);
+    if (singleLoader == 0) {
 
-    if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
-      tmpErr2 = true;
-    }
+      if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
+        tmpErr = true;
+      }
 
-    if (profileLoading == 1) {
-      if (tmpErr && tmpErr2) {
-        profileLoadingFail = 1;
-      } else {
-        // motor za pomik na 0
+      delay(350);
 
-        digitalWrite(53, HIGH);
-        digitalWrite(49, LOW);
+      if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
+        tmpErr2 = true;
+      }
 
-        int tmpMinDelay = 100;
-        int currDelay = 350;
-        int tmpDelayInterval = 5;
+      if (profileLoading == 1) {
+        if (tmpErr && tmpErr2) {
+          profileLoadingFail = 1;
+        } else {
+          // motor za pomik na 0
 
-        int tmpBay1 = motorBay1;
-        if (currentProfile != 1) {
-          tmpBay1 = motorBay2;
+          digitalWrite(53, HIGH);
+          digitalWrite(49, LOW);
+
+          int tmpMinDelay = 100;
+          int currDelay = 350;
+          int tmpDelayInterval = 5;
+
+          int tmpBay1 = motorBay1;
+          if (currentProfile != 1) {
+            tmpBay1 = motorBay2;
+          }
+          
+          while(!senzorPomik || !senzorVozPomik) {
+            if (tmpMinDelay < currDelay && tmpBay1 > 350) {
+              currDelay -= 1;
+            }
+
+            if (tmpBay1 < 500 && tmpBay1 > -1) {
+              currDelay += 1;
+            }
+
+            if (!senzorPomik) {
+              moveOneStep1(52,currDelay);
+            }
+            if (!senzorVozPomik) {
+              moveOneStep1(48,currDelay);
+            }
+
+            tmpBay1 -= 1;
+          }
+
+          digitalWrite(53, LOW);
+          digitalWrite(49, HIGH);
+
+          motorKlescePomik.setCurrentPosition(0);
+          motorKlescePomikVoz.setCurrentPosition(0);
+        }
+      }
+
+      tmpErr = false;
+      tmpErr2 = false;
+      if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
+        tmpErr = true;
+      }
+      delay(350);
+      if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
+        tmpErr2 = true;
+      }
+
+      if (profileLoading == 1 && profileLoadingFail == 0) {
+        if (tmpErr && tmpErr2) {
+          profileLoadingFail = 1;
+        } 
+      }
+
+      if (profileLoadingFail == 0) {
+        int tmpDropCnt = 0;
+        while(profileLoaded == LOW && tmpDropCnt < maxSpust) {
+          moveOneStep1(50,100);
+          moveOneStep1(46,100);
+          tmpDropCnt += 1;
+        }
+        //delay(4000);
+        profileLoadingFail = 0;
+
+        pnevmatikaKlesce = HIGH;
+        pnevmatikaVozKlesce = HIGH;
+        delay(400);
+
+        digitalWrite(51, HIGH);
+        digitalWrite(47, LOW);
+        
+        while(!snezorDvig || !snezorVozDvig) {
+          if (!snezorDvig) {
+            moveOneStep1(50,100);
+          }
+          if (!snezorVozDvig) {
+            moveOneStep1(46,100);
+          }
         }
         
-        while(!senzorPomik || !senzorVozPomik) {
-          if (tmpMinDelay < currDelay && tmpBay1 > 350) {
-            currDelay -= 1;
-          }
+        digitalWrite(51, LOW);
+        digitalWrite(47, HIGH);
 
-          if (tmpBay1 < 500 && tmpBay1 > -1) {
-            currDelay += 1;
-          }
+        profileLoading = 0;
 
-          if (!senzorPomik) {
-            moveOneStep1(52,currDelay);
-          }
-          if (!senzorVozPomik) {
-            moveOneStep1(48,currDelay);
-          }
-
-          tmpBay1 -= 1;
-        }
-
-        digitalWrite(53, LOW);
-        digitalWrite(49, HIGH);
-
-        motorKlescePomik.setCurrentPosition(0);
-        motorKlescePomikVoz.setCurrentPosition(0);
       }
-    }
 
-    tmpErr = false;
-    tmpErr2 = false;
-    if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
-      tmpErr = true;
-    }
-    delay(350);
-    if (senzorKlesce != HIGH || senzorVozKlesce != HIGH) {
-      tmpErr2 = true;
-    }
-
-    if (profileLoading == 1 && profileLoadingFail == 0) {
-      if (tmpErr && tmpErr2) {
-        profileLoadingFail = 1;
-      } 
-    }
-
-    if (profileLoadingFail == 0) {
-      int tmpDropCnt = 0;
-      while(profileLoaded == LOW && tmpDropCnt < maxSpust) {
-        moveOneStep1(50,100);
-        moveOneStep1(46,100);
-        tmpDropCnt += 1;
-      }
-      //delay(4000);
-      profileLoadingFail = 0;
-
-      pnevmatikaKlesce = HIGH;
-      pnevmatikaVozKlesce = HIGH;
-      delay(400);
-
-      digitalWrite(51, HIGH);
-      digitalWrite(47, LOW);
+    } else {
       
-      while(!snezorDvig || !snezorVozDvig) {
-        if (!snezorDvig) {
+      if (senzorKlesce != HIGH) {
+        tmpErr = true;
+      }
+
+      delay(350);
+
+      if (senzorKlesce != HIGH) {
+        tmpErr2 = true;
+      }
+
+      if (profileLoading == 1) {
+        if (tmpErr && tmpErr2) {
+          profileLoadingFail = 1;
+        } else {
+          // motor za pomik na 0
+
+          digitalWrite(53, HIGH);
+
+          int tmpMinDelay = 100;
+          int currDelay = 350;
+          int tmpDelayInterval = 5;
+
+          int tmpBay1 = motorBay1;
+          if (currentProfile != 1) {
+            tmpBay1 = motorBay2;
+          }
+          
+          while(!senzorPomik) {
+            if (tmpMinDelay < currDelay && tmpBay1 > 350) {
+              currDelay -= 1;
+            }
+
+            if (tmpBay1 < 500 && tmpBay1 > -1) {
+              currDelay += 1;
+            }
+
+            if (!senzorPomik) {
+              moveOneStep1(52,currDelay);
+            }
+            tmpBay1 -= 1;
+          }
+
+          digitalWrite(53, LOW);
+
+          motorKlescePomik.setCurrentPosition(0);
+        }
+      }
+
+      tmpErr = false;
+      tmpErr2 = false;
+      if (senzorKlesce != HIGH) {
+        tmpErr = true;
+      }
+      delay(350);
+      if (senzorKlesce != HIGH) {
+        tmpErr2 = true;
+      }
+
+      if (profileLoading == 1 && profileLoadingFail == 0) {
+        if (tmpErr && tmpErr2) {
+          profileLoadingFail = 1;
+        } 
+      }
+
+      if (profileLoadingFail == 0) {
+        int tmpDropCnt = 0;
+        while(profileLoaded == LOW && tmpDropCnt < maxSpust) {
           moveOneStep1(50,100);
+          tmpDropCnt += 1;
         }
-        if (!snezorVozDvig) {
-          moveOneStep1(46,100);
-        }
-      }
-      
-      digitalWrite(51, LOW);
-      digitalWrite(47, HIGH);
+        //delay(4000);
+        profileLoadingFail = 0;
 
-      profileLoading = 0;
-/*
-      while(1) {
-        if (profileFixedPickupSensor == HIGH && profileLoaderPickupSensor == HIGH) {
-          profileLoaderSwitch = HIGH;
-          profileFixedSwitch = HIGH;
-          break;
+        pnevmatikaKlesce = HIGH;
+        delay(400);
+
+        digitalWrite(51, HIGH);
+        
+        while(!snezorDvig) {
+          if (!snezorDvig) {
+            moveOneStep1(50,100);
+          }
         }
+        
+        digitalWrite(51, LOW);
+
+        profileLoading = 0;
       }
-*/
     }
 
-    //loadProfile(0);
-/*
-    fingersFixed = LOW;
-    fingersLoader = LOW;
-*/
+
+  return true;
+}
+
+bool retractLoader() {
+
+  digitalWrite(51, HIGH);
+  digitalWrite(47, LOW);
+  
+  while(!snezorDvig || !snezorVozDvig) {
+    if (!snezorDvig) {
+      moveOneStep1(50,100);
+    }
+    if (!snezorVozDvig) {
+      moveOneStep1(46,100);
+    }
+  }
+  
+  digitalWrite(51, LOW);
+  digitalWrite(47, HIGH);
+
+  return true;
+}
+
+
+bool resetLoader() {
+
+  homming();
+
+  extensionRev = HIGH;
+  extensionFwd = LOW;
+
   return true;
 }
 
