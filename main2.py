@@ -858,8 +858,13 @@ def runCycle():
 
             print("Rev move to load profile")
             tmpStatus = retractLoader()
+
+            tmpEL = extensionLength
+            if cut < 250:
+                tmpEL = 0
+
             tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + saw_width + refExtension - extensionLength, 1, 1)
+                runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
 
             print("Fold extension in extended")
             tmpStatus = extensionF()
