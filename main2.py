@@ -402,6 +402,12 @@ def saveSettings():
         c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
         conn.commit()
 
+def saveMachineSettings():
+
+    c.execute("UPDATE vars SET value = ? WHERE name LIKE 'bias'", (float(bias.get()),))
+    c.execute("UPDATE vars SET value = ? WHERE name LIKE 'bias2'", (float(bias2.get()),))
+    conn.commit()
+
 def addJob():
 
     addJobLength = float(jobLength.get())
@@ -713,6 +719,14 @@ def runCycle():
         idProfil = 1
         loadingBay = 0
 
+    # setup bias biff based on db values
+    tmpRes = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
+    tmpBias1 = float(tmpRes[2])
+    tmpRes = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
+    tmpBias2 = float(tmpRes[2])
+
+    biasDiff = (tmpBias1 - tmpBias2) * -1
+
     toolSetup = False
     if currentProfileId is None:
         currentProfileId = idProfil
@@ -733,6 +747,10 @@ def runCycle():
 
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
+
+        # reset bias value if wrong tool
+        if int(dbvars["orodjeL"]) == 3:
+            biasDiff = 0 
 
     if manualLoading:
         while 1:
@@ -808,6 +826,7 @@ def runCycle():
 
             fromStart += saw_width
             fromStart += sensorToDrill
+            fromStart += biasDiff
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
@@ -921,6 +940,7 @@ def runCycle():
 
             fromStart += saw_width
             fromStart += sensorToDrill
+            fromStart += biasDiff
 
             print("Prva: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwdF", fromStart)
@@ -1377,6 +1397,10 @@ def homeAll():
 
     home()
     #homeFeeder()
+
+    res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
+    balansRef = float(res[2])
+
     refFeeder(balansRef)
     runCyc.config(state=ACTIVE, bg='green')
     changeLen.config(state=ACTIVE, bg='green')
@@ -1450,12 +1474,14 @@ notebook = ttk.Notebook(main, width=1900, height=1000)
 tab1 = ttk.Frame(notebook, width=1900, height=950)
 tab2 = ttk.Frame(notebook, width=1900, height=950)
 tab3 = ttk.Frame(notebook, width=1900, height=950)
+tab4 = ttk.Frame(notebook, width=1900, height=950)
 
 # add frames to notebook
 
 notebook.add(tab1, text='Vrtalka')
 notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Ročno upravljanje')
+notebook.add(tab4, text='Nastavitve stroja')
 notebook.pack(side=TOP)
 
 vrtalkaL = ttk.Frame(tab1, width=600, height=950)
@@ -1509,6 +1535,10 @@ canvas_tab3.grid(column=0, row=0)
 tool_tab3 = ttk.Frame(tab3, height=50, width=300)
 #tool_tab3.pack(side=LEFT, expand=False, anchor='w')
 tool_tab3.grid(column=0, row=1)
+
+canvas_tab4 = ttk.Frame(tab4, height=950, width=900)
+#canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
+canvas_tab4.grid(column=0, row=0)
 
 
 numpad2 = ttk.Frame(tab3, width=900, height=950,borderwidth=1)
@@ -1570,8 +1600,8 @@ mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
 output.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
 
-on = PhotoImage(file = "/home/pi/profilapp/on.png")
-off = PhotoImage(file = "/home/pi/profilapp/off.png")
+on = PhotoImage(file = "on.png")
+off = PhotoImage(file = "off.png")
 mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
 mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
 
@@ -1653,6 +1683,24 @@ toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1
 toolButton2 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3,'LEFT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
 toolButton3 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=2, row=0)
 toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=3, row=0)
+
+bias = Label(canvas_tab4, text='Bias:',font=text_font)
+bias.grid(row=1, column=0,sticky=W+E)
+bias = Entry(canvas_tab4, font=etext_font, width=10)
+bias.grid(row=1, column=1,columnspan=2,sticky=W+E)
+res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
+bias.insert(0, float(res[2]))
+
+bias2 = Label(canvas_tab4, text='Bias 2:',font=text_font)
+bias2.grid(row=2, column=0,sticky=W+E)
+bias2 = Entry(canvas_tab4, font=etext_font, width=10)
+bias2.grid(row=2, column=1,columnspan=2,sticky=W+E)
+res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
+bias2.insert(0, float(res[2]))
+
+
+saveSett = Button(canvas_tab4, text='Shrani nastavitve', command=saveMachineSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
+
 
 Calculator()
 Calculator2()
