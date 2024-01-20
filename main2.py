@@ -725,7 +725,7 @@ def runCycle():
     tmpRes = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
     tmpBias2 = float(tmpRes[2])
 
-    biasDiff = (tmpBias1 - tmpBias2) * -1
+    biasDiff = (tmpBias1 - tmpBias2)
 
     toolSetup = False
     if currentProfileId is None:
