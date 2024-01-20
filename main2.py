@@ -1684,14 +1684,14 @@ toolButton2 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3
 toolButton3 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=2, row=0)
 toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=3, row=0)
 
-bias = Label(canvas_tab4, text='Bias:',font=text_font)
+bias = Label(canvas_tab4, text='Bias sveder 4,2mm:',font=text_font)
 bias.grid(row=1, column=0,sticky=W+E)
 bias = Entry(canvas_tab4, font=etext_font, width=10)
 bias.grid(row=1, column=1,columnspan=2,sticky=W+E)
 res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
 bias.insert(0, float(res[2]))
 
-bias2 = Label(canvas_tab4, text='Bias 2:',font=text_font)
+bias2 = Label(canvas_tab4, text='Bias sveder 5mm:',font=text_font)
 bias2.grid(row=2, column=0,sticky=W+E)
 bias2 = Entry(canvas_tab4, font=etext_font, width=10)
 bias2.grid(row=2, column=1,columnspan=2,sticky=W+E)
