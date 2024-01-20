@@ -9,7 +9,7 @@ import os, time
 from threading import Thread
 from PIL import Image,ImageTk
 
-
+t = 'test'
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB1"
 USB_PORT_LOADER = "/dev/ttyUSB0"
