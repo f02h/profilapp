@@ -748,6 +748,8 @@ def runCycle():
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    dbvars = dict(res)
     # reset bias value if wrong tool
     if int(dbvars["orodjeL"]) == 1:
         biasDiff = 0 
