@@ -12,6 +12,9 @@ volatile int pickupLowered = 0;
 volatile int currentProfile = 1;
 volatile int singleLoader = 0;
 
+volatile unsigned long dropTimer;
+volatile int dropTimerStop = 0;
+
 int motorBay1 = 1950;
 int motorBay2 = 3420;
 int motorVozBay1 = 1950;
@@ -200,11 +203,15 @@ void loop()
         loadLoaderStage2();
       } else {
   
-        if (!senzorKlesce) {
+        if (millis() - dropTimer >= 2000UL) {
+            dropTimerStop = 1;
+        }
+
+        if (!senzorKlesce && dropTimerStop == 0) {
           moveOneStep1(50,100);
         }
         
-        if (!senzorVozKlesce) {
+        if (!senzorVozKlesce && dropTimerStop == 0) {
           moveOneStep1(46,100);
         }
       }
@@ -213,9 +220,13 @@ void loop()
         profileLoading = 1;
         loadLoaderStage2();
       } else {
-  
-        if (!senzorKlesce) {
-          moveOneStep1(50,100);
+
+        if (millis() - dropTimer >= 2000UL) {
+            dropTimerStop = 1;
+        }
+        
+        if (!senzorKlesce && dropTimerStop == 0) {
+          moveOneStep1(50,150);
         }
       }
     }
@@ -284,6 +295,7 @@ bool loadLoaderStage1(int profileSwitch) {
     }
   }
     pickupLowered = 1;
+    dropTimer=millis(); 
     return true;
 }
 
@@ -317,7 +329,7 @@ bool loadLoaderStage2() {
 
       while(!snezorDvig) {
         if (!snezorDvig) {
-          moveOneStep1(50,100);
+          moveOneStep1(50,150);
         }
       }
 
@@ -364,8 +376,10 @@ bool unloadLoader() {
           int tmpDelayInterval = 5;
 
           int tmpBay1 = motorBay1;
-          if (currentProfile != 1) {
+          int tmpDelay = 500;
+          if (currentProfile == 1) {
             tmpBay1 = motorBay2;
+            tmpDelay = 200;
           }
           
           while(!senzorPomik || !senzorVozPomik) {
@@ -373,7 +387,7 @@ bool unloadLoader() {
               currDelay -= 1;
             }
 
-            if (tmpBay1 < 500 && tmpBay1 > -1) {
+            if (tmpBay1 < tmpDelay && tmpBay1 > -1) {
               currDelay += 1;
             }
 
@@ -464,21 +478,28 @@ bool unloadLoader() {
 
           digitalWrite(53, HIGH);
 
-          int tmpMinDelay = 100;
+          int tmpMinDelay = 150;
           int currDelay = 350;
           int tmpDelayInterval = 5;
-
+/*
           int tmpBay1 = motorBay1;
           if (currentProfile != 1) {
             tmpBay1 = motorBay2;
           }
-          
+*/
+          int tmpBay1 = motorBay1;
+          int tmpDelay = 500;
+          if (currentProfile == 1) {
+            tmpBay1 = motorBay2;
+            tmpDelay = 200;
+          }
+                  
           while(!senzorPomik) {
             if (tmpMinDelay < currDelay && tmpBay1 > 350) {
               currDelay -= 1;
             }
 
-            if (tmpBay1 < 500 && tmpBay1 > -1) {
+            if (tmpBay1 < tmpDelay && tmpBay1 > -1) {
               currDelay += 1;
             }
 
@@ -526,7 +547,7 @@ bool unloadLoader() {
         
         while(!snezorDvig) {
           if (!snezorDvig) {
-            moveOneStep1(50,100);
+            moveOneStep1(50,150);
           }
         }
         

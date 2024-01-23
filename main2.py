@@ -748,9 +748,9 @@ def runCycle():
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
-        # reset bias value if wrong tool
-        if int(dbvars["orodjeL"]) == 1:
-            biasDiff = 0 
+    # reset bias value if wrong tool
+    if int(dbvars["orodjeL"]) == 1:
+        biasDiff = 0 
 
     if manualLoading:
         while 1:
