@@ -1176,12 +1176,13 @@ def resetLoader():
     }
 
     usbl.write(json.dumps(data).encode())
-    hearv = hearJsonl()
+    #hearv = hearJsonl()
     #print(hearv)
-    if str(hearv["status"]).strip() == "done":
-        runCyc.config(state=ACTIVE, bg='green')
+    #if str(hearv["status"]).strip() == "done":
+    runCyc.config(state=ACTIVE, bg='green')
 
-    return hearv["status"]
+    #return hearv["status"]
+    return True
 
 def retractLoader():
     runCyc.config(state=DISABLED, fg='white', bg='#e69225')
@@ -1236,7 +1237,7 @@ def loadProfile(idBay = 0, singleLoader = 0):
         "B": idBay,
         "L": singleLoader
     }
-
+    print(data)
     usbl.write(json.dumps(data).encode())
     hearv = hearJsonl()
 

@@ -90,25 +90,6 @@ void setup() {
 
   Serial.begin(115200);
   while (!Serial) continue;
-/*
-  pnevmatikaOn.output();
-  pnevmatikaOn = HIGH;
-/*
-  profileLoaderSwitch.output();
-  profileLoaderSwitch = HIGH;
-  profileFixedSwitch.output();
-  profileFixedSwitch = HIGH;
-  profileLoaderSwitchArm.output();
-  profileLoaderSwitchArm = HIGH;
-  profileFixedSwitchArm.output();
-  profileFixedSwitchArm = HIGH;
-  profileLoaderPickup.output();
-  profileFixedPickup.output();
-  fingersLoader.output();
-  fingersLoader = HIGH;
-  fingersFixed.output();
-  fingersFixed = HIGH;
-*/
 
   snezorVozDvig.input();
   senzorVozPomik.input();
@@ -124,70 +105,14 @@ void setup() {
   
   profileLoaded.input();
 
-
   extensionRev.output();
   extensionRev = HIGH;
   extensionFwd.output();
   extensionFwd = LOW;
 
-  /*profileFixedPickupSensor.input();
-  profileLoaderPickupSensor.input();
-
-  fingersFixedSensor.input();
-  fingerLoaderSensor.input();
-*/
   profileLoaded.input();
 
-
-  /*extension.output();
-
-  extension = HIGH;
-  profileLoaderPickup = HIGH;
-  profileFixedPickup = HIGH;
-  delay(1000);*/
-  //pnevmatikaOn = LOW;
-/*
-
-  while(1) {
-    pnevmatikaKlesce = LOW;
-    delay(1000);
-    pnevmatikaKlesce = HIGH;
-    delay(1000);
-  }*/
-  /*loadLoader(1);
-  delay(3000);
-  unloadLoader();
-  delay(3000);
-  */
-  //}
-
-  //loadLoader(0);
-
-
-
-/*while(1) {
-    loadLoader(0);
-    delay(5000);
-    loadLoader(1);
-    delay(5000);
-}
-*/
-/*
-  while (1) {
-    loadLoader(1);
-    delay(5000);
-    loadLoader(0);
-    delay(5000);
-    /*
-    profileLoaderPickup = HIGH;
-    delay(2000);
-    profileLoaderPickup = LOW;
-    delay(2000);
-
-  }
-*/
   homming();
-  //loadLoaderStage1(2);
 }
 
 void loop()
@@ -297,6 +222,8 @@ void loop()
    }
 
 }
+
+void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
 bool loadLoaderStage1(int profileSwitch) {
   isLoading = 1;
@@ -636,12 +563,23 @@ bool retractLoader() {
 
 bool resetLoader() {
 
+  resetFunc();
+  /*
   homming();
 
   extensionRev = HIGH;
   extensionFwd = LOW;
 
-  return true;
+  profileLoading = 0;
+  profileLoadingFail = 0;
+  isLoading = 0;
+  pickupLowered = 0;
+
+  drillTool = 1;
+  currentProfile = 1;
+  singleLoader = 0;
+
+  return true;*/
 }
 
 
