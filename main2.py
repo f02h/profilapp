@@ -888,7 +888,8 @@ def runCycle():
                 runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
 
             print("Fold extension in extended")
-            tmpStatus = extensionF()
+            if cut > 250:
+                tmpStatus = extensionF()
 
             # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
