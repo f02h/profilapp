@@ -1409,6 +1409,8 @@ def homeAll():
     runCyc.config(state=ACTIVE, bg='green')
     changeLen.config(state=ACTIVE, bg='green')
 
+    currentProfileId = None
+
 def moveStepper():
 
     global stepperList
