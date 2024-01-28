@@ -15,10 +15,10 @@ t = 'test'
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB1"
 USB_PORT_LOADER = "/dev/ttyUSB0"
-usb = serial.Serial(USB_PORT, 115200)
+#usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
-usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
-usbl = serial.Serial(port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+#usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+#usbl = serial.Serial(port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
 #usb = 0
 #usbf = 0
 #usbl = 0
@@ -28,7 +28,7 @@ db = os.path.join(path, 'todo.db')
 #conn = sqlite3.connect(db, check_same_thread=False)
 #c = conn.cursor()
 
-db = mysql.connector.connect(host ="192.168.178.34",user = "pi",password = "pi",db ="todo")
+db = mysql.connector.connect(host ="192.168.178.34",user = "pi2",password = "pi2",db ="todo")
 c = db.cursor()
 
 settingsList = dict()
@@ -374,12 +374,14 @@ def hearJsonf1():
     return mystring
 
 def callback(*args):
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(monthchoosen.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)).fetchall()
+    c.execute("SELECT name,value FROM vars WHERE idProfil LIKE %s", (str(idProfil),))
+    res = c.fetchall()
     dbvars = dict(res)
 
     i=3
@@ -397,27 +399,29 @@ def setStepperValue(*args):
     moveStepperInput.insert(0,str(stepperList[int(stepperchoosen.get())]))
 
 def saveSettings():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(monthchoosen.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
     for key in settingsList:
         print(key,idProfil,settingsList[key].get())
-        c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
-        #conn.commit()
+        c.execute("UPDATE vars SET value = %s WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
+        db.commit()
 
 def saveMachineSettings():
 
-    c.execute("UPDATE vars SET value = ? WHERE name LIKE 'bias'", (float(bias.get()),))
-    c.execute("UPDATE vars SET value = ? WHERE name LIKE 'bias2'", (float(bias2.get()),))
-    #conn.commit()
+    c.execute("UPDATE vars SET value = %s WHERE name LIKE 'bias'", (float(bias.get()),))
+    c.execute("UPDATE vars SET value = %s WHERE name LIKE 'bias2'", (float(bias2.get()),))
+    db.commit()
 
 def addJob():
 
     addJobLength = float(jobLength.get())
 
-    res = c.execute("SELECT id,name,loader FROM profili WHERE name LIKE ?", (str(jobProfile.get()),)).fetchone()
+    c.execute("SELECT id,name,loader FROM profili WHERE name LIKE %s", (str(jobProfile.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     jobLoader = int(res[2])
     if not idProfil:
@@ -427,7 +431,7 @@ def addJob():
     addJobQty = int(jobQty.get())
 
     c.execute("INSERT INTO job (length, qty,idProfile, loader, qtyD, done) VALUES ('"+str(addJobLength)+"','"+str(addJobQty)+"','"+str(idProfil)+"','"+str(jobLoader)+"','0','0')")
-    #conn.commit()
+    db.commit()
 
     initJobs()
     return True
@@ -531,16 +535,16 @@ def changeTool(idTool, dir):
         return True
 
 def ctrlDeleteJob(idJob):
-    sql = 'DELETE FROM job WHERE id=?'
+    sql = 'DELETE FROM job WHERE id=%s'
     cur = c.cursor()
     #cur.execute(sql, (idJob,))
-    #conn.commit()
+    db.commit()
 
     initJobs()
 
 def ctrlConfirmJob(idJob):
     c.execute("UPDATE job SET done = 1 WHERE id = " + str(idJob) + "",)
-    #conn.commit()
+    db.commit()
 
     initJobs()
 
@@ -555,7 +559,8 @@ def stopJobs():
     return True
 
 def initEmptyCombo():
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
+    c.execute("SELECT name,value FROM vars WHERE idProfil LIKE %s", (str(1),))
+    res = c.fetchall()
     dbvars = dict(res)
 
     i = 3
@@ -571,7 +576,8 @@ def initJobs():
     for widget in vrtalkaDList.winfo_children():
         widget.destroy()
 
-    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1 ORDER BY length ASC").fetchall()
+    c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1 ORDER BY length ASC")
+    res = c.fetchall()
 
     tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor='w', width=10).grid(row=2, column=0)
     tk.Label(vrtalkaDList, text="Profil", font=etext_font, anchor='w', width=25).grid(row=2, column=1)
@@ -590,7 +596,8 @@ def initJobs():
         rowLength = row[0]
         rowQty = row[1]
 
-        res = c.execute("SELECT id,name,loader FROM profili WHERE id LIKE ?", (str(row[2]),)).fetchone()
+        c.execute("SELECT id,name,loader FROM profili WHERE id LIKE %s", (str(row[2]),))
+        res = c.fetchone()
         rowProfile = str(res[1])
         if not rowProfile:
             rowProfile = '/'
@@ -609,12 +616,14 @@ def initJobs():
 
 def executeDrill():
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+    res = c.fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -671,14 +680,16 @@ def executeDrill():
     #label.config(text=str(hearv))
 
 def cut():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
     print(idProfil)
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+    res = c.fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -717,7 +728,8 @@ def runCycle():
     global balansRef
     global saw_width
 
-    res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    c.execute("SELECT id,name, loader FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     loadingBay = int(res[2])
     if not idProfil:
@@ -725,9 +737,11 @@ def runCycle():
         loadingBay = 0
 
     # setup bias biff based on db values
-    tmpRes = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
+    c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'")
+    tmpRes = c.fetchone()
     tmpBias1 = float(tmpRes[2])
-    tmpRes = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
+    c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'")
+    tmpRes = c.fetchone()
     tmpBias2 = float(tmpRes[2])
 
     biasDiff = (tmpBias1 - tmpBias2)
@@ -741,7 +755,8 @@ def runCycle():
         toolSetup = True
 
     if toolSetup:
-        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+        res = c.fetchall()
         dbvars = dict(res)
         if float(dbvars['sensorToDrill']) == 0.0:
             currentSensorToDrill = sensorToDrill
@@ -753,7 +768,8 @@ def runCycle():
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+    res = c.fetchall()
     dbvars = dict(res)
     # reset bias value if wrong tool
     if int(dbvars["orodjeL"]) == 1:
@@ -1002,7 +1018,8 @@ def runAuto():
     global manualLoading
     global disableDrill
 
-    res = c.execute("SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0 ORDER BY length ASC").fetchone()
+    c.execute("SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0 ORDER BY length ASC")
+    res = c.fetchone()
     idProfil = int(res[3])
     loadingBay = int(res[4])
     currJobLength = float(res[1])
@@ -1017,7 +1034,8 @@ def runAuto():
         toolSetup = True
 
     if toolSetup:
-        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+        res = c.fetchall()
         dbvars = dict(res)
         if float(dbvars['sensorToDrill']) == 0.0:
             currentSensorToDrill = sensorToDrill
@@ -1145,7 +1163,8 @@ def runAuto():
 # abs = 1 => move to absolute position
 # abs = 0 => relative move
 def moveFeeder(dir, step, abs = 0, firstMove = 0):
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
@@ -1271,7 +1290,8 @@ def unloadProfile():
 
 
 def waitForProfile():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
@@ -1407,7 +1427,8 @@ def homeAll():
     home()
     #homeFeeder()
 
-    res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
+    c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'")
+    res = c.fetchone()
     balansRef = float(res[2])
 
     refFeeder(balansRef)
@@ -1514,7 +1535,8 @@ jobLength.insert(0, 0.0)
 
 n = tk.StringVar()
 n.trace("w", callback)
-res = c.execute("SELECT id,name FROM profili").fetchall()
+c.execute("SELECT id,name FROM profili")
+res = c.fetchall()
 profilList = dict(res)
 jobProfile = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
 # Adding combobox drop down list
@@ -1611,8 +1633,8 @@ mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
 output.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
 
-on = PhotoImage(file = "/home/pi/profilapp/on.png")
-off = PhotoImage(file = "/home/pi/profilapp/off.png")
+on = PhotoImage(file = "./on.png")
+off = PhotoImage(file = "./off.png")
 mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
 mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
 
@@ -1627,7 +1649,8 @@ mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
 homingA = tk.Button(vrtalkaL,text="Homing",font=text_font,command=homeAll)
 homingA.grid(column=2,row=0,padx=30,pady=30)
 
-res = c.execute("SELECT id,name FROM profili").fetchall()
+c.execute("SELECT id,name FROM profili")
+res = c.fetchall()
 profilList = dict(res)
 
 profilChooser = ttk.Combobox(vrtalkaL, width=25,font=text_font, style='my.TCombobox')
@@ -1699,14 +1722,16 @@ bias = Label(canvas_tab4, text='Bias sveder 4,2mm:',font=text_font)
 bias.grid(row=1, column=0,sticky=W+E)
 bias = Entry(canvas_tab4, font=etext_font, width=10)
 bias.grid(row=1, column=1,columnspan=2,sticky=W+E)
-res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
+c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'")
+res = c.fetchone()
 bias.insert(0, float(res[2]))
 
 bias2 = Label(canvas_tab4, text='Bias sveder 5mm:',font=text_font)
 bias2.grid(row=2, column=0,sticky=W+E)
 bias2 = Entry(canvas_tab4, font=etext_font, width=10)
 bias2.grid(row=2, column=1,columnspan=2,sticky=W+E)
-res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
+c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'")
+res = c.fetchone()
 bias2.insert(0, float(res[2]))
 
 
