@@ -1098,7 +1098,7 @@ def runCycle():
                 currentQty = currentQty - 1
                 runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
             else:
-                currentQty -= currentQty
+                currentQty -= 1
 
         if currentQty == 0:
             runCyc.config(state=ACTIVE, bg='green')
