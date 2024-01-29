@@ -1064,6 +1064,9 @@ def runCycle():
 
             if nbrOfHoles > 0:
 
+                print("Prva: " + str(fromStart))
+                tmpStatus = moveFeeder("moveFwdF", fromStart)
+
                 print("Drill prva")
                 if not disableDrill:
                     drillRes = executeDrill()
@@ -1099,7 +1102,7 @@ def runCycle():
                 runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
             else:
                 currentQty -= currentQty
-                
+
         if currentQty == 0:
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
