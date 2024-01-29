@@ -702,8 +702,8 @@ def executeDrillPlehek():
     hodL = dbvars["hodL"]
     hodD = dbvars["hodD"]
     if nizekPlehekS or visokPlehekS:
-        hodL -= dbvars["plehekOdmik"]
-        hodD -= dbvars["plehekOdmik"]
+        hodL = dbvars["hodL"] - dbvars["plehekOdmik"]
+        hodD = dbvars["hodD"] - dbvars["plehekOdmik"]
 
     data = {
         "A": "drill",
