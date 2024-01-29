@@ -701,12 +701,9 @@ def executeDrillPlehek():
 
     hodL = dbvars["hodL"]
     hodD = dbvars["hodD"]
-    if nizekPlehekS:
-        hodL -= dbvars['hodNizekPlehek']
-        hodD -= dbvars['hodNizekPlehek']
-    elif visokPlehekS:
-        hodL -= dbvars['hodVisokPlehek']
-        hodD -= dbvars['hodVisokPlehek']
+    if nizekPlehekS or visokPlehekS:
+        hodL -= dbvars['plehekOdmik']
+        hodD -= dbvars['plehekOdmik']
 
     data = {
         "A": "drill",
@@ -836,8 +833,11 @@ def runCycle():
 
     # use "plehek" offset in first move
     plehekOffset = 0
-    if (nizekPlehekS or visokPlehekS) and float(dbvars["plehekOdmik"]) != 0.0:
-        plehekOffset = dbvars["plehekOdmik"]
+    if nizekPlehekS and float(dbvars["hodNizekPlehek"]) != 0.0:
+        plehekOffset = dbvars["hodNizekPlehek"]
+    elif visokPlehekS and float(dbvars["hodVisokPlehek"]) != 0.0:
+        plehekOffset = dbvars["hodVisokPlehek"]
+        
 
     if manualLoading:
         while 1:
@@ -1032,7 +1032,7 @@ def runCycle():
 
             #use plhek offset for first drill
             if plehekOffset != 0:
-                tmpfromStart = saw_width + sensorToDrill + biasDiff + plehekOffset
+                tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
                 print("Lukna plehek: " + str(tmpfromStart))
                 tmpStatus = moveFeeder("moveFwdF", tmpfromStart)
     
