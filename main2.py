@@ -833,11 +833,12 @@ def runCycle():
 
     # use "plehek" offset in first move
     plehekOffset = 0
-    if nizekPlehekS and float(dbvars["hodNizekPlehek"]) != 0.0:
-        plehekOffset = dbvars["hodNizekPlehek"]
+    if visokPlehekS and nizekPlehekS:
+        plehekOffset = 0
     elif visokPlehekS and float(dbvars["hodVisokPlehek"]) != 0.0:
         plehekOffset = dbvars["hodVisokPlehek"]
-        
+    elif nizekPlehekS and float(dbvars["hodNizekPlehek"]) != 0.0:
+        plehekOffset = dbvars["hodNizekPlehek"]    
 
     if manualLoading:
         while 1:
@@ -914,6 +915,20 @@ def runCycle():
             fromStart += saw_width
             fromStart += sensorToDrill
             fromStart += biasDiff
+
+            #use plehek offset for first drill
+            if plehekOffset != 0:
+                tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                print("Lukna plehek: " + str(tmpfromStart))
+                tmpStatus = moveFeeder("moveFwdF", tmpfromStart)
+    
+                print("Drill prva")
+                if not disableDrill:
+                    drillRes = executeDrillPlehek()
+                    if not drillRes:
+                        print("Drill error")
+                        return
+                fromStart -= tmpfromStart
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
@@ -1030,7 +1045,7 @@ def runCycle():
             fromStart += sensorToDrill
             fromStart += biasDiff
 
-            #use plhek offset for first drill
+            #use plehek offset for first drill
             if plehekOffset != 0:
                 tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
                 print("Lukna plehek: " + str(tmpfromStart))
@@ -1047,21 +1062,14 @@ def runCycle():
             print("Prva: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwdF", fromStart)
 
-            print("Drill prva")
-            if not disableDrill:
-                drillRes = executeDrill()
-                if not drillRes:
-                    print("Drill error")
-                    return
+            if nbrOfHoles > 0:
 
-            if changingLen == True:
-                resetLoader()
-                print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
-                return
-
-            moveTo = fromStart
-            for x in range(1, nbrOfHoles):
+                print("Drill prva")
+                if not disableDrill:
+                    drillRes = executeDrill()
+                    if not drillRes:
+                        print("Drill error")
+                        return
 
                 if changingLen == True:
                     resetLoader()
@@ -1069,17 +1077,29 @@ def runCycle():
                     runCyc.config(state=NORMAL, bg='green')
                     return
 
-                moveTo += 120
-                print(str(x) + " : " + str(moveTo))
-                moveFeeder("moveFwd", 120)
-                print("Drill " + str(x) + ".")
-                if not disableDrill:
-                    drillRes = executeDrill()
-                    if not drillRes:
-                        print("Drill error")
+                moveTo = fromStart
+                for x in range(1, nbrOfHoles):
+
+                    if changingLen == True:
+                        resetLoader()
+                        print("Drop cycle")
+                        runCyc.config(state=NORMAL, bg='green')
                         return
-            currentQty = currentQty - 1
-            runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
+
+                    moveTo += 120
+                    print(str(x) + " : " + str(moveTo))
+                    moveFeeder("moveFwd", 120)
+                    print("Drill " + str(x) + ".")
+                    if not disableDrill:
+                        drillRes = executeDrill()
+                        if not drillRes:
+                            print("Drill error")
+                            return
+                currentQty = currentQty - 1
+                runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
+            else:
+                currentQty -= currentQty
+                
         if currentQty == 0:
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
