@@ -699,24 +699,24 @@ def executeDrillPlehek():
     ## povrtavanjeL
     ## povrtavanjeD
 
-    hodL = dbvars["hodL"]
-    hodD = dbvars["hodD"]
+    pozicijaL = dbvars["pozicijaL"]
+    pozicijaD = dbvars["pozicijaD"]
     if nizekPlehekS or visokPlehekS:
-        hodL = dbvars["hodL"] - dbvars["plehekOdmik"]
-        hodD = dbvars["hodD"] - dbvars["plehekOdmik"]
+        pozicijaL -= dbvars["plehekOdmik"]
+        pozicijaD -= dbvars["plehekOdmik"]
 
     data = {
         "A": "drill",
         "PLN": dbvars["pozicijaLNull"] * 160,
         "PDN": dbvars["pozicijaDNull"] * 160,
-        "PL": dbvars["pozicijaL"] * 160,
-        "PD": dbvars["pozicijaD"] * 160,
+        "PL": pozicijaL * 160,
+        "PD": pozicijaD * 160,
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
-        "HL": hodL * 160,
+        "HL": dbvars["hodL"] * 160,
         "PHL": dbvars["pocasnejePredKoncemHodaL"]*160,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
-        "HD": hodD * 160,
+        "HD": dbvars["hodD"] * 160,
         "PHD": dbvars["pocasnejePredKoncemHodaD"]*160,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
         "POL": dbvars["povratekL"] * 160,
