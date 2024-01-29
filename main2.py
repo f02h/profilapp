@@ -1059,14 +1059,11 @@ def runCycle():
                         return
                 fromStart -= tmpfromStart
 
-            print("Prva: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwdF", fromStart)
-
             if nbrOfHoles > 0:
 
                 print("Prva: " + str(fromStart))
-                tmpStatus = moveFeeder("moveFwdF", fromStart)
-
+                tmpStatus = moveFeeder("moveFwdF", fromStart)   
+                
                 print("Drill prva")
                 if not disableDrill:
                     drillRes = executeDrill()
