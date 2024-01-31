@@ -651,8 +651,8 @@ def executeDrill():
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
         "POL": dbvars["povratekL"] * 160,
         "POD": dbvars["povratekD"] * 160,
-        "POVL": dbvars["povrtavanjeL"] * 160,
-        "POVD": dbvars["povrtavanjeD"] * 160,
+        "POVL": dbvars["povrtavanjeL"] * 80,
+        "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
         "MAZD": int(dbvars["mazalkaProfil"])
@@ -723,8 +723,8 @@ def executeDrillPlehek():
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
         "POL": dbvars["povratekL"] * 160,
         "POD": dbvars["povratekD"] * 160,
-        "POVL": dbvars["povrtavanjeL"] * 160,
-        "POVD": dbvars["povrtavanjeD"] * 160,
+        "POVL": dbvars["povrtavanjeL"] * 80,
+        "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
         "MAZD": int(dbvars["mazalkaProfil"])
@@ -1548,7 +1548,7 @@ def moveStepper():
     global stepperList
 
     stepRatio = 160
-    if int(stepperchoosen.get()) == 7:
+    if int(stepperchoosen.get()) == 7 or int(stepperchoosen.get()) == 6 or int(stepperchoosen.get()) == 5:
         stepRatio = 80
 
     data = {
