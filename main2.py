@@ -1801,10 +1801,10 @@ vpButton.grid(column=1,columnspan=1,sticky=W,row=12,padx=5, pady=10)
 npButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehek)
 npButton.grid(column=1,columnspan=1,sticky=W,row=13,padx=5, pady=10)
 
-vpzButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehek)
+vpzButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehekZadaj)
 vpzButton.grid(column=3,columnspan=1,sticky=W,row=12,padx=10, pady=10)
 
-npzButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehek)
+npzButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehekZadaj)
 npzButton.grid(column=3,columnspan=1,sticky=W,row=13,padx=10, pady=10)
 
 
