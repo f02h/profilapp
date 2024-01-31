@@ -1594,8 +1594,6 @@ def visokPlehek():
         npButton.config(image=off)
         nizekPlehekS = False
 
-
-
 def nizekPlehek():
     global nizekPlehekS
     global visokPlehekS
@@ -1611,16 +1609,20 @@ def nizekPlehek():
 
 def visokPlehekZadaj():
     global visokPlehekZadajS
+    global nizekPlehekZadajS
     # Determine is on or off
     if visokPlehekZadajS:
         vpzButton.config(image=off)
-        visokPlehekS = False
+        visokPlehekZadajS = False
     else:
         vpzButton.config(image=on)
         visokPlehekZadajS = True
+        npzButton.config(image=off)
+        nizekPlehekZadajS = False
 
 def nizekPlehekZadaj():
     global nizekPlehekZadajS
+    global visokPlehekZadajS
     # Determine is on or off
     if nizekPlehekZadajS:
         npzButton.config(image=off)
@@ -1628,7 +1630,8 @@ def nizekPlehekZadaj():
     else:
         npzButton.config(image=on)
         nizekPlehekZadajS = True
-
+        vpzButton.config(image=off)
+        visokPlehekZadajS = False
 
 def add_log(log):
     output.insert("end", log + "\n")
@@ -1793,10 +1796,10 @@ mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
 mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
 
 vpButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehek)
-vpButton.grid(column=1,columnspan=1,sticky=W,row=12,padx=10, pady=10)
+vpButton.grid(column=1,columnspan=1,sticky=W,row=12,padx=5, pady=10)
 
 npButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehek)
-npButton.grid(column=1,columnspan=1,sticky=W,row=13,padx=10, pady=10)
+npButton.grid(column=1,columnspan=1,sticky=W,row=13,padx=5, pady=10)
 
 vpzButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehek)
 vpzButton.grid(column=3,columnspan=1,sticky=W,row=12,padx=10, pady=10)
