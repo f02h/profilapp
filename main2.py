@@ -1779,10 +1779,10 @@ mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font =
 mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 
 visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek S:", fg = "green", font = ("Helvetica", 24))
-visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=5, pady=10)
+visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=10, pady=10)
 
 nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek S:", fg = "green", font = ("Helvetica", 24))
-nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=5, pady=10)
+nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=10, pady=10)
 
 visokPlehekZadajLabel = Label(vrtalkaL, text = "Visok plehek Z:", fg = "green", font = ("Helvetica", 24))
 visokPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=12,padx=5, pady=10)
