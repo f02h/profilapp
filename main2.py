@@ -637,20 +637,20 @@ def executeDrill():
 
     data = {
         "A": "drill",
-        "PLN": dbvars["pozicijaLNull"] * 160,
-        "PDN": dbvars["pozicijaDNull"] * 160,
-        "PL": dbvars["pozicijaL"] * 160,
-        "PD": dbvars["pozicijaD"] * 160,
+        "PLN": dbvars["pozicijaLNull"] * 80,
+        "PDN": dbvars["pozicijaDNull"] * 80,
+        "PL": dbvars["pozicijaL"] * 80,
+        "PD": dbvars["pozicijaD"] * 80,
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
-        "HL": dbvars["hodL"] * 160,
-        "PHL": dbvars["pocasnejePredKoncemHodaL"]*160,
+        "HL": dbvars["hodL"] * 80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
-        "HD": dbvars["hodD"] * 160,
-        "PHD": dbvars["pocasnejePredKoncemHodaD"]*160,
+        "HD": dbvars["hodD"] * 80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
-        "POL": dbvars["povratekL"] * 160,
-        "POD": dbvars["povratekD"] * 160,
+        "POL": dbvars["povratekL"] * 80,
+        "POD": dbvars["povratekD"] * 80,
         "POVL": dbvars["povrtavanjeL"] * 80,
         "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
@@ -709,20 +709,20 @@ def executeDrillPlehek():
 
     data = {
         "A": "drill",
-        "PLN": dbvars["pozicijaLNull"] * 160,
-        "PDN": dbvars["pozicijaDNull"] * 160,
-        "PL": pozicijaL * 160,
-        "PD": pozicijaD * 160,
+        "PLN": dbvars["pozicijaLNull"] * 80,
+        "PDN": dbvars["pozicijaDNull"] * 80,
+        "PL": pozicijaL * 80,
+        "PD": pozicijaD * 80,
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
-        "HL": dbvars["hodL"] * 160,
-        "PHL": dbvars["pocasnejePredKoncemHodaL"]*160,
+        "HL": dbvars["hodL"] * 80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
-        "HD": dbvars["hodD"] * 160,
-        "PHD": dbvars["pocasnejePredKoncemHodaD"]*160,
+        "HD": dbvars["hodD"] * 80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
-        "POL": dbvars["povratekL"] * 160,
-        "POD": dbvars["povratekD"] * 160,
+        "POL": dbvars["povratekL"] * 80,
+        "POD": dbvars["povratekD"] * 80,
         "POVL": dbvars["povrtavanjeL"] * 80,
         "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
@@ -1547,7 +1547,7 @@ def moveStepper():
 
     global stepperList
 
-    stepRatio = 160
+    stepRatio = 80
     if int(stepperchoosen.get()) == 7 or int(stepperchoosen.get()) == 6 or int(stepperchoosen.get()) == 5:
         stepRatio = 80
 
