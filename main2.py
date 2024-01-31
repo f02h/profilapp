@@ -68,6 +68,8 @@ currentQtyLabel = 0
 manualLoading = False
 visokPlehekS = False
 nizekPlehekS = False
+visokPlehekZadajS = False
+nizekPlehekZadajS = False
 disableDrill = False
 
 def enumerate_row_column(iterable, num_cols):
@@ -788,6 +790,8 @@ def runCycle():
     global saw_width
     global nizekPlehekS
     global visokPlehekS
+    global nizekPlehekZadajS
+    global visokPlehekZadajS
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -1579,6 +1583,7 @@ def manualLoad():
 
 def visokPlehek():
     global visokPlehekS
+    global nizekPlehekS
     # Determine is on or off
     if visokPlehekS:
         vpButton.config(image=off)
@@ -1586,9 +1591,14 @@ def visokPlehek():
     else:
         vpButton.config(image=on)
         visokPlehekS = True
+        npButton.config(image=off)
+        nizekPlehekS = False
+
+
 
 def nizekPlehek():
     global nizekPlehekS
+    global visokPlehekS
     # Determine is on or off
     if nizekPlehekS:
         npButton.config(image=off)
@@ -1596,6 +1606,28 @@ def nizekPlehek():
     else:
         npButton.config(image=on)
         nizekPlehekS = True
+        vpButton.config(image=off)
+        visokPlehekS = False
+
+def visokPlehekZadaj():
+    global visokPlehekZadajS
+    # Determine is on or off
+    if visokPlehekZadajS:
+        vpzButton.config(image=off)
+        visokPlehekS = False
+    else:
+        vpzButton.config(image=on)
+        visokPlehekZadajS = True
+
+def nizekPlehekZadaj():
+    global nizekPlehekZadajS
+    # Determine is on or off
+    if nizekPlehekZadajS:
+        npzButton.config(image=off)
+        nizekPlehekZadajS = False
+    else:
+        npzButton.config(image=on)
+        nizekPlehekZadajS = True
 
 
 def add_log(log):
@@ -1743,10 +1775,10 @@ errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font = ("Helvetica", 24))
 mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 
-visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek:", fg = "green", font = ("Helvetica", 24))
+visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek S:", fg = "green", font = ("Helvetica", 24))
 visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=5, pady=10)
 
-nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek:", fg = "green", font = ("Helvetica", 24))
+nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek S:", fg = "green", font = ("Helvetica", 24))
 nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=5, pady=10)
 
 visokPlehekZadajLabel = Label(vrtalkaL, text = "Visok plehek Z:", fg = "green", font = ("Helvetica", 24))
