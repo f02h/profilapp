@@ -844,6 +844,15 @@ def runCycle():
     elif nizekPlehekS and float(dbvars["hodNizekPlehek"]) != 0.0:
         plehekOffset = dbvars["hodNizekPlehek"]    
 
+    plehekOffsetZadaj = 0
+    if visokPlehekZadajS and nizekPlehekZadajS:
+        plehekOffsetZadaj = 0
+    elif visokPlehekZadajS and float(dbvars["hodVisokPlehek"]) != 0.0:
+        plehekOffsetZadaj = dbvars["hodVisokPlehek"]
+    elif nizekPlehekZadajS and float(dbvars["hodNizekPlehek"]) != 0.0:
+        plehekOffsetZadaj = dbvars["hodNizekPlehek"]    
+
+
     if manualLoading:
         while 1:
 
