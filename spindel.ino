@@ -85,11 +85,11 @@ int zaga = 8;
 volatile int pozicijaLNull = 0;
 volatile int pozicijaDNull = 0;
 
-volatile int maxPozicija = 8000;
-volatile int maxHod = 14400;
-volatile int maxPovrtavanjeHod = 14400;
-volatile int minPovratekL = 200;
-volatile int minPovratekD = 200;
+volatile int maxPozicija = 4000;
+volatile int maxHod = 7200;
+volatile int maxPovrtavanjeHod = 7200;
+volatile int minPovratekL = 100;
+volatile int minPovratekD = 100;
 
 volatile int pozicijaL = 0;
 volatile int pozicijaD = 0;
@@ -98,28 +98,28 @@ volatile int drillToolL = 1;
 volatile int drillToolR = 3;
 
 
-volatile int hod = 15000;
-volatile int tmpHod = (maxHod - maxPozicija) + 4800;
-volatile int tmpHodL = 14400;
-volatile int slowHodL = 800;
+volatile int hod = 7500;
+volatile int tmpHod = (maxHod - maxPozicija) + 2400;
+volatile int tmpHodL = 7200;
+volatile int slowHodL = 400;
 volatile int slowHodLSpeed = 75;
 
-volatile int tmpHodD = 14400;
-volatile int slowHodD = 800;
+volatile int tmpHodD = 7200;
+volatile int slowHodD = 400;
 volatile int slowHodDSpeed = 75;
 
 volatile int hodL = 0;
 volatile int hodD = 0;
 
-volatile int povratekL = 1000;
-volatile int povratekD = 1000;
+volatile int povratekL = 500;
+volatile int povratekD = 500;
 
-volatile int minPovratekProfil = 1000;
+volatile int minPovratekProfil = 500;
 
 // hod levo hod desno, povratek levo povratek desno
 
-volatile int povrtavanjeL = 11200; // 7cm
-volatile int povrtavanjeD = 11200;
+volatile int povrtavanjeL = 5600; // 7cm
+volatile int povrtavanjeD = 5600;
 
 volatile int povrtavanjeLIzklop = 0;
 volatile int povrtavanjeDIzklop = 0;
@@ -240,10 +240,10 @@ void setup() {
   stepper4.setMaxSpeed(3000);
   stepper4.setAcceleration(1500.0);
 
-  stepper5.setMaxSpeed(6000);
+  stepper5.setMaxSpeed(12000);
   stepper5.setAcceleration(6000.0);
 
-  stepper6.setMaxSpeed(6000);
+  stepper6.setMaxSpeed(12000);
   stepper6.setAcceleration(6000.0);
 
   stepper7.setMaxSpeed(20000);
@@ -512,7 +512,7 @@ boolean drill() {
       runSpindle(5,0);
       stepper5.moveTo(povrtavanjeL);
       stepper5.runToPosition();
-      stepper5.moveTo(pozicijaD + 3200);
+      stepper5.moveTo(pozicijaD + 1600);
       stepper5.runToPosition();
   }
 
@@ -520,7 +520,7 @@ boolean drill() {
       runSpindle(6,0);
       stepper6.moveTo(povrtavanjeD);
       stepper6.runToPosition();
-      stepper6.moveTo(pozicijaL + 3200);
+      stepper6.moveTo(pozicijaL + 1600);
       stepper6.runToPosition();
   }
 
@@ -626,19 +626,19 @@ boolean changePositionL(int pozicija3) {
   pozicija3 = checkMove(3, pozicija3);
   if (pozicija3 < pozicijaL) {
       //minPovratekPovrtavanjeL = pozicija3;
-      stepper6.moveTo(pozicija3 + 3200);
+      stepper6.moveTo(pozicija3 + 1600);
       stepper6.runToPosition();
   }
 
   if (pozicija3 > pozicijaL) {
-      if (pozicija3 > 4800) {
-        tmpHodL = maxHod - (pozicija3 - 4800);
+      if (pozicija3 > 2400) {
+        tmpHodL = maxHod - (pozicija3 - 2400);
         if (stepper1.currentPosition() > tmpHodL) {
           stepper1.moveTo(tmpHodL);
           stepper1.runToPosition();
         }
       } else {
-        tmpHodL = 14400;
+        tmpHodL = 7200;
       }
   }
 
@@ -656,19 +656,19 @@ boolean changePositionD(int pozicija4) {
   pozicija4 = checkMove(4, pozicija4);
   if (pozicija4 < pozicijaD) {
       //minPovratekPovrtavanjeD = pozicija4;
-      stepper5.moveTo(pozicija4 + 3200);
+      stepper5.moveTo(pozicija4 + 1600);
       stepper5.runToPosition();
   }
 
   if (pozicija4 > pozicijaD) {
-      if (pozicija4 > 4800) {
-        tmpHodD = maxHod - (pozicija4 - 4800);
+      if (pozicija4 > 2400) {
+        tmpHodD = maxHod - (pozicija4 - 2400);
         if (stepper2.currentPosition() > tmpHodD) {
           stepper2.moveTo(tmpHodD);
           stepper2.runToPosition();
         }
       } else {
-        tmpHodD = 14400;
+        tmpHodD = 7200;
       }
   }
 
