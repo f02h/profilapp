@@ -1778,16 +1778,16 @@ errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font = ("Helvetica", 24))
 mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 
-visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek S:", fg = "green", font = ("Helvetica", 24))
+visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek S:", fg = "green", font = ("Helvetica", 20))
 visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=10, pady=10)
 
-nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek S:", fg = "green", font = ("Helvetica", 24))
+nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek S:", fg = "green", font = ("Helvetica", 20))
 nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=10, pady=10)
 
-visokPlehekZadajLabel = Label(vrtalkaL, text = "Visok plehek Z:", fg = "green", font = ("Helvetica", 24))
+visokPlehekZadajLabel = Label(vrtalkaL, text = "Visok plehek Z:", fg = "green", font = ("Helvetica", 20))
 visokPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=12,padx=5, pady=10)
 
-nizekPlehekZadajLabel = Label(vrtalkaL, text = "Nizek plehek Z:", fg = "green", font = ("Helvetica", 24))
+nizekPlehekZadajLabel = Label(vrtalkaL, text = "Nizek plehek Z:", fg = "green", font = ("Helvetica", 20))
 nizekPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=13,padx=5, pady=10)
 
 on = PhotoImage(file = "/home/pi/profilapp/on.png")
