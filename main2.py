@@ -1744,10 +1744,10 @@ mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font =
 mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 
 visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek:", fg = "green", font = ("Helvetica", 24))
-visokPlehekLabel.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
+visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=5, pady=10)
 
 nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek:", fg = "green", font = ("Helvetica", 24))
-nizekPlehekLabel.grid(column=0,columnspan=4,sticky=W,row=13,padx=5, pady=30)
+nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=5, pady=10)
 
 on = PhotoImage(file = "/home/pi/profilapp/on.png")
 off = PhotoImage(file = "/home/pi/profilapp/off.png")
@@ -1755,10 +1755,10 @@ mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
 mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
 
 vpButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehek)
-vpButton.grid(column=2,columnspan=1,sticky=W,row=12,padx=10, pady=30)
+vpButton.grid(column=1,columnspan=1,sticky=W,row=12,padx=10, pady=10)
 
 npButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehek)
-npButton.grid(column=2,columnspan=1,sticky=W,row=13,padx=10, pady=30)
+npButton.grid(column=1,columnspan=1,sticky=W,row=13,padx=10, pady=10)
 
 output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
 output.grid(column=0,columnspan=4,sticky=W,row=14,padx=5, pady=30)
