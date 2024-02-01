@@ -388,9 +388,9 @@ void loop()
 
       } else if (doc["A"] == "spindle") {
 
-        runSpindle(doc["IDS"], doc["T"]);
+          runSpindle(doc["IDS"], doc["T"]);
 
-        Serial.println("done");
+          Serial.println("done");
 
       } else if (doc["A"] == "spindleOn") {
 
@@ -413,6 +413,15 @@ void loop()
       } else if (doc["A"] == "spindleOff") {
 
           allSpindle(1);
+        
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
+      } else if (doc["A"] == "prijemaloOn") {
+
+          pneumatikaVentilPrijemalo = LOW;
         
           StaticJsonDocument<200> doc2;
           doc2["status"] = "done";

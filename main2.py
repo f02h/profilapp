@@ -784,6 +784,21 @@ def spindleOff():
         return False
     else:
         return True
+    
+def prijemaloOn():
+
+    data = {
+        "A": "prijemaloOn",
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
 
 
 def cut():
@@ -837,6 +852,9 @@ def runCycle():
     global nizekPlehekZadajS
     global visokPlehekZadajS
     global spindleOffTime
+
+    # variable used to determinate if feedForward should be used instead of regular feed
+    useFeedFwd = False
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -1045,14 +1063,7 @@ def runCycle():
 
             print("Run cycle")
             cut = float(runLength.get().replace(',', '.'))
-            print(cut)
-            # if currentCutLen == 0:
-            #    currentCutLen = cut
-
-            # if currentCutLen != cut and 0:
-            #    changeLength()
-            #    currentCutLen = cut
-
+           
             print("Rev move to load profile")
             tmpStatus = retractLoader()
 
@@ -1169,11 +1180,36 @@ def runCycle():
                     print(str(x) + " : " + str(moveTo))
                     moveFeeder("moveFwd", 120)
                     print("Drill " + str(x) + ".")
+
+                    ## use feedFwd before last drill
+                    if x == (nbrOfHoles - 1):
+                        '''
+                        tmpPrijemalo = prijemaloOn()
+                        useFeedFwd = True
+
+                        cut = float(runLength.get().replace(',', '.'))
+           
+                        print("Rev move to load profile")
+                        tmpStatus = retractLoader()
+
+                        tmpEL = extensionLength
+                        if cut < 250:
+                            tmpEL = 0
+
+                        tmpStatus = moveFeeder("moveRev", float(
+                            runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+
+                        print("Fold extension in extended")
+                        if cut > 250:
+                            tmpStatus = extensionF()
+                        '''
+
                     if not disableDrill:
                         drillRes = executeDrill()
                         if not drillRes:
                             print("Drill error")
                             return
+                        
                 currentQty = currentQty - 1
                 runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
             else:
