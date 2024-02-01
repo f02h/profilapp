@@ -893,7 +893,7 @@ def runCycle():
                     return
 
                 print("Waiting for profile")
-                time.sleep(1)
+                time.sleep(0.5)
                 tmpStatus = waitForProfile()
 
             # tmpStatus = unloadProfile()
@@ -914,7 +914,7 @@ def runCycle():
             #    time.sleep(1)
             #    tmpStatus = waitForProfile()
 
-            fromStart = 0.0;
+            fromStart = 0.0
             nbrOfHoles = int(cut // 120)
             rem = cut % 120
             fromStart = refExtension + (120 - rem)
@@ -977,6 +977,14 @@ def runCycle():
                         print("Drill error")
                         return
 
+    ##
+        ##
+        ##
+        ## AUTO LOAD
+        ##
+        ##
+        ##
+    ##
     else:
         while currentQty > 0:
 
@@ -1018,7 +1026,7 @@ def runCycle():
                     return
 
                 print("Waiting for profile")
-                time.sleep(1)
+                time.sleep(0.5)
                 tmpStatus = waitForProfile()
 
             # tmpStatus = unloadProfile()
@@ -1030,7 +1038,7 @@ def runCycle():
             print("Extend extension")
             tmpStatus = extensionE()
 
-            print("Load profile")
+            '''print("Load profile")
             tmpStatus = waitForProfile()
             while tmpStatus != "done":
                 # wait for profile
@@ -1043,7 +1051,7 @@ def runCycle():
                 print("Waiting for profile")
                 time.sleep(1)
                 tmpStatus = waitForProfile()
-
+            '''
             nbrOfHoles = int(cut // 120)
             rem = cut % 120
             fromStart = refExtension + (120 - rem)
