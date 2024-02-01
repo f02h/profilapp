@@ -298,95 +298,142 @@ void loop()
          drill();
          Serial.println("done");*/
        if (false && alarmTripped) {
-        StaticJsonDocument<200> doc2;
-        doc2["status"] = "failed";
-        serializeJson(doc2, Serial);
-        Serial.println();
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "failed";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
        }
 
 
        if (action2 == "drill") {
-         changePositionL(doc["PL"]);
-         changePositionD(doc["PD"]);
+          changePositionL(doc["PL"]);
+          changePositionD(doc["PD"]);
 
-         hodL = doc["HL"];
-         hodL = checkMove(1,hodL);
-         if (hodL > tmpHodL) {
-            hodL = tmpHodL;
-         }
+          hodL = doc["HL"];
+          hodL = checkMove(1,hodL);
+          if (hodL > tmpHodL) {
+              hodL = tmpHodL;
+          }
 
-         hodD = doc["HD"];
-         hodD = checkMove(2, hodD);
-         if (hodD > tmpHodD) {
-            hodD = tmpHodD;
-         }
+          hodD = doc["HD"];
+          hodD = checkMove(2, hodD);
+          if (hodD > tmpHodD) {
+              hodD = tmpHodD;
+          }
 
-         drillToolL = doc["OL"];
-         drillToolR = doc["OD"];
+          drillToolL = doc["OL"];
+          drillToolR = doc["OD"];
 
-         slowHodL = doc["PHL"];
-         slowHodLSpeed = doc["PHLH"];
+          slowHodL = doc["PHL"];
+          slowHodLSpeed = doc["PHLH"];
 
-         slowHodD = doc["PHD"];
-         slowHodDSpeed = doc["PHDH"];
+          slowHodD = doc["PHD"];
+          slowHodDSpeed = doc["PHDH"];
 
-         povrtavanjeL = doc["POVL"];
-         povrtavanjeD = doc["POVD"];
+          povrtavanjeL = doc["POVL"];
+          povrtavanjeD = doc["POVD"];
 
-         povrtavanjeLIzklop = doc["POVLI"];
-         povrtavanjeDIzklop = doc["POVDI"];
+          povrtavanjeLIzklop = doc["POVLI"];
+          povrtavanjeDIzklop = doc["POVDI"];
 
-         mazalkaP = doc["MAZD"];
-         if (mazalkaP == 1) {
-            mazalkaProfil = LOW;
-         } else {
-            mazalkaProfil = HIGH;
-         }
+          mazalkaP = doc["MAZD"];
+          if (mazalkaP == 1) {
+              mazalkaProfil = LOW;
+          } else {
+              mazalkaProfil = HIGH;
+          }
 
-         drill();
-         StaticJsonDocument<200> doc2;
-         doc2["status"] = "done";
-         serializeJson(doc2, Serial);
-         Serial.println();
-      } else if (action == "home") {  // turn on LED
-        homming();
-        StaticJsonDocument<200> doc2;
-        doc2["status"] = "done";
-        serializeJson(doc2, Serial);
-        Serial.println();
+          drill();
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
+      } else if (action == "home") { 
+
+          homming();
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (action2 == "cut") {
-        hodZaga = doc["MZ"];
-        slowHodZaga = doc["PHZ"];
-        slowHodZagaSpeed = doc["PHZH"];
-        cut();
-        StaticJsonDocument<200> doc2;
-        doc2["status"] = "done";
-        serializeJson(doc2, Serial);
-        Serial.println();
+
+          hodZaga = doc["MZ"];
+          slowHodZaga = doc["PHZ"];
+          slowHodZagaSpeed = doc["PHZH"];
+          cut();
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (doc["A"] == "moveS") {
-        moveStepper(doc["IDS"], doc["MS"]);
-        StaticJsonDocument<200> doc2;
-        doc2["status"] = "done";
-        JsonArray data = doc2.createNestedArray("data");
-        for (int i = 1; i <8; i++) {
-          data.add(returnStepperPosition(i));
-        }
-        serializeJson(doc2, Serial);
-        Serial.println();
+
+          moveStepper(doc["IDS"], doc["MS"]);
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          JsonArray data = doc2.createNestedArray("data");
+          for (int i = 1; i <8; i++) {
+            data.add(returnStepperPosition(i));
+          }
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (doc["A"] == "spindle") {
+
         runSpindle(doc["IDS"], doc["T"]);
+
         Serial.println("done");
+
+      } else if (doc["A"] == "spindleOn") {
+
+          runSpindle(doc["OL"], 0);
+          runSpindle(doc["OD"], 0);
+
+          if (doc["POVLI"] == 0) {
+            runSpindle(5, 0);
+          }
+
+          if (doc["POVDI"] == 0) {
+            runSpindle(6, 0);
+          }
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
+      } else if (doc["A"] == "spindleOff") {
+
+          allSpindle(1);
+        
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (doc["A"] == "CTL" || doc["A"] == "CTR") {
-        if (doc["A"] == "CTL") {
-          drillToolL = doc["T"];
-        } else {
-          drillToolR = doc["T"];
-        }
-        setupBothTool();
-        StaticJsonDocument<200> doc2;
-         doc2["status"] = "done";
-         serializeJson(doc2, Serial);
-         Serial.println();
+
+          if (doc["A"] == "CTL") {
+            drillToolL = doc["T"];
+          } else {
+            drillToolR = doc["T"];
+          }
+
+          setupBothTool();
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (doc["A"] == "spindleA") {
         allSpindle(doc["T"]);
         Serial.println("done");
@@ -524,10 +571,12 @@ boolean drill() {
       stepper6.runToPosition();
   }
 
+  /*
   runSpindle(drillToolL,1);
   runSpindle(drillToolR,1);
   runSpindle(5,1);
   runSpindle(6,1);
+  */
 
   pneumatikaVentilPrijemalo = HIGH;
 }
@@ -713,6 +762,7 @@ int checkMove(int idStepper, int steps) {
   return steps;
 
 }
+
 boolean moveStepper(int idStepper, int moveToStep) {
 
   int safeMove = checkMove(idStepper, moveToStep);

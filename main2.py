@@ -72,6 +72,8 @@ visokPlehekZadajS = False
 nizekPlehekZadajS = False
 disableDrill = False
 
+spindleOffTime = 30
+
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
         row = idx // num_cols
@@ -741,6 +743,48 @@ def executeDrillPlehek():
 
     #label.config(text=str(hearv))
 
+def spindleOn():
+
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    dbvars = dict(res)
+
+    data = {
+        "A": "spindleOn",
+        "OL": int(dbvars["orodjeL"]),
+        "OD": int(dbvars["orodjeD"]),
+        "POVLI": int(dbvars["povrtavanjeLIzklop"]),
+        "POVDI": int(dbvars["povrtavanjeDIzklop"]),
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+    
+def spindleOff():
+
+    data = {
+        "A": "spindleOff",
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+
 
 def cut():
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
@@ -792,6 +836,7 @@ def runCycle():
     global visokPlehekS
     global nizekPlehekZadajS
     global visokPlehekZadajS
+    global spindleOffTime
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -884,6 +929,9 @@ def runCycle():
             print("Load profile")
             add_log("Load profile")
             tmpStatus = waitForProfile()
+
+            currentSpindleTime = int(time.time())
+            
             while tmpStatus != "done":
                 # wait for profile
                 if changingLen == True:
@@ -895,6 +943,10 @@ def runCycle():
                 print("Waiting for profile")
                 time.sleep(0.5)
                 tmpStatus = waitForProfile()
+
+                if (int(time.time()) - currentSpindleTime) > spindleOffTime:
+                    ## turn spindle on
+                    turnSpindleOff = spindleOff() 
 
             # tmpStatus = unloadProfile()
             print("Profile loaded")
@@ -928,6 +980,9 @@ def runCycle():
             fromStart += saw_width
             fromStart += sensorToDrill
             fromStart += biasDiff
+
+            ## turn spindle on
+            turnSpindleOn = spindleOn()
 
             #use plehek offset for first drill
             if plehekOffset != 0:
@@ -1066,6 +1121,9 @@ def runCycle():
             fromStart += sensorToDrill
             fromStart += biasDiff
 
+            ## turn spindle on
+            turnSpindleOn = spindleOn()
+
             #use plehek offset for first drill
             if plehekOffset != 0:
                 tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
@@ -1122,6 +1180,10 @@ def runCycle():
                 currentQty -= 1
 
         if currentQty == 0:
+
+            ## turn spindle off
+            turnSpindleOff = spindleOff()
+
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
 
