@@ -72,6 +72,10 @@ visokPlehekZadajS = False
 nizekPlehekZadajS = False
 disableDrill = False
 
+# variable used to determinate if feedForward should be used instead of regular feed
+feedForwardDone = True
+useFeedFwd = False
+
 spindleOffTime = 30
 
 def enumerate_row_column(iterable, num_cols):
@@ -852,9 +856,9 @@ def runCycle():
     global nizekPlehekZadajS
     global visokPlehekZadajS
     global spindleOffTime
-
-    # variable used to determinate if feedForward should be used instead of regular feed
-    useFeedFwd = False
+    global feedForwardDone
+    global useFeedFwd
+    
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
@@ -1062,21 +1066,29 @@ def runCycle():
         while currentQty > 0:
 
             print("Run cycle")
-            cut = float(runLength.get().replace(',', '.'))
-           
-            print("Rev move to load profile")
-            tmpStatus = retractLoader()
 
-            tmpEL = extensionLength
-            if cut < 250:
-                tmpEL = 0
+            while (not feedForwardDone):
+                pass
+                    
+            if useFeedFwd == False:
 
-            tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+                cut = float(runLength.get().replace(',', '.'))
+            
+                print("Rev move to load profile")
+                tmpStatus = retractLoader()
 
-            print("Fold extension in extended")
-            if cut > 250:
-                tmpStatus = extensionF()
+                tmpEL = extensionLength
+                if cut < 250:
+                    tmpEL = 0
+
+                tmpStatus = moveFeeder("moveRev", float(
+                    runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+
+                print("Fold extension in extended")
+                if cut > 250:
+                    tmpStatus = extensionF()
+            else:
+                useFeedFwd = True
 
             # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
@@ -1181,28 +1193,14 @@ def runCycle():
                     moveFeeder("moveFwd", 120)
                     print("Drill " + str(x) + ".")
 
-                    ## use feedFwd before last drill
+                    ##
+                    ## use feedFwdThread before last drill
                     if x == (nbrOfHoles - 1):
-                        '''
-                        tmpPrijemalo = prijemaloOn()
                         useFeedFwd = True
-
-                        cut = float(runLength.get().replace(',', '.'))
-           
-                        print("Rev move to load profile")
-                        tmpStatus = retractLoader()
-
-                        tmpEL = extensionLength
-                        if cut < 250:
-                            tmpEL = 0
-
-                        tmpStatus = moveFeeder("moveRev", float(
-                            runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
-
-                        print("Fold extension in extended")
-                        if cut > 250:
-                            tmpStatus = extensionF()
-                        '''
+                        tmpPrijemalo = prijemaloOn()
+                        start_thread_feedFwd()
+                    ##
+                    ##
 
                     if not disableDrill:
                         drillRes = executeDrill()
@@ -1519,6 +1517,37 @@ def waitForProfile():
     print(hearv)
     return hearv["status"]
 
+def feedForwardThread():
+    global feedForwardDone
+    global saw_width
+    global refExtension
+    
+    feedForwardDone = False
+
+    cut = float(runLength.get().replace(',', '.'))
+           
+    print("Rev move to load profile")
+    tmpStatus = retractLoader()
+
+    tmpEL = extensionLength
+    if cut < 250:
+        tmpEL = 0
+
+    tmpStatus = moveFeeder("moveRev", float(
+        runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+
+    print("Fold extension in extended")
+    if cut > 250:
+        tmpStatus = extensionF()
+
+    feedForwardDone = True
+
+def start_thread_feedFwd():
+    # Assign global variable and initialize value
+    
+    ffThread = Thread(target=feedForwardThread)
+    ffThread.start()
+    ffThread.join()
 
 def start_thread():
     # Assign global variable and initialize value
