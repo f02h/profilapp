@@ -308,8 +308,12 @@ void loop()
 
 
        if (action2 == "drill") {
-          changePositionL(doc["PL"]);
-          changePositionD(doc["PD"]);
+
+          povrtavanjeLIzklop = doc["POVLI"];
+          povrtavanjeDIzklop = doc["POVDI"];
+
+          changePositionL(doc["PL"], povrtavanjeLIzklop);
+          changePositionD(doc["PD"], povrtavanjeDIzklop);
 
           hodL = doc["HL"];
           hodL = checkMove(1,hodL);
@@ -334,9 +338,6 @@ void loop()
 
           povrtavanjeL = doc["POVL"];
           povrtavanjeD = doc["POVD"];
-
-          povrtavanjeLIzklop = doc["POVLI"];
-          povrtavanjeDIzklop = doc["POVDI"];
 
           mazalkaP = doc["MAZD"];
           if (mazalkaP == 1) {
@@ -679,12 +680,18 @@ boolean drill2() {
 }
 
 
-boolean changePositionL(int pozicija3) {
+boolean changePositionL(int pozicija3, int povrtavanjeIzklop) {
 
   pozicija3 = checkMove(3, pozicija3);
-  if (pozicija3 < pozicijaL) {
-      //minPovratekPovrtavanjeL = pozicija3;
-      stepper6.moveTo(pozicija3 + 1600);
+
+  if (povrtavanjeIzklop == 0) {
+    if (pozicija3 < pozicijaL) {
+        //minPovratekPovrtavanjeL = pozicija3;
+        stepper6.moveTo(pozicija3 + 1600);
+        stepper6.runToPosition();
+    }
+  } else {
+      stepper6.moveTo(0);
       stepper6.runToPosition();
   }
 
@@ -709,12 +716,17 @@ boolean changePositionL(int pozicija3) {
 
 }
 
-boolean changePositionD(int pozicija4) {
+boolean changePositionD(int pozicija4, int povrtavanjeIzklop) {
 
   pozicija4 = checkMove(4, pozicija4);
-  if (pozicija4 < pozicijaD) {
-      //minPovratekPovrtavanjeD = pozicija4;
-      stepper5.moveTo(pozicija4 + 1600);
+  if (povrtavanjeIzklop == 0) {
+    if (pozicija4 < pozicijaD) {
+        //minPovratekPovrtavanjeD = pozicija4;
+        stepper5.moveTo(pozicija4 + 1600);
+        stepper5.runToPosition();
+    }
+  } else {
+      stepper5.moveTo(0);
       stepper5.runToPosition();
   }
 
@@ -786,12 +798,12 @@ boolean moveStepper(int idStepper, int moveToStep) {
       stepper2.runToPosition();
       break;
     case 3:
-      changePositionL(safeMove);
+      changePositionL(safeMove,0);
       /*stepper3.moveTo(safeMove);
       stepper3.runToPosition();*/
       break;
     case 4:
-      changePositionD(safeMove);
+      changePositionD(safeMove,0);
       /*
       stepper4.moveTo(safeMove);
       stepper4.runToPosition();*/
