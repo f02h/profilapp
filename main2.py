@@ -72,6 +72,9 @@ visokPlehekZadajS = False
 nizekPlehekZadajS = False
 disableDrill = False
 
+zagaToggleS = False
+zagaToggleSFirst = True
+
 spindleOffTime = 30
 
 def enumerate_row_column(iterable, num_cols):
@@ -838,6 +841,9 @@ def runCycle():
     global visokPlehekZadajS
     global spindleOffTime
 
+    global zagaToggleS
+    global zagaToggleSFirst
+
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
     idProfil = int(res[0])
     loadingBay = int(res[2])
@@ -1053,73 +1059,85 @@ def runCycle():
             #    changeLength()
             #    currentCutLen = cut
 
-            print("Rev move to load profile")
-            tmpStatus = retractLoader()
+            if not zagaToggleS:
 
-            tmpEL = extensionLength
-            if cut < 250:
-                tmpEL = 0
+                print("Rev move to load profile")
+                tmpStatus = retractLoader()
 
-            tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+                tmpEL = extensionLength
+                if cut < 250:
+                    tmpEL = 0
 
-            print("Fold extension in extended")
-            if cut > 250:
-                tmpStatus = extensionF()
+                tmpStatus = moveFeeder("moveRev", float(
+                    runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
 
-            # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+                print("Fold extension in extended")
+                if cut > 250:
+                    tmpStatus = extensionF()
 
-            print("Load profile")
-            tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
-            tmpStatus = waitForProfile()
-            while tmpStatus != "done":
-                # wait for profile
-                if changingLen == True:
-                    resetLoader()
-                    print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
-                    return
+                # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
-                print("Waiting for profile")
-                time.sleep(0.5)
+                print("Load profile")
+                tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
                 tmpStatus = waitForProfile()
+                while tmpStatus != "done":
+                    # wait for profile
+                    if changingLen == True:
+                        resetLoader()
+                        print("Drop cycle")
+                        runCyc.config(state=NORMAL, bg='green')
+                        return
 
-            # tmpStatus = unloadProfile()
-            print("Profile loaded")
-            tmpStatus = retractLoader()
-            tmpStatus = moveFeeder("moveRev",
-                                   float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+                    print("Waiting for profile")
+                    time.sleep(0.5)
+                    tmpStatus = waitForProfile()
 
-            print("Extend extension")
-            tmpStatus = extensionE()
+                # tmpStatus = unloadProfile()
+                print("Profile loaded")
+                tmpStatus = retractLoader()
+                tmpStatus = moveFeeder("moveRev",
+                                    float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
 
-            '''print("Load profile")
-            tmpStatus = waitForProfile()
-            while tmpStatus != "done":
-                # wait for profile
-                if changingLen == True:
-                    resetLoader()
-                    print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
-                    return
+                print("Extend extension")
+                tmpStatus = extensionE()
 
-                print("Waiting for profile")
-                time.sleep(1)
+                '''print("Load profile")
                 tmpStatus = waitForProfile()
-            '''
-            nbrOfHoles = int(cut // 120)
-            rem = cut % 120
-            fromStart = refExtension + (120 - rem)
-            if rem == 0:
-                nbrOfHoles -= 1
-            else:
-                tmpCut = (int(cut // 120) + 1) * 120
-                rem = (tmpCut - cut) / 2
+                while tmpStatus != "done":
+                    # wait for profile
+                    if changingLen == True:
+                        resetLoader()
+                        print("Drop cycle")
+                        runCyc.config(state=NORMAL, bg='green')
+                        return
+
+                    print("Waiting for profile")
+                    time.sleep(1)
+                    tmpStatus = waitForProfile()
+                '''
+
+            if zagaToggleSFirst:
+
+                nbrOfHoles = int(cut // 120)
+                rem = cut % 120
                 fromStart = refExtension + (120 - rem)
+                if rem == 0:
+                    nbrOfHoles -= 1
+                else:
+                    tmpCut = (int(cut // 120) + 1) * 120
+                    rem = (tmpCut - cut) / 2
+                    fromStart = refExtension + (120 - rem)
 
-            fromStart += saw_width
-            fromStart += sensorToDrill
-            fromStart += biasDiff
+                fromStart += saw_width
+                fromStart += sensorToDrill
+                fromStart += biasDiff
+
+                if zagaToggleS:
+                    zagaToggleSFirst = False
+
+            if zagaToggleS:
+                ## razlika med navadnim štartom in tem k je že odžagano
+                fromStart = 10
 
             ## turn spindle on
             turnSpindleOn = spindleOn()
@@ -1178,6 +1196,9 @@ def runCycle():
                 runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
             else:
                 currentQty -= 1
+
+            # odrezi
+            #tmpCut = cut()
 
         if currentQty == 0:
 
@@ -1712,6 +1733,16 @@ def nizekPlehekZadaj():
         vpzButton.config(image=off)
         visokPlehekZadajS = False
 
+def toggleZaga():
+    global zagaToggleS
+    # Determine is on or off
+    if zagaToggleS:
+        zagaToggle.config(image=off)
+        zagaToggleS = False
+    else:
+        zagaToggle.config(image=on)
+        zagaToggleS = True        
+
 def add_log(log):
     output.insert("end", log + "\n")
     output.see("end")
@@ -1886,9 +1917,24 @@ vpzButton.grid(column=3,columnspan=1,sticky=W,row=12,padx=10, pady=10)
 npzButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehekZadaj)
 npzButton.grid(column=3,columnspan=1,sticky=W,row=13,padx=10, pady=10)
 
+# uporaba zage in
+
+remLengthL = Label(vrtalkaL, text='Ostanek:',font=text_font)
+remLengthL.grid(row=14, column=0,sticky=W+E)
+remLength = Entry(vrtalkaL, font=etext_font, width=10,textvariable=sv)
+remLength.grid(row=14, column=1,columnspan=2,sticky=W+E)
+remLength.insert(0, 0.0)
+
+
+zagaLabel = Label(vrtalkaL, text = "Žaga:", fg = "green", font = ("Helvetica", 20))
+zagaLabel.grid(column=2,columnspan=2,sticky=W,row=14,padx=5, pady=10)
+
+zagaToggle = Button(vrtalkaL, image = off, bd = 0,command = toggleZaga)
+zagaToggle.grid(column=3,columnspan=1,sticky=W,row=14,padx=10, pady=10)
+
 
 output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
-output.grid(column=0,columnspan=4,sticky=W,row=14,padx=5, pady=30)
+output.grid(column=0,columnspan=4,sticky=W,row=15,padx=5, pady=30)
 
 #homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
 #homingd.grid(column=2,row=9,padx=30,pady=30)
