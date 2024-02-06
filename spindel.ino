@@ -619,7 +619,7 @@ boolean drill() {
   } while (stepper1R || stepper2R);
 
 
-  if (povrtavanjeLIzklop == 0) {
+  if (povrtavanjeLIzklop == 0 && pozicijaD < 3328) {
       runSpindle(5,0);
       stepper5.moveTo(povrtavanjeL);
       stepper5.runToPosition();
@@ -627,7 +627,7 @@ boolean drill() {
       stepper5.runToPosition();
   }
 
-  if (povrtavanjeDIzklop == 0) {
+  if (povrtavanjeDIzklop == 0 && pozicijaL < 3376) {
       runSpindle(6,0);
       stepper6.moveTo(povrtavanjeD);
       stepper6.runToPosition();
@@ -738,7 +738,7 @@ boolean changePositionL(int pozicija3, int povrtavanjeIzklop) {
 
   pozicija3 = checkMove(3, pozicija3);
 
-  if (povrtavanjeIzklop == 0) {
+  if (povrtavanjeIzklop == 0 && pozicijaL < 3328) {
     if (pozicija3 < pozicijaL) {
         //minPovratekPovrtavanjeL = pozicija3;
         stepper6.moveTo(pozicija3 + 1600);
@@ -773,7 +773,7 @@ boolean changePositionL(int pozicija3, int povrtavanjeIzklop) {
 boolean changePositionD(int pozicija4, int povrtavanjeIzklop) {
 
   pozicija4 = checkMove(4, pozicija4);
-  if (povrtavanjeIzklop == 0) {
+  if (povrtavanjeIzklop == 0 && pozicijaD < 3376) {
     if (pozicija4 < pozicijaD) {
         //minPovratekPovrtavanjeD = pozicija4;
         stepper5.moveTo(pozicija4 + 1600);

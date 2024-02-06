@@ -938,10 +938,10 @@ def runCycle():
             currentSensorToDrill = float(dbvars['sensorToDrill'])
         currentSensorToDrill = sensorToDrill
 
-        prep()
-
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
+
+        prep()
 
     res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
