@@ -611,6 +611,68 @@ def initJobs():
         ctrlDelete = Button(vrtalkaDList, text='Izbrisi', command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
 
+def prep():
+
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    dictionary = {}
+    # dbvars = (Convert(res, dictionary))
+    dbvars = dict(res)
+
+    ## pozicijaLNull
+    ## pozicijaDNull
+    ## pozicijaL
+    ## pozicijaD
+    ## orodjeL
+    ## orodjeD
+    ## hodL
+    ## počasnejePredKoncemHodaL
+    ## hitrostPredKoncemHodaL
+    ## hodD
+    ## počasnejePredKoncemHodaD
+    ## hitrostPredKoncemHodaD
+    ## povratekL
+    ## povratekD
+    ## povrtavanjeL
+    ## povrtavanjeD
+
+    data = {
+        "A": "prep",
+        "PLN": dbvars["pozicijaLNull"] * 80,
+        "PDN": dbvars["pozicijaDNull"] * 80,
+        "PL": dbvars["pozicijaL"] * 80,
+        "PD": dbvars["pozicijaD"] * 80,
+        "OL": int(dbvars["orodjeL"]),
+        "OD": int(dbvars["orodjeD"]),
+        "HL": dbvars["hodL"] * 80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
+        "PHLH": dbvars["hitrostPredKoncemHodaL"],
+        "HD": dbvars["hodD"] * 80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
+        "PHDH": dbvars["hitrostPredKoncemHodaD"],
+        "POL": dbvars["povratekL"] * 80,
+        "POD": dbvars["povratekD"] * 80,
+        "POVL": dbvars["povrtavanjeL"] * 80,
+        "POVD": dbvars["povrtavanjeD"] * 80,
+        "POVLI": int(dbvars["povrtavanjeLIzklop"]),
+        "POVDI": int(dbvars["povrtavanjeDIzklop"]),
+        "MAZD": int(dbvars["mazalkaProfil"])
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+
+
 def executeDrill():
 
     res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
@@ -876,6 +938,7 @@ def runCycle():
             currentSensorToDrill = float(dbvars['sensorToDrill'])
         currentSensorToDrill = sensorToDrill
 
+        prep()
 
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')

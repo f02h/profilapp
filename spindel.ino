@@ -353,6 +353,50 @@ void loop()
           serializeJson(doc2, Serial);
           Serial.println();
 
+      } else if (action2 == "prep") {
+
+          povrtavanjeLIzklop = doc["POVLI"];
+          povrtavanjeDIzklop = doc["POVDI"];
+
+          changePositionL(doc["PL"], povrtavanjeLIzklop);
+          changePositionD(doc["PD"], povrtavanjeDIzklop);
+
+          hodL = doc["HL"];
+          hodL = checkMove(1,hodL);
+          if (hodL > tmpHodL) {
+              hodL = tmpHodL;
+          }
+
+          hodD = doc["HD"];
+          hodD = checkMove(2, hodD);
+          if (hodD > tmpHodD) {
+              hodD = tmpHodD;
+          }
+
+          drillToolL = doc["OL"];
+          drillToolR = doc["OD"];
+
+          slowHodL = doc["PHL"];
+          slowHodLSpeed = doc["PHLH"];
+
+          slowHodD = doc["PHD"];
+          slowHodDSpeed = doc["PHDH"];
+
+          povrtavanjeL = doc["POVL"];
+          povrtavanjeD = doc["POVD"];
+
+          mazalkaP = doc["MAZD"];
+          if (mazalkaP == 1) {
+              mazalkaProfil = LOW;
+          } else {
+              mazalkaProfil = HIGH;
+          }
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (action == "home") { 
 
           homming();
