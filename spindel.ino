@@ -392,6 +392,16 @@ void loop()
               mazalkaProfil = HIGH;
           }
 
+          stepper1.moveTo(hodL-slowHodL);
+          stepper2.moveTo(hodD-slowHodD);
+
+          bool stepper1R,stepper2R;
+          do {
+            stepper1R = stepper1.run();
+            stepper2R = stepper2.run();
+          } while (stepper1R || stepper2R);
+
+
           StaticJsonDocument<200> doc2;
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
