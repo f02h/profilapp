@@ -1921,7 +1921,7 @@ npzButton.grid(column=3,columnspan=1,sticky=W,row=13,padx=10, pady=10)
 
 remLengthL = Label(vrtalkaL, text='Ostanek:',font=text_font)
 remLengthL.grid(row=14, column=0,sticky=W+E)
-remLength = Entry(vrtalkaL, font=etext_font, width=10,textvariable=sv)
+remLength = Entry(vrtalkaL, font=etext_font, width=10)
 remLength.grid(row=14, column=1,columnspan=2,sticky=W+E)
 remLength.insert(0, 0.0)
 
