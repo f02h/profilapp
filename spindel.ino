@@ -500,7 +500,7 @@ void loop()
 
       } else if (doc["A"] == "PT") {
 
-          pullBothTool()
+          pullBothTool();
 
           StaticJsonDocument<200> doc2;
           doc2["status"] = "done";
