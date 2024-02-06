@@ -498,6 +498,15 @@ void loop()
           serializeJson(doc2, Serial);
           Serial.println();
 
+      } else if (doc["A"] == "PT") {
+
+          pullBothTool()
+
+          StaticJsonDocument<200> doc2;
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
+
       } else if (doc["A"] == "spindleA") {
         allSpindle(doc["T"]);
         Serial.println("done");
@@ -561,6 +570,23 @@ boolean setupBothTool() {
   }
 }
 
+boolean pullBothTool() {
+
+  pneumatikaVentil3 = HIGH;
+  delay(500);
+  while(pneumatikaSenzor3) {}
+  pneumatikaVentil1 = HIGH;
+  delay(500);
+  while(!pneumatikaSenzor1) {}
+  
+  pneumatikaVentil4 = HIGH;
+  delay(500);
+  while(pneumatikaSenzor4) {}
+  pneumatikaVentil2 = HIGH;
+  delay(500);
+  while(!pneumatikaSenzor2) {}
+
+}
 
 boolean drill() {
   // žaga do konca

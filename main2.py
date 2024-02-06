@@ -533,6 +533,21 @@ def changeTool(idTool, dir):
         return False
     else:
         return True
+    
+def pullTools():
+
+    data = {
+        "A": 'PT',
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
 
 def ctrlDeleteJob(idJob):
     sql = 'DELETE FROM job WHERE id=?'
@@ -938,10 +953,12 @@ def runCycle():
             currentSensorToDrill = float(dbvars['sensorToDrill'])
         currentSensorToDrill = sensorToDrill
 
+        pullTools()
+        prep()
+
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
 
-        prep()
 
     res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
     dbvars = dict(res)
