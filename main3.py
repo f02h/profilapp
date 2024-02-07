@@ -71,7 +71,16 @@ currentProfileId = None
 currentQty = 0
 currentQtyLabel = 0
 manualLoading = False
+visokPlehekS = False
+nizekPlehekS = False
+visokPlehekZadajS = False
+nizekPlehekZadajS = False
 disableDrill = False
+
+zagaToggleS = False
+zagaToggleSFirst = True
+
+spindleOffTime = 30
 
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
@@ -533,6 +542,21 @@ def changeTool(idTool, dir):
         return False
     else:
         return True
+    
+def pullTools():
+
+    data = {
+        "A": 'PT',
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
 
 def ctrlDeleteJob(idJob):
     sql = 'DELETE FROM job WHERE id=%s'
@@ -614,6 +638,70 @@ def initJobs():
         ctrlDelete = Button(vrtalkaDList, text='Izbrisi', command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=6, row=i)
         i += 1
 
+def prep():
+
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %", (str(idProfil),))
+    res = c.fetchall()
+    dictionary = {}
+    # dbvars = (Convert(res, dictionary))
+    dbvars = dict(res)
+
+    ## pozicijaLNull
+    ## pozicijaDNull
+    ## pozicijaL
+    ## pozicijaD
+    ## orodjeL
+    ## orodjeD
+    ## hodL
+    ## počasnejePredKoncemHodaL
+    ## hitrostPredKoncemHodaL
+    ## hodD
+    ## počasnejePredKoncemHodaD
+    ## hitrostPredKoncemHodaD
+    ## povratekL
+    ## povratekD
+    ## povrtavanjeL
+    ## povrtavanjeD
+
+    data = {
+        "A": "prep",
+        "PLN": dbvars["pozicijaLNull"] * 80,
+        "PDN": dbvars["pozicijaDNull"] * 80,
+        "PL": dbvars["pozicijaL"] * 80,
+        "PD": dbvars["pozicijaD"] * 80,
+        "OL": int(dbvars["orodjeL"]),
+        "OD": int(dbvars["orodjeD"]),
+        "HL": dbvars["hodL"] * 80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
+        "PHLH": dbvars["hitrostPredKoncemHodaL"],
+        "HD": dbvars["hodD"] * 80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
+        "PHDH": dbvars["hitrostPredKoncemHodaD"],
+        "POL": dbvars["povratekL"] * 80,
+        "POD": dbvars["povratekD"] * 80,
+        "POVL": dbvars["povrtavanjeL"] * 80,
+        "POVD": dbvars["povrtavanjeD"] * 80,
+        "POVLI": int(dbvars["povrtavanjeLIzklop"]),
+        "POVDI": int(dbvars["povrtavanjeDIzklop"]),
+        "MAZD": int(dbvars["mazalkaProfil"])
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+
+
 def executeDrill():
 
     c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
@@ -647,22 +735,22 @@ def executeDrill():
 
     data = {
         "A": "drill",
-        "PLN": dbvars["pozicijaLNull"] * 160,
-        "PDN": dbvars["pozicijaDNull"] * 160,
-        "PL": dbvars["pozicijaL"] * 160,
-        "PD": dbvars["pozicijaD"] * 160,
+        "PLN": dbvars["pozicijaLNull"] * 80,
+        "PDN": dbvars["pozicijaDNull"] * 80,
+        "PL": dbvars["pozicijaL"] * 80,
+        "PD": dbvars["pozicijaD"] * 80,
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
-        "HL": dbvars["hodL"] * 160,
-        "PHL": dbvars["pocasnejePredKoncemHodaL"]*160,
+        "HL": dbvars["hodL"] * 80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
-        "HD": dbvars["hodD"] * 160,
-        "PHD": dbvars["pocasnejePredKoncemHodaD"]*160,
+        "HD": dbvars["hodD"] * 80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
-        "POL": dbvars["povratekL"] * 160,
-        "POD": dbvars["povratekD"] * 160,
-        "POVL": dbvars["povrtavanjeL"] * 160,
-        "POVD": dbvars["povrtavanjeD"] * 160,
+        "POL": dbvars["povratekL"] * 80,
+        "POD": dbvars["povratekD"] * 80,
+        "POVL": dbvars["povrtavanjeL"] * 80,
+        "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
         "MAZD": int(dbvars["mazalkaProfil"])
@@ -678,6 +766,123 @@ def executeDrill():
         return True
 
     #label.config(text=str(hearv))
+
+def executeDrillPlehek():
+
+    global nizekPlehekS
+    global visokPlehekS
+
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+    res = c.fetchall()
+    dictionary = {}
+    # dbvars = (Convert(res, dictionary))
+    dbvars = dict(res)
+
+    ## pozicijaLNull
+    ## pozicijaDNull
+    ## pozicijaL
+    ## pozicijaD
+    ## orodjeL
+    ## orodjeD
+    ## hodL
+    ## počasnejePredKoncemHodaL
+    ## hitrostPredKoncemHodaL
+    ## hodD
+    ## počasnejePredKoncemHodaD
+    ## hitrostPredKoncemHodaD
+    ## povratekL
+    ## povratekD
+    ## povrtavanjeL
+    ## povrtavanjeD
+
+    pozicijaL = dbvars["pozicijaL"]
+    pozicijaD = dbvars["pozicijaD"]
+    if nizekPlehekS or visokPlehekS:
+        pozicijaL -= dbvars["plehekOdmik"]
+        pozicijaD -= dbvars["plehekOdmik"]
+
+    data = {
+        "A": "drill",
+        "PLN": dbvars["pozicijaLNull"] * 80,
+        "PDN": dbvars["pozicijaDNull"] * 80,
+        "PL": pozicijaL * 80,
+        "PD": pozicijaD * 80,
+        "OL": int(dbvars["orodjeL"]),
+        "OD": int(dbvars["orodjeD"]),
+        "HL": dbvars["hodL"] * 80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
+        "PHLH": dbvars["hitrostPredKoncemHodaL"],
+        "HD": dbvars["hodD"] * 80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
+        "PHDH": dbvars["hitrostPredKoncemHodaD"],
+        "POL": dbvars["povratekL"] * 80,
+        "POD": dbvars["povratekD"] * 80,
+        "POVL": dbvars["povrtavanjeL"] * 80,
+        "POVD": dbvars["povrtavanjeD"] * 80,
+        "POVLI": int(dbvars["povrtavanjeLIzklop"]),
+        "POVDI": int(dbvars["povrtavanjeDIzklop"]),
+        "MAZD": int(dbvars["mazalkaProfil"])
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+
+    #label.config(text=str(hearv))
+
+def spindleOn():
+
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    dbvars = dict(res)
+
+    data = {
+        "A": "spindleOn",
+        "OL": int(dbvars["orodjeL"]),
+        "OD": int(dbvars["orodjeD"]),
+        "POVLI": int(dbvars["povrtavanjeLIzklop"]),
+        "POVDI": int(dbvars["povrtavanjeDIzklop"]),
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+    
+def spindleOff():
+
+    data = {
+        "A": "spindleOff",
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    print(hearv)
+    if str(hearv["status"]).strip() != "done":
+        errorBox.config(state=DISABLED, fg='white', bg='red')
+        return False
+    else:
+        return True
+
 
 def cut():
     c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
@@ -727,6 +932,14 @@ def runCycle():
     global disableDrill
     global balansRef
     global saw_width
+    global nizekPlehekS
+    global visokPlehekS
+    global nizekPlehekZadajS
+    global visokPlehekZadajS
+    global spindleOffTime
+
+    global zagaToggleS
+    global zagaToggleSFirst
 
     c.execute("SELECT id,name, loader FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
     res = c.fetchone()
@@ -764,6 +977,8 @@ def runCycle():
             currentSensorToDrill = float(dbvars['sensorToDrill'])
         currentSensorToDrill = sensorToDrill
 
+        pullTools()
+        prep()
 
         changeTool(int(dbvars["orodjeL"]), 'LEFT')
         changeTool(int(dbvars["orodjeD"]), 'RIGHT')
@@ -774,6 +989,24 @@ def runCycle():
     # reset bias value if wrong tool
     if int(dbvars["orodjeL"]) == 1:
         biasDiff = 0 
+
+    # use "plehek" offset in first move
+    plehekOffset = 0
+    if visokPlehekS and nizekPlehekS:
+        plehekOffset = 0
+    elif visokPlehekS and float(dbvars["hodVisokPlehek"]) != 0.0:
+        plehekOffset = dbvars["hodVisokPlehek"]
+    elif nizekPlehekS and float(dbvars["hodNizekPlehek"]) != 0.0:
+        plehekOffset = dbvars["hodNizekPlehek"]    
+
+    plehekOffsetZadaj = 0
+    if visokPlehekZadajS and nizekPlehekZadajS:
+        plehekOffsetZadaj = 0
+    elif visokPlehekZadajS and float(dbvars["hodVisokPlehek"]) != 0.0:
+        plehekOffsetZadaj = dbvars["hodVisokPlehek"]
+    elif nizekPlehekZadajS and float(dbvars["hodNizekPlehek"]) != 0.0:
+        plehekOffsetZadaj = dbvars["hodNizekPlehek"]    
+
 
     if manualLoading:
         while 1:
@@ -806,6 +1039,9 @@ def runCycle():
             print("Load profile")
             add_log("Load profile")
             tmpStatus = waitForProfile()
+
+            currentSpindleTime = int(time.time())
+            
             while tmpStatus != "done":
                 # wait for profile
                 if changingLen == True:
@@ -815,8 +1051,12 @@ def runCycle():
                     return
 
                 print("Waiting for profile")
-                time.sleep(1)
+                time.sleep(0.5)
                 tmpStatus = waitForProfile()
+
+                if (int(time.time()) - currentSpindleTime) > spindleOffTime:
+                    ## turn spindle on
+                    turnSpindleOff = spindleOff() 
 
             # tmpStatus = unloadProfile()
             print("Profile loaded")
@@ -836,7 +1076,7 @@ def runCycle():
             #    time.sleep(1)
             #    tmpStatus = waitForProfile()
 
-            fromStart = 0.0;
+            fromStart = 0.0
             nbrOfHoles = int(cut // 120)
             rem = cut % 120
             fromStart = refExtension + (120 - rem)
@@ -850,6 +1090,23 @@ def runCycle():
             fromStart += saw_width
             fromStart += sensorToDrill
             fromStart += biasDiff
+
+            ## turn spindle on
+            turnSpindleOn = spindleOn()
+
+            #use plehek offset for first drill
+            if plehekOffset != 0:
+                tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                print("Lukna plehek: " + str(tmpfromStart))
+                tmpStatus = moveFeeder("moveFwdF", tmpfromStart)
+    
+                print("Drill prva")
+                if not disableDrill:
+                    drillRes = executeDrillPlehek()
+                    if not drillRes:
+                        print("Drill error")
+                        return
+                fromStart -= tmpfromStart
 
             add_log("Št. lukenj: "+str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
@@ -885,6 +1142,14 @@ def runCycle():
                         print("Drill error")
                         return
 
+    ##
+        ##
+        ##
+        ## AUTO LOAD
+        ##
+        ##
+        ##
+    ##
     else:
         while currentQty > 0:
 
@@ -898,111 +1163,152 @@ def runCycle():
             #    changeLength()
             #    currentCutLen = cut
 
-            print("Rev move to load profile")
-            tmpStatus = retractLoader()
+            if not zagaToggleS:
 
-            tmpEL = extensionLength
-            if cut < 250:
-                tmpEL = 0
+                print("Rev move to load profile")
+                tmpStatus = retractLoader()
 
-            tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+                tmpEL = extensionLength
+                if cut < 250:
+                    tmpEL = 0
 
-            print("Fold extension in extended")
-            if cut > 250:
-                tmpStatus = extensionF()
+                tmpStatus = moveFeeder("moveRev", float(
+                    runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
 
-            # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+                print("Fold extension in extended")
+                if cut > 250:
+                    tmpStatus = extensionF()
 
-            print("Load profile")
-            tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
-            tmpStatus = waitForProfile()
-            while tmpStatus != "done":
-                # wait for profile
-                if changingLen == True:
-                    resetLoader()
-                    print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
-                    return
+                # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
-                print("Waiting for profile")
-                time.sleep(1)
+                print("Load profile")
+                tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
                 tmpStatus = waitForProfile()
+                while tmpStatus != "done":
+                    # wait for profile
+                    if changingLen == True:
+                        resetLoader()
+                        print("Drop cycle")
+                        runCyc.config(state=NORMAL, bg='green')
+                        return
 
-            # tmpStatus = unloadProfile()
-            print("Profile loaded")
-            tmpStatus = retractLoader()
-            tmpStatus = moveFeeder("moveRev",
-                                   float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+                    print("Waiting for profile")
+                    time.sleep(0.5)
+                    tmpStatus = waitForProfile()
 
-            print("Extend extension")
-            tmpStatus = extensionE()
+                # tmpStatus = unloadProfile()
+                print("Profile loaded")
+                tmpStatus = retractLoader()
+                tmpStatus = moveFeeder("moveRev",
+                                    float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
 
-            print("Load profile")
-            tmpStatus = waitForProfile()
-            while tmpStatus != "done":
-                # wait for profile
-                if changingLen == True:
-                    resetLoader()
-                    print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
-                    return
+                print("Extend extension")
+                tmpStatus = extensionE()
 
-                print("Waiting for profile")
-                time.sleep(1)
+                '''print("Load profile")
                 tmpStatus = waitForProfile()
+                while tmpStatus != "done":
+                    # wait for profile
+                    if changingLen == True:
+                        resetLoader()
+                        print("Drop cycle")
+                        runCyc.config(state=NORMAL, bg='green')
+                        return
 
-            nbrOfHoles = int(cut // 120)
-            rem = cut % 120
-            fromStart = refExtension + (120 - rem)
-            if rem == 0:
-                nbrOfHoles -= 1
-            else:
-                tmpCut = (int(cut // 120) + 1) * 120
-                rem = (tmpCut - cut) / 2
+                    print("Waiting for profile")
+                    time.sleep(1)
+                    tmpStatus = waitForProfile()
+                '''
+
+            if zagaToggleSFirst:
+
+                nbrOfHoles = int(cut // 120)
+                rem = cut % 120
                 fromStart = refExtension + (120 - rem)
+                if rem == 0:
+                    nbrOfHoles -= 1
+                else:
+                    tmpCut = (int(cut // 120) + 1) * 120
+                    rem = (tmpCut - cut) / 2
+                    fromStart = refExtension + (120 - rem)
 
-            fromStart += saw_width
-            fromStart += sensorToDrill
-            fromStart += biasDiff
+                fromStart += saw_width
+                fromStart += sensorToDrill
+                fromStart += biasDiff
 
-            print("Prva: " + str(fromStart))
-            tmpStatus = moveFeeder("moveFwdF", fromStart)
+                if zagaToggleS:
+                    zagaToggleSFirst = False
 
-            print("Drill prva")
-            if not disableDrill:
-                drillRes = executeDrill()
-                if not drillRes:
-                    print("Drill error")
-                    return
+            if zagaToggleS:
+                ## razlika med navadnim štartom in tem k je že odžagano
+                fromStart = 10
 
-            if changingLen == True:
-                resetLoader()
-                print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
-                return
+            ## turn spindle on
+            turnSpindleOn = spindleOn()
 
-            moveTo = fromStart
-            for x in range(1, nbrOfHoles):
+            #use plehek offset for first drill
+            if plehekOffset != 0:
+                tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                print("Lukna plehek: " + str(tmpfromStart))
+                tmpStatus = moveFeeder("moveFwdF", tmpfromStart)
+    
+                print("Drill prva")
+                if not disableDrill:
+                    drillRes = executeDrillPlehek()
+                    if not drillRes:
+                        print("Drill error")
+                        return
+                fromStart -= tmpfromStart
 
-                if changingLen == True:
-                    resetLoader()
-                    print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
-                    return
+            if nbrOfHoles > 0:
 
-                moveTo += 120
-                print(str(x) + " : " + str(moveTo))
-                moveFeeder("moveFwd", 120)
-                print("Drill " + str(x) + ".")
+                print("Prva: " + str(fromStart))
+                tmpStatus = moveFeeder("moveFwdF", fromStart)   
+                
+                print("Drill prva")
                 if not disableDrill:
                     drillRes = executeDrill()
                     if not drillRes:
                         print("Drill error")
                         return
-            currentQty = currentQty - 1
-            runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
+
+                if changingLen == True:
+                    resetLoader()
+                    print("Drop cycle")
+                    runCyc.config(state=NORMAL, bg='green')
+                    return
+
+                moveTo = fromStart
+                for x in range(1, nbrOfHoles):
+
+                    if changingLen == True:
+                        resetLoader()
+                        print("Drop cycle")
+                        runCyc.config(state=NORMAL, bg='green')
+                        return
+
+                    moveTo += 120
+                    print(str(x) + " : " + str(moveTo))
+                    moveFeeder("moveFwd", 120)
+                    print("Drill " + str(x) + ".")
+                    if not disableDrill:
+                        drillRes = executeDrill()
+                        if not drillRes:
+                            print("Drill error")
+                            return
+                currentQty = currentQty - 1
+                runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
+            else:
+                currentQty -= 1
+
+            # odrezi
+            #tmpCut = cut()
+
         if currentQty == 0:
+
+            ## turn spindle off
+            turnSpindleOff = spindleOff()
+
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
 
@@ -1441,8 +1747,8 @@ def moveStepper():
 
     global stepperList
 
-    stepRatio = 160
-    if int(stepperchoosen.get()) == 7:
+    stepRatio = 80
+    if int(stepperchoosen.get()) == 7 or int(stepperchoosen.get()) == 6 or int(stepperchoosen.get()) == 5:
         stepRatio = 80
 
     data = {
@@ -1483,6 +1789,68 @@ def manualLoad():
     else:
         mlButton.config(image=on)
         manualLoading = True
+
+def visokPlehek():
+    global visokPlehekS
+    global nizekPlehekS
+    # Determine is on or off
+    if visokPlehekS:
+        vpButton.config(image=off)
+        visokPlehekS = False
+    else:
+        vpButton.config(image=on)
+        visokPlehekS = True
+        npButton.config(image=off)
+        nizekPlehekS = False
+
+def nizekPlehek():
+    global nizekPlehekS
+    global visokPlehekS
+    # Determine is on or off
+    if nizekPlehekS:
+        npButton.config(image=off)
+        nizekPlehekS = False
+    else:
+        npButton.config(image=on)
+        nizekPlehekS = True
+        vpButton.config(image=off)
+        visokPlehekS = False
+
+def visokPlehekZadaj():
+    global visokPlehekZadajS
+    global nizekPlehekZadajS
+    # Determine is on or off
+    if visokPlehekZadajS:
+        vpzButton.config(image=off)
+        visokPlehekZadajS = False
+    else:
+        vpzButton.config(image=on)
+        visokPlehekZadajS = True
+        npzButton.config(image=off)
+        nizekPlehekZadajS = False
+
+def nizekPlehekZadaj():
+    global nizekPlehekZadajS
+    global visokPlehekZadajS
+    # Determine is on or off
+    if nizekPlehekZadajS:
+        npzButton.config(image=off)
+        nizekPlehekZadajS = False
+    else:
+        npzButton.config(image=on)
+        nizekPlehekZadajS = True
+        vpzButton.config(image=off)
+        visokPlehekZadajS = False
+
+def toggleZaga():
+    global zagaToggleS
+    # Determine is on or off
+    if zagaToggleS:
+        zagaToggle.config(image=off)
+        zagaToggleS = False
+    else:
+        zagaToggle.config(image=on)
+        zagaToggleS = True        
 
 def add_log(log):
     output.insert("end", log + "\n")
@@ -1591,8 +1959,7 @@ tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=2)
 tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 
 
-#cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
-#    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+
 
 sv = StringVar()
 sv.trace("w", lambda name, index, mode, sv=sv: nbrOfHoles(sv))
@@ -1630,14 +1997,55 @@ errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
 mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font = ("Helvetica", 24))
 mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
 
-output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
-output.grid(column=0,columnspan=4,sticky=W,row=12,padx=5, pady=30)
+visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek S:", fg = "green", font = ("Helvetica", 20))
+visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=10, pady=10)
 
+nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek S:", fg = "green", font = ("Helvetica", 20))
+nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=10, pady=10)
+
+visokPlehekZadajLabel = Label(vrtalkaL, text = "Visok plehek Z:", fg = "green", font = ("Helvetica", 20))
+visokPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=12,padx=5, pady=10)
+
+nizekPlehekZadajLabel = Label(vrtalkaL, text = "Nizek plehek Z:", fg = "green", font = ("Helvetica", 20))
+nizekPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=13,padx=5, pady=10)
+
+#on = PhotoImage(file = "/home/pi/profilapp/on.png")
+#off = PhotoImage(file = "/home/pi/profilapp/off.png")
 on = PhotoImage(file = "./on.png")
 off = PhotoImage(file = "./off.png")
 mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
 mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
 
+vpButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehek)
+vpButton.grid(column=1,columnspan=1,sticky=W,row=12,padx=5, pady=10)
+
+npButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehek)
+npButton.grid(column=1,columnspan=1,sticky=W,row=13,padx=5, pady=10)
+
+vpzButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehekZadaj)
+vpzButton.grid(column=3,columnspan=1,sticky=W,row=12,padx=10, pady=10)
+
+npzButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehekZadaj)
+npzButton.grid(column=3,columnspan=1,sticky=W,row=13,padx=10, pady=10)
+
+# uporaba zage in
+
+remLengthL = Label(vrtalkaL, text='Ostanek:',font=text_font)
+remLengthL.grid(row=14, column=0,sticky=W+E)
+remLength = Entry(vrtalkaL, font=etext_font, width=10)
+remLength.grid(row=14, column=1,columnspan=2,sticky=W+E)
+remLength.insert(0, 0.0)
+
+
+zagaLabel = Label(vrtalkaL, text = "Žaga:", fg = "green", font = ("Helvetica", 20))
+zagaLabel.grid(column=2,columnspan=2,sticky=W,row=14,padx=5, pady=10)
+
+zagaToggle = Button(vrtalkaL, image = off, bd = 0,command = toggleZaga)
+zagaToggle.grid(column=3,columnspan=1,sticky=W,row=14,padx=10, pady=10)
+
+
+output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
+output.grid(column=0,columnspan=4,sticky=W,row=15,padx=5, pady=30)
 
 #homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
 #homingd.grid(column=2,row=9,padx=30,pady=30)
@@ -1711,6 +2119,7 @@ tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
 drill = tk.Button(canvas_tab3,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
     .grid(column=0,columnspan=2,sticky=W+E,row=10,padx=30,pady=30)
 
+cut = tk.Button(canvas_tab3,text="Žaga",font=text_font,bg="green",command=cut).grid(column=0,columnspan=2,sticky=W+E,row=11,padx=30,pady=30)
 
 
 toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
