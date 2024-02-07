@@ -1929,8 +1929,7 @@ tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=2)
 tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
 
 
-#cut = tk.Button(tab1,text="Žaga",font=text_font,bg="green",command=cut)\
-#    .grid(column=2,columnspan=2,sticky=W+E,row=5,padx=30,pady=30)
+
 
 sv = StringVar()
 sv.trace("w", lambda name, index, mode, sv=sv: nbrOfHoles(sv))
@@ -2087,6 +2086,7 @@ tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
 drill = tk.Button(canvas_tab3,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
     .grid(column=0,columnspan=2,sticky=W+E,row=10,padx=30,pady=30)
 
+cut = tk.Button(canvas_tab3,text="Žaga",font=text_font,bg="green",command=cut).grid(column=0,columnspan=2,sticky=W+E,row=11,padx=30,pady=30)
 
 
 toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
