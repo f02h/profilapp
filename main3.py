@@ -843,12 +843,14 @@ def executeDrillPlehek():
 
 def spindleOn():
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
+    res = c.fetchall()
     dbvars = dict(res)
 
     data = {
