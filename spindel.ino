@@ -680,7 +680,7 @@ boolean cut() {
 
   bool stepper1R,stepper5R;
   do {
-    stepper1R = stepper5.run();
+    stepper1R = stepper1.run();
     stepper5R = stepper5.run();
   } while (stepper1R || stepper5R);
 
