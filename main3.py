@@ -28,7 +28,7 @@ db = os.path.join(path, 'todo.db')
 #conn = sqlite3.connect(db, check_same_thread=False)
 #c = conn.cursor()
 
-db = mysql.connector.connect(host ="192.168.178.34",user = "pi2",password = "pi2",db ="todo")
+db = mysql.connector.connect(host ="192.168.178.200",user = "pi2",password = "pi2",db ="todo")
 c = db.cursor()
 
 settingsList = dict()
@@ -646,7 +646,7 @@ def prep():
     if not idProfil:
         idProfil = 1
 
-    c.execute("SELECT name,value FROM vars WHERE idProfil = %", (str(idProfil),))
+    c.execute("SELECT name,value FROM vars WHERE idProfil = %s", (str(idProfil),))
     res = c.fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
