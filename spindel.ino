@@ -684,6 +684,8 @@ boolean cut() {
     stepper5R = stepper5.run();
   } while (stepper1R || stepper5R);
 
+  changePositionD(1600, 1);
+
   int hodZ = checkMove(7,hodZaga);
 
   runSpindle(7,0);
@@ -692,11 +694,15 @@ boolean cut() {
   stepper7.moveTo(hodZ-slowHodZaga);
   stepper7.runToPosition();
 
+  mazalkaZaga = LOW;
+
   stepper7.setAcceleration(24000);
   stepper7.setMaxSpeed(slowHodZagaSpeed);
   stepper7.moveTo(hodZ);
   stepper7.runToPosition();
   runSpindle(7,1);
+
+  mazalkaZaga = HIGH;
 
   stepper7.setAcceleration(20000);
   stepper7.setMaxSpeed(20000);
