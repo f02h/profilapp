@@ -868,6 +868,7 @@ def spindleOff():
 def loadAndMeasure():
 
     tmpStatus = moveFeeder("moveRev", 1000, 1, 1)
+    tmpStatus = extensionE()
     measure()
 
 def measure():
