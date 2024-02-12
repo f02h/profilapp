@@ -58,6 +58,9 @@ currentCutLen = 0
 #debelina zage
 saw_width = 2.5
 
+#od meritvenega senzorja do zage
+measureToCutDistance = 174
+
 changingLen = False
 stop_auto_thread = False
 cycleThread = None
@@ -909,6 +912,9 @@ def loadAndMeasure():
     tmpStatus = extensionE()
 
     measure()
+
+    tmpStatus = moveFeeder("moveRev",measureToCutDistance, 0, 1)
+
 
 def measure():
     
