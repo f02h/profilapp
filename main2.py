@@ -867,8 +867,47 @@ def spindleOff():
 
 def loadAndMeasure():
 
-    tmpStatus = moveFeeder("moveRev", 1000, 1, 1)
+    res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    loadingBay = int(res[2])
+    if not idProfil:
+        idProfil = 1
+        loadingBay = 0
+
+    cut = float(runLength.get().replace(',', '.'))
+
+    print("Rev move to load profile")
+    tmpStatus = retractLoader()
+
+    tmpEL = extensionLength
+    if cut < 250:
+        tmpEL = 0
+
+    tmpStatus = moveFeeder("moveRev", float(
+        runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+
+    print("Fold extension in extended")
+    if cut > 250:
+        tmpStatus = extensionF()
+
+    # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+
+    print("Load profile")
+    tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
+    tmpStatus = waitForProfile()
+    while tmpStatus != "done":
+        print("Waiting for profile")
+        time.sleep(0.5)
+        tmpStatus = waitForProfile()
+
+    print("Profile loaded")
+    tmpStatus = retractLoader()
+    tmpStatus = moveFeeder("moveRev",
+                        float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+
+    print("Extend extension")
     tmpStatus = extensionE()
+
     measure()
 
 def measure():
