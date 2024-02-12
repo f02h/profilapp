@@ -877,26 +877,26 @@ def loadAndMeasure():
         idProfil = 1
         loadingBay = 0
 
-    cut = float(runLength.get().replace(',', '.'))
+    cutM = float(runLength.get().replace(',', '.'))
 
     print("Rev move to load profile")
     tmpStatus = retractLoader()
 
     tmpEL = extensionLength
-    if cut < 250:
+    if cutM < 250:
         tmpEL = 0
 
     tmpStatus = moveFeeder("moveRev", float(
         runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
 
     print("Fold extension in extended")
-    if cut > 250:
+    if cutM > 250:
         tmpStatus = extensionF()
 
     # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
     print("Load profile")
-    tmpStatus = loadProfile(loadingBay, 1 if cut < 250 else 0)
+    tmpStatus = loadProfile(loadingBay, 1 if cutM < 250 else 0)
     tmpStatus = waitForProfile()
     while tmpStatus != "done":
         print("Waiting for profile")
@@ -915,7 +915,7 @@ def loadAndMeasure():
 
     tmpStatus = moveFeeder("moveRev",measureToCutDistance*-1, 0, 1)
 
-    cut()
+    #cut()
 
 def measure():
     
