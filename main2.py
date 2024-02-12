@@ -59,7 +59,7 @@ currentCutLen = 0
 saw_width = 2.5
 
 #od meritvenega senzorja do zage
-measureToCutDistance = 174
+measureToCutDistance = 175
 
 changingLen = False
 stop_auto_thread = False
@@ -915,6 +915,7 @@ def loadAndMeasure():
 
     tmpStatus = moveFeeder("moveRev",measureToCutDistance*-1, 0, 1)
 
+    cut()
 
 def measure():
     
