@@ -212,7 +212,7 @@ boolean waitForProfile(int profileSize) {
     }
   }
 
-  if (profileSize == 2 || profileSize == 6 || profileSize == 7) {
+  if (profileSize == 2 || profileSize == 6 || profileSize == 7 || profileSize == 8) {
     if (senzorMali == HIGH && senzorVeliki == HIGH) {
         return true;
     }
