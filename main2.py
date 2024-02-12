@@ -913,7 +913,7 @@ def loadAndMeasure():
 
     measure()
 
-    tmpStatus = moveFeeder("moveRev",measureToCutDistance, 0, 1)
+    tmpStatus = moveFeeder("moveRev",measureToCutDistance*-1, 0, 1)
 
 
 def measure():
