@@ -264,7 +264,7 @@ boolean homming() {
 
 boolean toMeasure() {
 
-  if (!mac()) {
+  if (!measure()) {
     while (1) {};
   }
 
@@ -330,7 +330,7 @@ boolean homming1() {
   return true;
 }
 
-boolean mac() {
+boolean measure() {
 
   yield();
   //directionPin1 = HIGH;
@@ -352,31 +352,7 @@ boolean mac() {
 
       moveOneStep1();
       //delayMicroseconds(20000);
-      delayMicroseconds(320);
-    }
-
-    if (limitSwitchFlag == false)
-      return (false);
-  }
-
-  digitalWrite(directionPin1, LOW);
-  //directionPin1 = LOW;
-  macSenzorState = digitalRead(measureSenzor);
-  if (macSenzorState == HIGH)
-  {
-    boolean limitSwitchFlag = false;
-    while (1)
-    {
-      yield();
-      macSenzorState = digitalRead(measureSenzor);
-      if (macSenzorState == LOW)
-      {
-        limitSwitchFlag = true;
-        break;
-      }
-
-      moveOneStep1();
-      delayMicroseconds(16000);
+      delayMicroseconds(1000);
     }
 
     if (limitSwitchFlag == false)
