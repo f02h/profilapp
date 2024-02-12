@@ -1353,6 +1353,11 @@ def runCycle():
             ## turn spindle off
             turnSpindleOff = spindleOff()
 
+            vpButton.config(image=off)
+            visokPlehekS = False
+            npButton.config(image=off)
+            nizekPlehekS = False
+
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
 
