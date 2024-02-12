@@ -34,6 +34,7 @@ int stepsPerMM = 160;
 int startSenzorMali = D6;
 int startSenzorVeliki = D5;
 int hommingSenzor1 = D7;
+int measureSenzor = D8;
 
 int directionPin1 = D2;
 int stepPin1 = D1;
@@ -189,6 +190,12 @@ void loop()
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
           Serial.println();
+        } else if (action == "measure") {
+          toMeasure();
+          DynamicJsonDocument doc2(1024);
+          doc2["status"] = "done";
+          serializeJson(doc2, Serial);
+          Serial.println();
         }
       }
 
@@ -255,6 +262,15 @@ boolean homming() {
   return true;
 }
 
+boolean toMeasure() {
+
+  if (!mac()) {
+    while (1) {};
+  }
+
+  return true;
+}
+
 
 boolean homming1() {
 
@@ -296,6 +312,64 @@ boolean homming1() {
       yield();
       hommingSenzorState = digitalRead(hommingSenzor1);
       if (hommingSenzorState == LOW)
+      {
+        limitSwitchFlag = true;
+        break;
+      }
+
+      moveOneStep1();
+      delayMicroseconds(16000);
+    }
+
+    if (limitSwitchFlag == false)
+      return (false);
+  }
+
+  digitalWrite(directionPin1, LOW);
+  //directionPin1 = LOW;
+  return true;
+}
+
+boolean mac() {
+
+  yield();
+  //directionPin1 = HIGH;
+  digitalWrite(directionPin1, HIGH);
+
+  int macSenzorState = digitalRead(measureSenzor);
+  if (macSenzorState == LOW)
+  {
+    boolean limitSwitchFlag = false;
+    while (1)
+    {
+      yield();
+      macSenzorState = digitalRead(measureSenzor);
+      if (macSenzorState == HIGH)
+      {
+        limitSwitchFlag = true;
+        break;
+      }
+
+      moveOneStep1();
+      //delayMicroseconds(20000);
+      delayMicroseconds(320);
+    }
+
+    if (limitSwitchFlag == false)
+      return (false);
+  }
+
+  digitalWrite(directionPin1, LOW);
+  //directionPin1 = LOW;
+  macSenzorState = digitalRead(measureSenzor);
+  if (macSenzorState == HIGH)
+  {
+    boolean limitSwitchFlag = false;
+    while (1)
+    {
+      yield();
+      macSenzorState = digitalRead(measureSenzor);
+      if (macSenzorState == LOW)
       {
         limitSwitchFlag = true;
         break;
