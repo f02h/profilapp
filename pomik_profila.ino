@@ -263,12 +263,34 @@ boolean homming() {
 }
 
 boolean toMeasure() {
-
+/*
   if (!measure()) {
     while (1) {};
   }
 
   return true;
+  */
+
+  stepper1.setMaxSpeed(500);
+  stepper1.setAcceleration(100.0);
+
+  stepper1.moveTo(0);
+
+  bool stepper1R;
+  bool toM = false;
+  do {
+    stepper1R = stepper1.run();
+    int macSenzorState = digitalRead(measureSenzor);
+    if (macSenzorState == HIGH) {
+      toM = true;
+    }
+  } while (!toM);
+
+  stepper1.setMaxSpeed(5000000);
+  stepper1.setAcceleration(10000.0);
+
+  return true;
+
 }
 
 
