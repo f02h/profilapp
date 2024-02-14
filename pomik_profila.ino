@@ -271,7 +271,7 @@ boolean toMeasure() {
   return true;
   */
 
-  stepper1.setMaxSpeed(500);
+  stepper1.setMaxSpeed(1000);
   stepper1.setAcceleration(100.0);
 
   stepper1.moveTo(0);
@@ -279,6 +279,7 @@ boolean toMeasure() {
   bool stepper1R;
   bool toM = false;
   do {
+    yield();
     stepper1R = stepper1.run();
     int macSenzorState = digitalRead(measureSenzor);
     if (macSenzorState == HIGH) {

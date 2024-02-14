@@ -868,6 +868,53 @@ def spindleOff():
     else:
         return True
 
+def measure():
+    
+    data = {
+        "A": "measure",
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    #print(hearv)
+    if str(hearv["status"]).strip() == "waitingForProfile":
+        runCyc.config(state=ACTIVE, bg='green')
+        #print("Enabled")
+    
+    return hearv["status"]
+
+
+
+def cut():
+    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    idProfil = int(res[0])
+    if not idProfil:
+        idProfil = 1
+
+    print(idProfil)
+
+    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    dictionary = {}
+    # dbvars = (Convert(res, dictionary))
+    dbvars = dict(res)
+
+    data = {
+        "A": "cut",
+        "MZ": dbvars["pozicijaZaga"] * 80,
+        "PHZ": dbvars["pocasnejePredKoncemHodaZaga"] * 80,
+        "PHZH": dbvars["hitrostPredKoncemHodaZaga"],
+    }
+
+    usb.write(json.dumps(data).encode())
+    hearv = hearJson()
+    """print(hearv)
+    if str(hearv["status"]).strip() == "done":
+        #cut.config(state=ACTIVE, bg='green')
+    else:
+        #cut.config(state=ACTIVE, bg='red')
+    label.config(text=str(hearv))
+"""
+
 def loadAndMeasure():
 
     res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
@@ -915,54 +962,7 @@ def loadAndMeasure():
 
     tmpStatus = moveFeeder("moveRev",measureToCutDistance*-1, 0, 1)
 
-    #cut()
-
-def measure():
-    
-    data = {
-        "A": "measure",
-    }
-
-    usbf.write(json.dumps(data).encode())
-    hearv = hearJsonf()
-    #print(hearv)
-    if str(hearv["status"]).strip() == "waitingForProfile":
-        runCyc.config(state=ACTIVE, bg='green')
-        #print("Enabled")
-    
-    return hearv["status"]
-
-
-
-def cut():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
-    idProfil = int(res[0])
-    if not idProfil:
-        idProfil = 1
-
-    print(idProfil)
-
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
-    dictionary = {}
-    # dbvars = (Convert(res, dictionary))
-    dbvars = dict(res)
-
-    data = {
-        "A": "cut",
-        "MZ": dbvars["pozicijaZaga"] * 80,
-        "PHZ": dbvars["pocasnejePredKoncemHodaZaga"] * 80,
-        "PHZH": dbvars["hitrostPredKoncemHodaZaga"],
-    }
-
-    usb.write(json.dumps(data).encode())
-    hearv = hearJson()
-    """print(hearv)
-    if str(hearv["status"]).strip() == "done":
-        #cut.config(state=ACTIVE, bg='green')
-    else:
-        #cut.config(state=ACTIVE, bg='red')
-    label.config(text=str(hearv))
-"""
+    cut()
 
 def runCycle1():
     moveFeeder("moveRev", int(1000))
@@ -2161,7 +2161,7 @@ tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
 drill = tk.Button(canvas_tab3,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
     .grid(column=0,columnspan=2,sticky=W+E,row=10,padx=30,pady=30)
 
-cut = tk.Button(canvas_tab3,text="Žaga",font=text_font,bg="green",command=cut).grid(column=0,columnspan=2,sticky=W+E,row=11,padx=30,pady=30)
+cutBtn = tk.Button(canvas_tab3,text="Žaga",font=text_font,bg="green",command=cut).grid(column=0,columnspan=2,sticky=W+E,row=11,padx=30,pady=30)
 
 
 toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
