@@ -169,13 +169,13 @@ void loop()
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
           Serial.println();
-        } else if (action == "moveRev") {  // turn on LED
+        } else if (action == "moveRev") { 
           moveRev(moveStep, absMove);
           DynamicJsonDocument doc2(1024);
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
           Serial.println();
-        } else if (action == "home") {  // turn on LED
+        } else if (action == "home") {  
           homming();
           stepper1.setCurrentPosition(0);
           DynamicJsonDocument doc2(1024);
