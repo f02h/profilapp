@@ -63,6 +63,9 @@ currentCutLen = 0
 #debelina zage
 saw_width = 2.5
 
+#od meritvenega senzorja do zage
+measureToCutDistance = 175
+
 changingLen = False
 stop_auto_thread = False
 cycleThread = None
@@ -885,6 +888,22 @@ def spindleOff():
     else:
         return True
 
+def measure():
+    
+    data = {
+        "A": "measure",
+    }
+
+    usbf.write(json.dumps(data).encode())
+    hearv = hearJsonf()
+    #print(hearv)
+    if str(hearv["status"]).strip() == "waitingForProfile":
+        runCyc.config(state=ACTIVE, bg='green')
+        #print("Enabled")
+    
+    return hearv["status"]
+
+
 
 def cut():
     c.execute("SELECT id,name FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
@@ -917,6 +936,56 @@ def cut():
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 """
+
+def loadAndMeasure():
+
+    c.execute("SELECT id,name, loader FROM profili WHERE name LIKE %s", (str(profilChooser.get()),))
+    res = c.fetchone()
+    idProfil = int(res[0])
+    loadingBay = int(res[2])
+    if not idProfil:
+        idProfil = 1
+        loadingBay = 0
+
+    cutM = float(runLength.get().replace(',', '.'))
+
+    print("Rev move to load profile")
+    tmpStatus = retractLoader()
+
+    tmpEL = extensionLength
+    if cutM < 250:
+        tmpEL = 0
+
+    tmpStatus = moveFeeder("moveRev", float(
+        runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+
+    print("Fold extension in extended")
+    if cutM > 250:
+        tmpStatus = extensionF()
+
+    # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
+
+    print("Load profile")
+    tmpStatus = loadProfile(loadingBay, 1 if cutM < 250 else 0)
+    tmpStatus = waitForProfile()
+    while tmpStatus != "done":
+        print("Waiting for profile")
+        time.sleep(0.5)
+        tmpStatus = waitForProfile()
+
+    print("Profile loaded")
+    tmpStatus = retractLoader()
+    tmpStatus = moveFeeder("moveRev",
+                        float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+
+    print("Extend extension")
+    tmpStatus = extensionE()
+
+    measure()
+
+    tmpStatus = moveFeeder("moveRev",measureToCutDistance*-1, 0, 1)
+
+    cut()
 
 def runCycle1():
     moveFeeder("moveRev", int(1000))
@@ -1310,6 +1379,11 @@ def runCycle():
 
             ## turn spindle off
             turnSpindleOff = spindleOff()
+
+            vpButton.config(image=off)
+            visokPlehekS = False
+            npButton.config(image=off)
+            nizekPlehekS = False
 
             runCyc.config(state=ACTIVE, bg='green')
             changeLen.config(state=ACTIVE, bg='green')
@@ -1895,8 +1969,10 @@ vrtalkaD.pack(expand=True, anchor='nw', side=TOP, pady=40)
 vrtalkaDList = ScrollableFrame(tab1, height=750, width=1300, hscroll=False, vscroll=True)
 vrtalkaDList.pack(side=BOTTOM, expand=True, anchor='nw')
 
-runJobs = Button(vrtalkaD, text='Zaženi', command=runJobs,bg='green',fg='white', font=('Courier New', '32')).grid(column=0, columnspan=3, row=0, pady=30)
-stobJobs = Button(vrtalkaD, text='Stop', command=stopJobs,bg='red',fg='white', font=('Courier New', '32')).grid(column=1, columnspan=4, row=0, pady=30)
+measureBtn = Button(vrtalkaD, text='M', command=loadAndMeasure,bg='green',fg='white', font=('Courier New', '32')).grid(column=0, columnspan=3, row=0, pady=30)
+
+runJobs = Button(vrtalkaD, text='Zaženi', command=runJobs,bg='green',fg='white', font=('Courier New', '32')).grid(column=1, columnspan=3, row=0, pady=30)
+stobJobs = Button(vrtalkaD, text='Stop', command=stopJobs,bg='red',fg='white', font=('Courier New', '32')).grid(column=2, columnspan=4, row=0, pady=30)
 
 
 jobLength = Entry(vrtalkaD, font=text_font, width=10)
