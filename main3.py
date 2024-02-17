@@ -15,13 +15,13 @@ t = 'test'
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB1"
 USB_PORT_LOADER = "/dev/ttyUSB0"
-usb = serial.Serial(USB_PORT, 115200)
+#usb = serial.Serial(USB_PORT, 115200)
 #usbf = serial.Serial(USB_PORT_FEEDER, 115200)
-usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
-usbl = serial.Serial(port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
-#usb = 0
-#usbf = 0
-#usbl = 0
+#usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+#usbl = serial.Serial(port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
+usb = 0
+usbf = 0
+usbl = 0
 path = os.path.dirname(os.path.abspath(__file__))
 db = os.path.join(path, 'todo.db')
 
@@ -1951,6 +1951,7 @@ tab1 = ttk.Frame(notebook, width=1900, height=950)
 tab2 = ttk.Frame(notebook, width=1900, height=950)
 tab3 = ttk.Frame(notebook, width=1900, height=950)
 tab4 = ttk.Frame(notebook, width=1900, height=950)
+tab5 = ttk.Frame(notebook, width=1900, height=950)
 
 # add frames to notebook
 
@@ -1958,6 +1959,7 @@ notebook.add(tab1, text='Vrtalka')
 notebook.add(tab2, text='Nastavitve')
 notebook.add(tab3, text='Ročno upravljanje')
 notebook.add(tab4, text='Nastavitve stroja')
+notebook.add(tab5, text='Zaloga')
 notebook.pack(side=TOP)
 
 vrtalkaL = ttk.Frame(tab1, width=600, height=950)
