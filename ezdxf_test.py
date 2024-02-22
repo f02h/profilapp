@@ -18,7 +18,7 @@ def print_entity(e):
 
 # iterate over all entities in modelspace
 msp = doc.modelspace()
-for e in map.query("LWPOLYLINE"):
+for e in msp.query("LWPOLYLINE"):
     print(e)
     with e.points("xyseb") as points:
         print(points)
