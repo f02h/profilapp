@@ -18,10 +18,7 @@ def print_entity(e):
 
 # iterate over all entities in modelspace
 msp = doc.modelspace()
-for e in msp:
-    if e.dxftype() == "LINE":
-        print_entity(e)
-
-# entity query for all LINE entities in modelspace
-for e in msp.query("LINE"):
-    print_entity(e)
+for e in map.query("LWPOLYLINE"):
+    print(e)
+    with e.points("xyseb") as points:
+        print(points)
