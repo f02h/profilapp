@@ -27,13 +27,13 @@ for e in msp.query("LWPOLYLINE"):
         #print(points)
         tmp = []
         if points[0][1] > points[3][1]:
-            tmp.append(points[3][1])
-            tmp.append(points[0][1])
-            tmp.append(points[0][1] - points[3][1])
+            tmp.append(round(points[3][1],3))
+            tmp.append(round(points[0][1],3))
+            tmp.append(round(points[0][1],3)  - round(points[3][1],3))
         else:
-            tmp.append(points[0][1])
-            tmp.append(points[3][1])
-            tmp.append(points[3][1] - points[0][1])
+            tmp.append(round(points[0][1],3))
+            tmp.append(round(points[3][1],3))
+            tmp.append(round(points[3][1],3) - round(points[0][1],3))
             
         pieces.append(tmp)
         
