@@ -30,9 +30,7 @@ for e in msp.query("CIRCLE"):
     holes.append(tmp)
 
 pieces = []
-holePer = []
 
-idx = 0
 for e in msp.query("LWPOLYLINE"):
     print(e)
     with e.points("xy") as points:
@@ -48,14 +46,18 @@ for e in msp.query("LWPOLYLINE"):
             tmp.append(round(points[3][1],3) - round(points[0][1],3))
             
         pieces.append(tmp)
-        holePer.append([])
 
-        for h in holes:
-            if pieces[idx][1] > h[1] and pieces[idx][0] < h[1]:
-                holePer[idx].append(h)
 
-        idx = idx + 1
-        
+holePer = [None] * len(pieces)
+
+idx = 0
+for p in pieces:
+    for h in holes:
+        if p[1] > h[1] and p[0] < h[1]:
+            holePer[idx].append(h)
+    idx += 1
+
+
 print(pieces)
 print(holePer)
 
