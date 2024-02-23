@@ -48,10 +48,11 @@ for e in msp.query("LWPOLYLINE"):
             tmp.append(round(points[3][1],3) - round(points[0][1],3))
             
         pieces.append(tmp)
+        holePer.append([])
 
         for h in holes:
             if pieces[idx][1] > h[1] and pieces[idx][0] < h[1]:
-                holePer.append(h)
+                holePer[idx].append(h)
 
         idx += 1
         
