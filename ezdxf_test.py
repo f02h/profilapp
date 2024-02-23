@@ -15,6 +15,8 @@ def print_entity(e):
     print("LINE on layer: %s\n" % e.dxf.layer)
     print("start point: %s\n" % e.dxf.start)
     print("end point: %s\n" % e.dxf.end)
+# iterate over all entities in modelspace
+msp = doc.modelspace()
 
 holes = []
 for e in msp.query("CIRCLE"):
@@ -30,8 +32,6 @@ for e in msp.query("CIRCLE"):
 pieces = []
 holePer = []
 
-# iterate over all entities in modelspace
-msp = doc.modelspace()
 idx = 0
 for e in msp.query("LWPOLYLINE"):
     print(e)
