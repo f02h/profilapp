@@ -23,11 +23,11 @@ msp = doc.modelspace()
 idx = 0
 for e in msp.query("LWPOLYLINE"):
     print(e)
-    with e.points("xyseb") as points:
-        #print(points)
+    with e.points("xy") as points:
+        print(points)
         tmp = []
         tmp.append(points[0][1])
-        tmp.append(points[0][3])
+        tmp.append(points[3][1])
 
         pieces.append(tmp)
         
