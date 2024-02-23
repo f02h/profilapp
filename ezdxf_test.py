@@ -60,7 +60,9 @@ idx = 0
 for p in pieces:
     for h in holes:
         if p[1] > h[1] and p[0] < h[1]:
-            holePer[idx].append(h)
+            tmpH = h
+            tmpH[1] = h[1] - p[0] 
+            holePer[idx].append(tmpH)
     idx += 1
 
 
