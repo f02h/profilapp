@@ -26,9 +26,13 @@ for e in msp.query("LWPOLYLINE"):
     with e.points("xy") as points:
         print(points)
         tmp = []
-        tmp.append(points[0][1])
-        tmp.append(points[3][1])
-
+        if points[0][1] > points[3][1]:
+            tmp.append(points[3][1])
+            tmp.append(points[0][1])
+        else:
+            tmp.append(points[0][1])
+            tmp.append(points[3][1])
+            
         pieces.append(tmp)
         
 print(pieces)
