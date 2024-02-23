@@ -50,7 +50,7 @@ for e in msp.query("LWPOLYLINE"):
         pieces.append(tmp)
 
         for h in holes:
-            if pieces[idx][1] > h[1] and pieces[idx][1] < h[1]:
+            if pieces[idx][1] > h[1] and pieces[idx][0] < h[1]:
                 holePer.append(h)
 
         idx += 1
