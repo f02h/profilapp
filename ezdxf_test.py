@@ -16,7 +16,19 @@ def print_entity(e):
     print("start point: %s\n" % e.dxf.start)
     print("end point: %s\n" % e.dxf.end)
 
+holes = []
+for e in msp.query("CIRCLE"):
+    ocs = e.ocs()
+    wcs_center = ocs.to_wcs(e.dxf.center)
+    x = wcs_center.x
+    y = wcs_center.y
+    tmp = []
+    tmp.append(x)
+    tmp.append(y)
+    holes.append(tmp)
+
 pieces = []
+holePer = []
 
 # iterate over all entities in modelspace
 msp = doc.modelspace()
@@ -36,5 +48,15 @@ for e in msp.query("LWPOLYLINE"):
             tmp.append(round(points[3][1],3) - round(points[0][1],3))
             
         pieces.append(tmp)
+        idx += 1
+
+        for h in holes:
+            if pieces[idx] > h[1] and pieces[idx] < h[1]:
+                holePer.append(h)
         
 print(pieces)
+print(holePer)
+
+
+
+    
