@@ -16,9 +16,17 @@ def print_entity(e):
     print("start point: %s\n" % e.dxf.start)
     print("end point: %s\n" % e.dxf.end)
 
+pieces = []
+
 # iterate over all entities in modelspace
 msp = doc.modelspace()
+idx = 0
 for e in msp.query("LWPOLYLINE"):
     print(e)
     with e.points("xyseb") as points:
-        print(points)
+        #print(points)
+        pieces[idx][0] = points[0][1]
+        pieces[idx][1] = points[0][3]
+        idx += 1
+
+print(pieces)
