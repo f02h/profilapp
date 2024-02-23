@@ -25,8 +25,10 @@ for e in msp.query("LWPOLYLINE"):
     print(e)
     with e.points("xyseb") as points:
         #print(points)
-        pieces[idx][0] = points[0][1]
-        pieces[idx][1] = points[0][3]
-        idx += 1
+        tmp = []
+        tmp.append(points[0][1])
+        tmp.append(points[0][3])
 
+        pieces.append(tmp)
+        
 print(pieces)
