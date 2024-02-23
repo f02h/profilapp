@@ -25,8 +25,8 @@ for e in msp.query("CIRCLE"):
     x = wcs_center.x
     y = wcs_center.y
     tmp = []
-    tmp.append(x)
-    tmp.append(y)
+    tmp.append(round(x,3))
+    tmp.append(round(y,3))
     holes.append(tmp)
 
 pieces = []
@@ -54,7 +54,7 @@ for e in msp.query("LWPOLYLINE"):
             if pieces[idx][1] > h[1] and pieces[idx][0] < h[1]:
                 holePer[idx].append(h)
 
-        idx += 1
+        idx = idx + 1
         
 print(pieces)
 print(holePer)
