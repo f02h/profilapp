@@ -32,9 +32,13 @@ for e in msp.query("CIRCLE"):
     holes.append(tmp)
 
 pieces = []
+firstPiece = True
 
 for e in msp.query("LWPOLYLINE"):
     print(e)
+    if firstPiece:
+        firstPiece = False
+        continue
     with e.points("xy") as points:
         #print(points)
         tmp = []
