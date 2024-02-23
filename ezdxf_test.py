@@ -48,7 +48,7 @@ for e in msp.query("LWPOLYLINE"):
         pieces.append(tmp)
 
 
-holePer = [0] * len(pieces)
+holePer = {}
 
 idx = 0
 for p in pieces:
