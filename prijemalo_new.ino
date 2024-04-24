@@ -450,6 +450,13 @@ bool unloadLoader() {
             moveOneStep1(46,100);
           }
         }
+
+        loopCnt = 20
+        while (loopCnt > 0) {
+          moveOneStep1(50,100);
+          moveOneStep1(46,100);
+          loopCnt -= 1;
+        }
         
         digitalWrite(51, LOW);
         digitalWrite(47, HIGH);
@@ -549,6 +556,13 @@ bool unloadLoader() {
           if (!snezorDvig) {
             moveOneStep1(50,150);
           }
+        }
+
+        
+        loopCnt = 20
+        while (loopCnt > 0) {
+          moveOneStep1(50,150);
+          loopCnt -= 1;
         }
         
         digitalWrite(51, LOW);
