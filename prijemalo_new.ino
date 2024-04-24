@@ -451,7 +451,7 @@ bool unloadLoader() {
           }
         }
 
-        int loopCnt = 20;
+        int loopCnt = 100;
         while (loopCnt > 0) {
           moveOneStep1(50,100);
           moveOneStep1(46,100);
@@ -559,7 +559,7 @@ bool unloadLoader() {
         }
 
         
-        int loopCnt = 20;
+        int loopCnt = 100;
         while (loopCnt > 0) {
           moveOneStep1(50,150);
           loopCnt -= 1;
