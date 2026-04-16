@@ -814,6 +814,7 @@ def prep():
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
         "MAZD": int(dbvars["mazalkaProfil"]),
         "MAZOFF": int(dbvars["mazalkaOffTimer"]),
+        "MAZON": int(dbvars["mazalkaOnTimer"]),
     }
 
     usb.write(json.dumps(data).encode())
@@ -881,6 +882,7 @@ def executeDrill():
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
         "MAZD": int(dbvars["mazalkaProfil"]),
         "MAZOFF": int(dbvars["mazalkaOffTimer"]),
+        "MAZON": int(dbvars["mazalkaOnTimer"]),
     }
 
     usb.write(json.dumps(data).encode())
@@ -959,6 +961,7 @@ def executeDrillPlehek():
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
         "MAZD": int(dbvars["mazalkaProfil"]),
         "MAZOFF": int(dbvars["mazalkaOffTimer"]),
+        "MAZON": int(dbvars["mazalkaOnTimer"]),
     }
 
     usb.write(json.dumps(data).encode())

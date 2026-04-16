@@ -416,7 +416,7 @@ void loop()
           serializeJson(doc2, Serial);
           Serial.println();
 
-      } else if (action == "home") { 
+      } else if (action == "home") {
 
           homming();
 
@@ -477,7 +477,7 @@ void loop()
       } else if (doc["A"] == "spindleOff") {
 
           allSpindle(1);
-        
+
           StaticJsonDocument<200> doc2;
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
@@ -486,7 +486,7 @@ void loop()
       } else if (doc["A"] == "prijemaloOn") {
 
           pneumatikaVentilPrijemalo = LOW;
-        
+
           StaticJsonDocument<200> doc2;
           doc2["status"] = "done";
           serializeJson(doc2, Serial);
@@ -587,7 +587,7 @@ boolean pullBothTool() {
   pneumatikaVentil1 = HIGH;
   delay(500);
   while(!pneumatikaSenzor1) {}
-  
+
   pneumatikaVentil4 = HIGH;
   delay(500);
   while(pneumatikaSenzor4) {}
@@ -626,28 +626,26 @@ boolean drill() {
 
   runSpindle(drillToolL,0);
   runSpindle(drillToolR,0);
-  mazalkaL = LOW;
+ /*  mazalkaL = LOW;
   mazalkaD = LOW;
-
+*/
   stepper1R = false;
   stepper2R = false;
   {
     unsigned long mazalkaTimer = millis();
-    bool mazalkaAktivna = true; // true = LOW (active)
+    bool mazalkaAktivna = false; // true = LOW (active)
     do {
       stepper1R = stepper1.run();
       stepper2R = stepper2.run();
       unsigned long elapsed = millis() - mazalkaTimer;
-      if (mazalkaAktivna && elapsed >= (unsigned long)mazalkaVklopCas) {
-        mazalkaL = HIGH;
-        mazalkaD = HIGH;
-        mazalkaAktivna = false;
-        mazalkaTimer = millis();
-      } else if (!mazalkaAktivna && elapsed >= (unsigned long)mazalkaIzklopCas) {
+      if (!mazalkaAktivna && elapsed >= (unsigned long)mazalkaVklopCas) {
         mazalkaL = LOW;
         mazalkaD = LOW;
         mazalkaAktivna = true;
         mazalkaTimer = millis();
+      } else if (mazalkaAktivna && elapsed >= (unsigned long)mazalkaIzklopCas) {
+        mazalkaL = HIGH;
+        mazalkaD = HIGH;
       }
     } while (stepper1R || stepper2R);
   }
@@ -1049,7 +1047,7 @@ boolean hommingPneu() {
   while(pneumatikaSenzor1) {}
   pneumatikaVentil1 = HIGH;
   delay(500);
-  while(!pneumatikaSenzor1) {}  
+  while(!pneumatikaSenzor1) {}
 
   delay(1000);
 
@@ -1058,16 +1056,16 @@ boolean hommingPneu() {
   while(pneumatikaSenzor2) {}
   pneumatikaVentil2 = HIGH;
   delay(500);
-  while(!pneumatikaSenzor2) {}  
+  while(!pneumatikaSenzor2) {}
 
   delay(1000);
-  
+
   pneumatikaVentil3 = LOW;
   delay(500);
   while(!pneumatikaSenzor3) {}
   delay(500);
   pneumatikaVentil3 = HIGH;
-  while(pneumatikaSenzor3) {}  
+  while(pneumatikaSenzor3) {}
 
   delay(1000);
 
@@ -1076,7 +1074,7 @@ boolean hommingPneu() {
   while(!pneumatikaSenzor4) {}
   delay(500);
   pneumatikaVentil4 = HIGH;
-  while(pneumatikaSenzor4) {} 
+  while(pneumatikaSenzor4) {}
 
   delay(1000);
 
@@ -1085,8 +1083,8 @@ boolean hommingPneu() {
   while(pneumatikaSenzorPrijemalo) {}
   delay(500);
   pneumatikaVentilPrijemalo = HIGH;
-  while(!pneumatikaSenzorPrijemalo) {} 
-  
+  while(!pneumatikaSenzorPrijemalo) {}
+
   return true;
 }
 
@@ -1166,7 +1164,7 @@ void moveOneStep1() {
     delayMicroseconds(40);
     stepPin1 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 boolean homming2() {
@@ -1224,7 +1222,7 @@ void moveOneStep2() {
     delayMicroseconds(40);
     stepPin2 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 boolean homming3() {
@@ -1282,7 +1280,7 @@ void moveOneStep3() {
     delayMicroseconds(40);
     stepPin3 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 boolean homming4() {
@@ -1340,7 +1338,7 @@ void moveOneStep4() {
     delayMicroseconds(40);
     stepPin4 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 boolean homming5() {
@@ -1400,7 +1398,7 @@ void moveOneStep5() {
     delayMicroseconds(40);
     stepPin5 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 boolean homming6() {
@@ -1460,7 +1458,7 @@ void moveOneStep6() {
     delayMicroseconds(40);
     stepPin6 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 
@@ -1521,7 +1519,7 @@ void moveOneStep7() {
     delayMicroseconds(40);
     stepPin7 = LOW;
     delayMicroseconds(40);
- 
+
 }
 
 void triggerAlarm() {
