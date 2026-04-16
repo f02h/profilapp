@@ -126,7 +126,8 @@ volatile int povrtavanjeDIzklop = 0;
 
 volatile int mazalkaP = 0;
 
-volatile int mazalkaIzklopCas = 500; // ms after drill start before mazalkaL/D turn off (HIGH)
+volatile int mazalkaVklopCas = 500;  // ms mazalkaL/D active (LOW)
+volatile int mazalkaIzklopCas = 500; // ms mazalkaL/D off (HIGH)
 
 volatile int minPovratekPovrtavanjeL = 0;
 volatile int minPovratekPovrtavanjeD = 0;
@@ -348,6 +349,7 @@ void loop()
               mazalkaProfil = HIGH;
           }
 
+          mazalkaVklopCas = doc["MAZON"] | mazalkaVklopCas;
           mazalkaIzklopCas = doc["MAZOFF"] | mazalkaIzklopCas;
 
           drill();
@@ -396,6 +398,7 @@ void loop()
               mazalkaProfil = HIGH;
           }
 
+          mazalkaVklopCas = doc["MAZON"] | mazalkaVklopCas;
           mazalkaIzklopCas = doc["MAZOFF"] | mazalkaIzklopCas;
 
           stepper1.moveTo(hodL-slowHodL);
@@ -630,12 +633,21 @@ boolean drill() {
   stepper2R = false;
   {
     unsigned long mazalkaTimer = millis();
+    bool mazalkaAktivna = true; // true = LOW (active)
     do {
       stepper1R = stepper1.run();
       stepper2R = stepper2.run();
-      if (millis() - mazalkaTimer >= (unsigned long)mazalkaIzklopCas) {
+      unsigned long elapsed = millis() - mazalkaTimer;
+      if (mazalkaAktivna && elapsed >= (unsigned long)mazalkaVklopCas) {
         mazalkaL = HIGH;
         mazalkaD = HIGH;
+        mazalkaAktivna = false;
+        mazalkaTimer = millis();
+      } else if (!mazalkaAktivna && elapsed >= (unsigned long)mazalkaIzklopCas) {
+        mazalkaL = LOW;
+        mazalkaD = LOW;
+        mazalkaAktivna = true;
+        mazalkaTimer = millis();
       }
     } while (stepper1R || stepper2R);
   }
