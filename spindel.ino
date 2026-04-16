@@ -126,6 +126,8 @@ volatile int povrtavanjeDIzklop = 0;
 
 volatile int mazalkaP = 0;
 
+volatile int mazalkaIzklopCas = 500; // ms after drill start before mazalkaL/D turn off (HIGH)
+
 volatile int minPovratekPovrtavanjeL = 0;
 volatile int minPovratekPovrtavanjeD = 0;
 
@@ -346,6 +348,8 @@ void loop()
               mazalkaProfil = HIGH;
           }
 
+          mazalkaIzklopCas = doc["MAZOFF"] | mazalkaIzklopCas;
+
           drill();
 
           StaticJsonDocument<200> doc2;
@@ -391,6 +395,8 @@ void loop()
           } else {
               mazalkaProfil = HIGH;
           }
+
+          mazalkaIzklopCas = doc["MAZOFF"] | mazalkaIzklopCas;
 
           stepper1.moveTo(hodL-slowHodL);
           stepper2.moveTo(hodD-slowHodD);
@@ -622,10 +628,17 @@ boolean drill() {
 
   stepper1R = false;
   stepper2R = false;
-  do {
-    stepper1R = stepper1.run();
-    stepper2R = stepper2.run();
-  } while (stepper1R || stepper2R);
+  {
+    unsigned long mazalkaTimer = millis();
+    do {
+      stepper1R = stepper1.run();
+      stepper2R = stepper2.run();
+      if (millis() - mazalkaTimer >= (unsigned long)mazalkaIzklopCas) {
+        mazalkaL = HIGH;
+        mazalkaD = HIGH;
+      }
+    } while (stepper1R || stepper2R);
+  }
 
   mazalkaL = HIGH;
   mazalkaD = HIGH;

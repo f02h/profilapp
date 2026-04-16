@@ -1,27 +1,41 @@
-import tkinter as tk
-import serial
 import json
+import os
 import sqlite3
+import time
+import tkinter as tk
+from threading import Thread
 from tkinter import *
 from tkinter import ttk
 from tkinter.scrolledtext import ScrolledText
-import os, time
-from threading import Thread
-from PIL import Image,ImageTk
 
-t = 'test'
+import serial
+from PIL import Image, ImageTk
+
+t = "test"
 USB_PORT = "/dev/ttyACM0"
 USB_PORT_FEEDER = "/dev/ttyUSB1"
 USB_PORT_LOADER = "/dev/ttyUSB0"
 usb = serial.Serial(USB_PORT, 115200)
-#usbf = serial.Serial(USB_PORT_FEEDER, 115200)
-usbf = serial.Serial(port=USB_PORT_FEEDER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
-usbl = serial.Serial(port=USB_PORT_LOADER, baudrate=115200, bytesize=8, timeout=2, stopbits=serial.STOPBITS_ONE)
-#usb = 0
-#usbf = 0
-#usbl = 0
+# usbf = serial.Serial(USB_PORT_FEEDER, 115200)
+usbf = serial.Serial(
+    port=USB_PORT_FEEDER,
+    baudrate=115200,
+    bytesize=8,
+    timeout=2,
+    stopbits=serial.STOPBITS_ONE,
+)
+usbl = serial.Serial(
+    port=USB_PORT_LOADER,
+    baudrate=115200,
+    bytesize=8,
+    timeout=2,
+    stopbits=serial.STOPBITS_ONE,
+)
+# usb = 0
+# usbf = 0
+# usbl = 0
 path = os.path.dirname(os.path.abspath(__file__))
-db = os.path.join(path, 'todo.db')
+db = os.path.join(path, "todo.db")
 
 conn = sqlite3.connect(db, check_same_thread=False)
 c = conn.cursor()
@@ -30,35 +44,35 @@ settingsList = dict()
 currentSetting = None
 jobsRunning = False
 
-stepperList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
-spindleList = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
+stepperList = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
+spindleList = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
 
-#sensorToDrill = 197.4
+# sensorToDrill = 197.4
 ## add to settings page
 # + premakne prva luknja bolj naprej
 # - premakne prvo luknjo bolj nazaj
 # razdalja žaga - sveder
-#sensorToDrill = 30.85
+# sensorToDrill = 30.85
 sensorToDrill = 23
 currentSensorToDrill = 0.0
 
-#refZaga
+# refZaga
 # + premakne prva luknja bolj nazaj
 # - premakne prvo luknjo bolj naprej
 balansRef = 18.9
 
 #
 # razdalja referenca - žaga
-#refExtension = 260
+# refExtension = 260
 refExtension = 250
 feederRef = 225
 extensionLength = 370
 currentCutLen = 0
 
-#debelina zage
+# debelina zage
 saw_width = 2.5
 
-#od meritvenega senzorja do zage
+# od meritvenega senzorja do zage
 measureToCutDistance = 175
 
 changingLen = False
@@ -80,25 +94,33 @@ zagaToggleSFirst = True
 
 spindleOffTime = 30
 
+
 def enumerate_row_column(iterable, num_cols):
     for idx, item in enumerate(iterable):
         row = idx // num_cols
         col = idx % num_cols
         yield row, col, item
 
+
 class FullScreenApp(object):
     def __init__(self, master, **kwargs):
-        self.master=master
-        pad=3
-        self._geom='200x200+0+0'
-        master.geometry("{0}x{1}+0+0".format(
-            master.winfo_screenwidth()-pad, master.winfo_screenheight()-pad))
-        master.bind('<Escape>',self.toggle_geom)
-    def toggle_geom(self,event):
-        geom=self.master.winfo_geometry()
-        print(geom,self._geom)
+        self.master = master
+        pad = 3
+        self._geom = "200x200+0+0"
+        master.geometry(
+            "{0}x{1}+0+0".format(
+                master.winfo_screenwidth() - pad, master.winfo_screenheight() - pad
+            )
+        )
+        master.bind("<Escape>", self.toggle_geom)
+
+    def toggle_geom(self, event):
+        geom = self.master.winfo_geometry()
+        print(geom, self._geom)
         self.master.geometry(self._geom)
-        self._geom=geom
+        self._geom = geom
+
+
 FIT_WIDTH = "fit_width"
 FIT_HEIGHT = "fit_height"
 
@@ -125,38 +147,51 @@ class ScrollableFrame(tk.Frame):
     |  ----------------------------------------------------              |
      --------------------------------------------------------------------
     """
-    def __init__(self, master=None, scroll_speed:int=2, hscroll:bool=False,
-                 vscroll:bool=True, bd:int=0, scrollbar_kwargs={},
-                 bg="#f0f0ed", **kwargs):
+
+    def __init__(
+        self,
+        master=None,
+        scroll_speed: int = 2,
+        hscroll: bool = False,
+        vscroll: bool = True,
+        bd: int = 0,
+        scrollbar_kwargs={},
+        bg="#f0f0ed",
+        **kwargs,
+    ):
         assert isinstance(scroll_speed, int), "`scroll_speed` must be an int"
         self.scroll_speed = scroll_speed
 
         self.master_frame = tk.Frame(master, bd=bd, bg=bg)
         self.master_frame.grid_rowconfigure(0, weight=1)
         self.master_frame.grid_columnconfigure(0, weight=1)
-        self.dummy_canvas = tk.Canvas(self.master_frame, highlightthickness=0,
-                                      bd=0, bg=bg, **kwargs)
+        self.dummy_canvas = tk.Canvas(
+            self.master_frame, highlightthickness=0, bd=0, bg=bg, **kwargs
+        )
         super().__init__(self.dummy_canvas, bg=bg)
 
         # Create the 2 scrollbars
         if vscroll:
-            self.v_scrollbar = tk.Scrollbar(self.master_frame,
-                                            orient="vertical",
-                                            command=self.dummy_canvas.yview,
-                                            **scrollbar_kwargs)
+            self.v_scrollbar = tk.Scrollbar(
+                self.master_frame,
+                orient="vertical",
+                command=self.dummy_canvas.yview,
+                **scrollbar_kwargs,
+            )
             self.v_scrollbar.grid(row=0, column=1, sticky="news")
             self.dummy_canvas.configure(yscrollcommand=self.v_scrollbar.set)
         if hscroll:
-            self.h_scrollbar = tk.Scrollbar(self.master_frame,
-                                            orient="horizontal",
-                                            command=self.dummy_canvas.xview,
-                                            **scrollbar_kwargs)
+            self.h_scrollbar = tk.Scrollbar(
+                self.master_frame,
+                orient="horizontal",
+                command=self.dummy_canvas.xview,
+                **scrollbar_kwargs,
+            )
             self.h_scrollbar.grid(row=1, column=0, sticky="news")
             self.dummy_canvas.configure(xscrollcommand=self.h_scrollbar.set)
 
         # Bind to the mousewheel scrolling
-        self.dummy_canvas.bind_all("<MouseWheel>", self.scrolling_windows,
-                                   add=True)
+        self.dummy_canvas.bind_all("<MouseWheel>", self.scrolling_windows, add=True)
         self.dummy_canvas.bind_all("<Button-4>", self.scrolling_linux, add=True)
         self.dummy_canvas.bind_all("<Button-5>", self.scrolling_linux, add=True)
         self.bind("<Configure>", self.scrollbar_scrolling, add=True)
@@ -173,24 +208,24 @@ class ScrollableFrame(tk.Frame):
         self.grid_forget = self.master_frame.grid_forget
         self.place_forget = self.master_frame.place_forget
 
-    def scrolling_windows(self, event:tk.Event) -> None:
+    def scrolling_windows(self, event: tk.Event) -> None:
         assert event.delta != 0, "On Windows, `event.delta` should never be 0"
-        y_steps = int(-event.delta/abs(event.delta)*self.scroll_speed)
+        y_steps = int(-event.delta / abs(event.delta) * self.scroll_speed)
         self.dummy_canvas.yview_scroll(y_steps, "units")
 
-    def scrolling_linux(self, event:tk.Event) -> None:
+    def scrolling_linux(self, event: tk.Event) -> None:
         y_steps = self.scroll_speed
         if event.num == 4:
             y_steps *= -1
         self.dummy_canvas.yview_scroll(y_steps, "units")
 
-    def scrollbar_scrolling(self, event:tk.Event) -> None:
+    def scrollbar_scrolling(self, event: tk.Event) -> None:
         region = list(self.dummy_canvas.bbox("all"))
         region[2] = max(self.dummy_canvas.winfo_width(), region[2])
         region[3] = max(self.dummy_canvas.winfo_height(), region[3])
         self.dummy_canvas.configure(scrollregion=region)
 
-    def resize(self, fit:str=None, height:int=None, width:int=None) -> None:
+    def resize(self, fit: str = None, height: int = None, width: int = None) -> None:
         """
         Resizes the frame to fit the widgets inside. You must either
         specify (the `fit`) or (the `height` or/and the `width`) parameter.
@@ -216,15 +251,15 @@ class ScrollableFrame(tk.Frame):
             self.dummy_canvas.config(height=super().winfo_height())
         else:
             raise ValueError("Unknow value for the `fit` parameter.")
+
     fit = resize
 
 
-class Calculator():
-
+class Calculator:
     def __init__(self):
         super().__init__()
 
-        btn_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'Del']
+        btn_list = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "Del"]
         # create and position all buttons with a for-loop
         btn = []
         # Use custom generator to give us row/column positions
@@ -238,7 +273,7 @@ class Calculator():
             btn.append(cur)
 
     def click(self, label):
-        if label == 'Del':
+        if label == "Del":
             currentText = settingsList[currentSetting].get()
             settingsList[currentSetting].delete(0, END)
             settingsList[currentSetting].insert(0, currentText[:-1])
@@ -247,12 +282,12 @@ class Calculator():
             settingsList[currentSetting].delete(0, END)
             settingsList[currentSetting].insert(0, currentText + label)
 
-class Calculator2():
 
+class Calculator2:
     def __init__(self):
         super().__init__()
 
-        btn_list = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', 'Del']
+        btn_list = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "Del"]
         # create and position all buttons with a for-loop
         btn = []
         # Use custom generator to give us row/column positions
@@ -266,7 +301,7 @@ class Calculator2():
             btn.append(cur)
 
     def click(self, label):
-        if label == 'Del':
+        if label == "Del":
             currentText = moveStepperInput.get()
             moveStepperInput.delete(0, END)
             moveStepperInput.insert(0, currentText[:-1])
@@ -275,156 +310,181 @@ class Calculator2():
             moveStepperInput.delete(0, END)
             moveStepperInput.insert(0, currentText + label)
 
+
 class ResizingCanvas(Canvas):
-    def __init__(self,parent,**kwargs):
-        Canvas.__init__(self,parent,**kwargs)
+    def __init__(self, parent, **kwargs):
+        Canvas.__init__(self, parent, **kwargs)
         self.bind("<Configure>", self.on_resize)
         self.height = self.winfo_reqheight()
         self.width = self.winfo_reqwidth()
 
-    def on_resize(self,event):
+    def on_resize(self, event):
         # determine the ratio of old width/height to new width/height
-        wscale = float(event.width)/self.width
-        hscale = float(event.height)/self.height
+        wscale = float(event.width) / self.width
+        hscale = float(event.height) / self.height
         self.width = event.width
         self.height = event.height
         # resize the canvas
         self.config(width=self.width, height=self.height)
         # rescale all the objects tagged with the "all" tag
-        self.scale("all",0,0,wscale,hscale)
+        self.scale("all", 0, 0, wscale, hscale)
+
 
 def submitForm():
     strFile = optVariable.get()
     # Print the selected value from Option (Combo Box)
-    if (strFile !=''):
-        print('Selected Value is : ' + strFile)
+    if strFile != "":
+        print("Selected Value is : " + strFile)
+
 
 def write_slogan():
     print("Tkinter is easy to use!")
 
+
 def hear():
-    msg = usb.read_until() # read until a new line
-    #mystring = msg.decode('ascii')  # decode n return
+    msg = usb.read_until()  # read until a new line
+    # mystring = msg.decode('ascii')  # decode n return
     mystring = json.loads(str(msg.decode("ascii")).strip())
     return mystring
 
+
 def hearJson():
-    msg = usb.read_until()# read until a new line
+    msg = usb.read_until()  # read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
 
     if str(mystring["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
     return mystring
 
 
 def hearJsonf():
 
-    #msg = usbf.read_until()# read until a new line
-    #mystring = json.loads(str(msg.decode("Ascii")).strip())
-    #return mystring
+    # msg = usbf.read_until()# read until a new line
+    # mystring = json.loads(str(msg.decode("Ascii")).strip())
+    # return mystring
 
     while 1:
         if usbf.in_waiting > 0:
-
             # Read data out of the buffer until a carraige return / new line is found
             serialString = usbf.readline()
 
             # Print the contents of the serial data
             try:
-                #print(serialString.decode("Ascii"))
+                # print(serialString.decode("Ascii"))
 
                 mystring = json.loads(str(serialString.decode("Ascii")).strip())
-                #print(mystring)
+                # print(mystring)
                 return mystring
             except:
                 print("fail")
                 pass
 
+
 def hearJsonl():
 
-    #msg = usbf.read_until()# read until a new line
-    #mystring = json.loads(str(msg.decode("Ascii")).strip())
-    #return mystring
+    # msg = usbf.read_until()# read until a new line
+    # mystring = json.loads(str(msg.decode("Ascii")).strip())
+    # return mystring
 
     while 1:
         if usbl.in_waiting > 0:
-
             # Read data out of the buffer until a carraige return / new line is found
             serialString = usbl.readline()
 
             # Print the contents of the serial data
             try:
-                #print(serialString.decode("Ascii"))
+                # print(serialString.decode("Ascii"))
 
                 mystring = json.loads(str(serialString.decode("Ascii")).strip())
-                #print(mystring)
+                # print(mystring)
                 return mystring
             except:
                 print("fail")
                 pass
 
 
-
 def hearJsonf1():
     """while (True):
-        if (usbf.in_waiting > 0):
-            data_str = usbf.read_until()
-            mystring = json.loads(str(data_str.decode("utf-8")).strip())
-            return mystring
+    if (usbf.in_waiting > 0):
+        data_str = usbf.read_until()
+        mystring = json.loads(str(data_str.decode("utf-8")).strip())
+        return mystring
 
-        # Put the rest of your code you want here
+    # Put the rest of your code you want here
 
-        time.sleep(0.01)
+    time.sleep(0.01)
     """
-    msg = usbf.read_until()# read until a new line
+    msg = usbf.read_until()  # read until a new line
     mystring = json.loads(str(msg.decode("utf-8")).strip())
     return mystring
 
+
 def callback(*args):
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(idProfil),)
+    ).fetchall()
     dbvars = dict(res)
 
-    i=3
+    i = 3
     for var in dbvars:
         settingsList[var].delete(0, END)
-        settingsList[var].insert(0,dbvars[var])
+        settingsList[var].insert(0, dbvars[var])
         """tk.Label(canvas_tab2, text=var,font=text_font,anchor='w', width=25).grid(row=i,column=0)
         e1 = tk.Entry(canvas_tab2,font=text_font)
         e1.grid(row=i,column=1)
         e1.insert(0,dbvars[var])
         i+=1"""
 
+
 def setStepperValue(*args):
     moveStepperInput.delete(0, END)
-    moveStepperInput.insert(0,str(stepperList[int(stepperchoosen.get())]))
+    moveStepperInput.insert(0, str(stepperList[int(stepperchoosen.get())]))
+
 
 def saveSettings():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
     for key in settingsList:
-        print(key,idProfil,settingsList[key].get())
-        c.execute("UPDATE vars SET value = ? WHERE name LIKE '"+key+"' AND idProfil = "+str(idProfil)+"", (float(settingsList[key].get()),))
+        print(key, idProfil, settingsList[key].get())
+        c.execute(
+            "UPDATE vars SET value = ? WHERE name LIKE '"
+            + key
+            + "' AND idProfil = "
+            + str(idProfil)
+            + "",
+            (float(settingsList[key].get()),),
+        )
         conn.commit()
+
 
 def saveMachineSettings():
 
     c.execute("UPDATE vars SET value = ? WHERE name LIKE 'bias'", (float(bias.get()),))
-    c.execute("UPDATE vars SET value = ? WHERE name LIKE 'bias2'", (float(bias2.get()),))
+    c.execute(
+        "UPDATE vars SET value = ? WHERE name LIKE 'bias2'", (float(bias2.get()),)
+    )
     conn.commit()
+
 
 def addJob():
 
     addJobLength = float(jobLength.get())
 
-    res = c.execute("SELECT id,name,loader FROM profili WHERE name LIKE ?", (str(jobProfile.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name,loader FROM profili WHERE name LIKE ?", (str(jobProfile.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     jobLoader = int(res[2])
     if not idProfil:
@@ -433,22 +493,33 @@ def addJob():
 
     addJobQty = int(jobQty.get())
 
-    c.execute("INSERT INTO job (length, qty,idProfile, loader, qtyD, done) VALUES ('"+str(addJobLength)+"','"+str(addJobQty)+"','"+str(idProfil)+"','"+str(jobLoader)+"','0','0')")
+    c.execute(
+        "INSERT INTO job (length, qty,idProfile, loader, qtyD, done) VALUES ('"
+        + str(addJobLength)
+        + "','"
+        + str(addJobQty)
+        + "','"
+        + str(idProfil)
+        + "','"
+        + str(jobLoader)
+        + "','0','0')"
+    )
     conn.commit()
 
     initJobs()
     return True
-    #res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
-    #idProfil = int(res[0])
-    #if not idProfil:
+    # res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(monthchoosen.get()),)).fetchone()
+    # idProfil = int(res[0])
+    # if not idProfil:
     #    idProfil = 1
 
-    #for key in settingsList:
+    # for key in settingsList:
     #    print(key, idProfil, settingsList[key].get())
     #    c.execute(
     #        "UPDATE vars SET value = ? WHERE name LIKE '" + key + "' AND idProfil = " + str(idProfil) + "",
     #        (float(settingsList[key].get()),))
     #    conn.commit()
+
 
 def handle_focus(event):
     global currentSetting
@@ -456,6 +527,7 @@ def handle_focus(event):
         if event.widget == settingsList[k]:
             settingsList[k].config({"background": "#ffffcc"})
             currentSetting = k
+
 
 def handle_focus_lost(event):
     global currentSetting
@@ -473,7 +545,7 @@ def Simpletoggle():
         "T": 1,
     }
 
-    spindleList[int(spindlechoosen.get())] = 1;
+    spindleList[int(spindlechoosen.get())] = 1
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
@@ -487,11 +559,12 @@ def Simpletoggle2():
         "T": 0,
     }
 
-    spindleList[int(spindlechoosen.get())] = 0;
+    spindleList[int(spindlechoosen.get())] = 0
     print(json.dumps(data).encode())
     usb.write(json.dumps(data).encode())
     hearv = hear()
     label.config(text=str(hearv))
+
 
 def toggleAllOff():
     global spindleList
@@ -506,6 +579,7 @@ def toggleAllOff():
     hearv = hear()
     label.config(text=str(hearv))
 
+
 def toggleAllOn():
     global spindleList
     data = {
@@ -519,9 +593,10 @@ def toggleAllOn():
     hearv = hear()
     label.config(text=str(hearv))
 
+
 def changeTool(idTool, dir):
 
-    action = (dir == "LEFT" and "CTL" or "CTR")
+    action = dir == "LEFT" and "CTL" or "CTR"
 
     data = {
         "A": action,
@@ -532,111 +607,170 @@ def changeTool(idTool, dir):
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
-    
+
+
 def pullTools():
 
     data = {
-        "A": 'PT',
+        "A": "PT",
     }
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
 
+
 def ctrlDeleteJob(idJob):
-    sql = 'DELETE FROM job WHERE id=?'
+    sql = "DELETE FROM job WHERE id=?"
     cur = conn.cursor()
-    #cur.execute(sql, (idJob,))
-    #conn.commit()
+    # cur.execute(sql, (idJob,))
+    # conn.commit()
 
     initJobs()
 
+
 def ctrlConfirmJob(idJob):
-    c.execute("UPDATE job SET done = 1 WHERE id = " + str(idJob) + "",)
+    c.execute(
+        "UPDATE job SET done = 1 WHERE id = " + str(idJob) + "",
+    )
     conn.commit()
 
     initJobs()
+
 
 def runJobs():
     jobsRunning = True
     start_auto_thread()
     return True
 
+
 def stopJobs():
     jobsRunning = False
     stop_auto_thread()
     return True
 
+
 def initEmptyCombo():
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil LIKE ?", (str(1),)
+    ).fetchall()
     dbvars = dict(res)
 
     i = 3
     for var in dbvars:
-        tk.Label(canvas_tab2, text=var, font=etext_font,anchor='w', width=25).grid(row=i, column=0)
+        tk.Label(canvas_tab2, text=var, font=etext_font, anchor="w", width=25).grid(
+            row=i, column=0
+        )
         e1 = Entry(canvas_tab2, font=etext_font, width=10)
         e1.grid(row=i, column=1)
         settingsList[var] = e1
         settingsList[var].insert(0, 0)
         i += 1
 
+
 def initJobs():
     for widget in vrtalkaDList.winfo_children():
         widget.destroy()
 
-    res = c.execute("SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1 ORDER BY length ASC").fetchall()
+    res = c.execute(
+        "SELECT length,qty,idProfile,loader,qtyD,done,id FROM job WHERE done != 1 ORDER BY length ASC"
+    ).fetchall()
 
-    tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor='w', width=10).grid(row=2, column=0)
-    tk.Label(vrtalkaDList, text="Profil", font=etext_font, anchor='w', width=25).grid(row=2, column=1)
-    tk.Label(vrtalkaDList, text="Količina", font=etext_font, anchor='w', width=10).grid(row=2, column=2)
-    tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor='w', width=10).grid(row=2, column=3)
-    tk.Label(vrtalkaDList, text="Zaključeno", font=etext_font, anchor='w', width=10).grid(row=2, column=4)
-    tk.Label(vrtalkaDList, text="Potrdi", font=etext_font, anchor='w', width=5).grid(row=2, column=5)
-    tk.Label(vrtalkaDList, text="Izbrisi", font=etext_font, anchor='w', width=5).grid(row=2, column=6)
+    tk.Label(vrtalkaDList, text="Dolžina", font=etext_font, anchor="w", width=10).grid(
+        row=2, column=0
+    )
+    tk.Label(vrtalkaDList, text="Profil", font=etext_font, anchor="w", width=25).grid(
+        row=2, column=1
+    )
+    tk.Label(vrtalkaDList, text="Količina", font=etext_font, anchor="w", width=10).grid(
+        row=2, column=2
+    )
+    tk.Label(vrtalkaDList, text="Ostane", font=etext_font, anchor="w", width=10).grid(
+        row=2, column=3
+    )
+    tk.Label(
+        vrtalkaDList, text="Zaključeno", font=etext_font, anchor="w", width=10
+    ).grid(row=2, column=4)
+    tk.Label(vrtalkaDList, text="Potrdi", font=etext_font, anchor="w", width=5).grid(
+        row=2, column=5
+    )
+    tk.Label(vrtalkaDList, text="Izbrisi", font=etext_font, anchor="w", width=5).grid(
+        row=2, column=6
+    )
 
-    #imgConfirm = PhotoImage(file=r"confirm.png")
-    #imgDelete = PhotoImage(file=r"delete.png")
+    # imgConfirm = PhotoImage(file=r"confirm.png")
+    # imgDelete = PhotoImage(file=r"delete.png")
 
     i = 3
     for row in res:
-
         rowLength = row[0]
         rowQty = row[1]
 
-        res = c.execute("SELECT id,name,loader FROM profili WHERE id LIKE ?", (str(row[2]),)).fetchone()
+        res = c.execute(
+            "SELECT id,name,loader FROM profili WHERE id LIKE ?", (str(row[2]),)
+        ).fetchone()
         rowProfile = str(res[1])
         if not rowProfile:
-            rowProfile = '/'
+            rowProfile = "/"
 
         rowQtyD = row[4]
         rowDone = row[5]
-        tk.Label(vrtalkaDList, text=rowLength, font=etext_font,anchor='w', width=10).grid(row=i, column=0)
-        tk.Label(vrtalkaDList, text=rowProfile, font=etext_font,anchor='w', width=25).grid(row=i, column=1)
-        tk.Label(vrtalkaDList, text=rowQty, font=etext_font,anchor='w', width=10).grid(row=i, column=2)
-        tk.Label(vrtalkaDList, text=rowQtyD, font=etext_font,anchor='w', width=10).grid(row=i, column=3)
-        tk.Label(vrtalkaDList, text=rowDone, font=etext_font,anchor='w', width=10).grid(row=i, column=4)
+        tk.Label(
+            vrtalkaDList, text=rowLength, font=etext_font, anchor="w", width=10
+        ).grid(row=i, column=0)
+        tk.Label(
+            vrtalkaDList, text=rowProfile, font=etext_font, anchor="w", width=25
+        ).grid(row=i, column=1)
+        tk.Label(vrtalkaDList, text=rowQty, font=etext_font, anchor="w", width=10).grid(
+            row=i, column=2
+        )
+        tk.Label(
+            vrtalkaDList, text=rowQtyD, font=etext_font, anchor="w", width=10
+        ).grid(row=i, column=3)
+        tk.Label(
+            vrtalkaDList, text=rowDone, font=etext_font, anchor="w", width=10
+        ).grid(row=i, column=4)
 
-        ctrlConfirm = Button(vrtalkaDList, text='Potrdi', command=lambda :ctrlConfirmJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=5, row=i)
-        ctrlDelete = Button(vrtalkaDList, text='Izbrisi', command=lambda :ctrlDeleteJob(row[6]), bg='brown', fg='white',font=('Courier New', '18')).grid(column=6, row=i)
+        ctrlConfirm = Button(
+            vrtalkaDList,
+            text="Potrdi",
+            command=lambda: ctrlConfirmJob(row[6]),
+            bg="brown",
+            fg="white",
+            font=("Courier New", "18"),
+        ).grid(column=5, row=i)
+        ctrlDelete = Button(
+            vrtalkaDList,
+            text="Izbrisi",
+            command=lambda: ctrlDeleteJob(row[6]),
+            bg="brown",
+            fg="white",
+            font=("Courier New", "18"),
+        ).grid(column=6, row=i)
         i += 1
+
 
 def prep():
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+    ).fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -667,10 +801,10 @@ def prep():
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
         "HL": dbvars["hodL"] * 80,
-        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"] * 80,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
         "HD": dbvars["hodD"] * 80,
-        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"] * 80,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
         "POL": dbvars["povratekL"] * 80,
         "POD": dbvars["povratekD"] * 80,
@@ -678,14 +812,15 @@ def prep():
         "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
-        "MAZD": int(dbvars["mazalkaProfil"])
+        "MAZD": int(dbvars["mazalkaProfil"]),
+        "MAZOFF": int(dbvars["mazalkaOffTimer"]),
     }
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
@@ -693,12 +828,16 @@ def prep():
 
 def executeDrill():
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+    ).fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -729,10 +868,10 @@ def executeDrill():
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
         "HL": dbvars["hodL"] * 80,
-        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"] * 80,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
         "HD": dbvars["hodD"] * 80,
-        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"] * 80,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
         "POL": dbvars["povratekL"] * 80,
         "POD": dbvars["povratekD"] * 80,
@@ -740,31 +879,37 @@ def executeDrill():
         "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
-        "MAZD": int(dbvars["mazalkaProfil"])
+        "MAZD": int(dbvars["mazalkaProfil"]),
+        "MAZOFF": int(dbvars["mazalkaOffTimer"]),
     }
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
 
-    #label.config(text=str(hearv))
+    # label.config(text=str(hearv))
+
 
 def executeDrillPlehek():
 
     global nizekPlehekS
     global visokPlehekS
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+    ).fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -801,10 +946,10 @@ def executeDrillPlehek():
         "OL": int(dbvars["orodjeL"]),
         "OD": int(dbvars["orodjeD"]),
         "HL": dbvars["hodL"] * 80,
-        "PHL": dbvars["pocasnejePredKoncemHodaL"]*80,
+        "PHL": dbvars["pocasnejePredKoncemHodaL"] * 80,
         "PHLH": dbvars["hitrostPredKoncemHodaL"],
         "HD": dbvars["hodD"] * 80,
-        "PHD": dbvars["pocasnejePredKoncemHodaD"]*80,
+        "PHD": dbvars["pocasnejePredKoncemHodaD"] * 80,
         "PHDH": dbvars["hitrostPredKoncemHodaD"],
         "POL": dbvars["povratekL"] * 80,
         "POD": dbvars["povratekD"] * 80,
@@ -812,28 +957,34 @@ def executeDrillPlehek():
         "POVD": dbvars["povrtavanjeD"] * 80,
         "POVLI": int(dbvars["povrtavanjeLIzklop"]),
         "POVDI": int(dbvars["povrtavanjeDIzklop"]),
-        "MAZD": int(dbvars["mazalkaProfil"])
+        "MAZD": int(dbvars["mazalkaProfil"]),
+        "MAZOFF": int(dbvars["mazalkaOffTimer"]),
     }
 
     usb.write(json.dumps(data).encode())
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
 
-    #label.config(text=str(hearv))
+    # label.config(text=str(hearv))
+
 
 def spindleOn():
 
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+    ).fetchall()
     dbvars = dict(res)
 
     data = {
@@ -848,11 +999,12 @@ def spindleOn():
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
-    
+
+
 def spindleOff():
 
     data = {
@@ -863,37 +1015,41 @@ def spindleOff():
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() != "done":
-        errorBox.config(state=DISABLED, fg='white', bg='red')
+        errorBox.config(state=DISABLED, fg="white", bg="red")
         return False
     else:
         return True
 
+
 def measure():
-    
+
     data = {
         "A": "measure",
     }
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    #print(hearv)
+    # print(hearv)
     if str(hearv["status"]).strip() == "waitingForProfile":
-        runCyc.config(state=ACTIVE, bg='green')
-        #print("Enabled")
-    
+        runCyc.config(state=ACTIVE, bg="green")
+        # print("Enabled")
+
     return hearv["status"]
 
 
-
 def cut():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
     print(idProfil)
 
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+    ).fetchall()
     dictionary = {}
     # dbvars = (Convert(res, dictionary))
     dbvars = dict(res)
@@ -915,16 +1071,20 @@ def cut():
     label.config(text=str(hearv))
 """
 
+
 def loadAndMeasure():
 
-    res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name, loader FROM profili WHERE name LIKE ?",
+        (str(profilChooser.get()),),
+    ).fetchone()
     idProfil = int(res[0])
     loadingBay = int(res[2])
     if not idProfil:
         idProfil = 1
         loadingBay = 0
 
-    cutM = float(runLength.get().replace(',', '.'))
+    cutM = float(runLength.get().replace(",", "."))
 
     print("Rev move to load profile")
     tmpStatus = retractLoader()
@@ -933,8 +1093,12 @@ def loadAndMeasure():
     if cutM < 250:
         tmpEL = 0
 
-    tmpStatus = moveFeeder("moveRev", float(
-        runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+    tmpStatus = moveFeeder(
+        "moveRev",
+        float(runLength.get().replace(",", ".")) + saw_width + refExtension - tmpEL,
+        1,
+        1,
+    )
 
     print("Fold extension in extended")
     if cutM > 250:
@@ -952,20 +1116,26 @@ def loadAndMeasure():
 
     print("Profile loaded")
     tmpStatus = retractLoader()
-    tmpStatus = moveFeeder("moveRev",
-                        float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+    tmpStatus = moveFeeder(
+        "moveRev",
+        float(runLength.get().replace(",", ".")) + saw_width + refExtension,
+        1,
+        1,
+    )
 
     print("Extend extension")
     tmpStatus = extensionE()
 
     measure()
 
-    tmpStatus = moveFeeder("moveRev",measureToCutDistance*-1, 0, 1)
+    tmpStatus = moveFeeder("moveRev", measureToCutDistance * -1, 0, 1)
 
     cut()
 
+
 def runCycle1():
     moveFeeder("moveRev", int(1000))
+
 
 def runCycle():
 
@@ -989,7 +1159,10 @@ def runCycle():
     global zagaToggleS
     global zagaToggleSFirst
 
-    res = c.execute("SELECT id,name, loader FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name, loader FROM profili WHERE name LIKE ?",
+        (str(profilChooser.get()),),
+    ).fetchone()
     idProfil = int(res[0])
     loadingBay = int(res[2])
     if not idProfil:
@@ -1002,7 +1175,7 @@ def runCycle():
     tmpRes = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
     tmpBias2 = float(tmpRes[2])
 
-    biasDiff = (tmpBias1 - tmpBias2)
+    biasDiff = tmpBias1 - tmpBias2
 
     toolSetup = False
     if currentProfileId is None:
@@ -1013,26 +1186,29 @@ def runCycle():
         toolSetup = True
 
     if toolSetup:
-        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        res = c.execute(
+            "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+        ).fetchall()
         dbvars = dict(res)
-        if float(dbvars['sensorToDrill']) == 0.0:
+        if float(dbvars["sensorToDrill"]) == 0.0:
             currentSensorToDrill = sensorToDrill
         else:
-            currentSensorToDrill = float(dbvars['sensorToDrill'])
+            currentSensorToDrill = float(dbvars["sensorToDrill"])
         currentSensorToDrill = sensorToDrill
 
         pullTools()
         prep()
 
-        changeTool(int(dbvars["orodjeL"]), 'LEFT')
-        changeTool(int(dbvars["orodjeD"]), 'RIGHT')
+        changeTool(int(dbvars["orodjeL"]), "LEFT")
+        changeTool(int(dbvars["orodjeD"]), "RIGHT")
 
-
-    res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+    res = c.execute(
+        "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+    ).fetchall()
     dbvars = dict(res)
     # reset bias value if wrong tool
     if int(dbvars["orodjeL"]) == 1:
-        biasDiff = 0 
+        biasDiff = 0
 
     # use "plehek" offset in first move
     plehekOffset = 0
@@ -1041,7 +1217,7 @@ def runCycle():
     elif visokPlehekS and float(dbvars["hodVisokPlehek"]) != 0.0:
         plehekOffset = dbvars["hodVisokPlehek"]
     elif nizekPlehekS and float(dbvars["hodNizekPlehek"]) != 0.0:
-        plehekOffset = dbvars["hodNizekPlehek"]    
+        plehekOffset = dbvars["hodNizekPlehek"]
 
     plehekOffsetZadaj = 0
     if visokPlehekZadajS and nizekPlehekZadajS:
@@ -1049,18 +1225,15 @@ def runCycle():
     elif visokPlehekZadajS and float(dbvars["hodVisokPlehek"]) != 0.0:
         plehekOffsetZadaj = dbvars["hodVisokPlehek"]
     elif nizekPlehekZadajS and float(dbvars["hodNizekPlehek"]) != 0.0:
-        plehekOffsetZadaj = dbvars["hodNizekPlehek"]    
-
+        plehekOffsetZadaj = dbvars["hodNizekPlehek"]
 
     if manualLoading:
         while 1:
-
             print("Run cycle ročno")
-            cut = float(runLength.get().replace(',', '.'))
-            #add_log(cut)
+            cut = float(runLength.get().replace(",", "."))
+            # add_log(cut)
             print(str(cut))
 
-        
             # if currentCutLen == 0:
             #    currentCutLen = cut
 
@@ -1069,14 +1242,18 @@ def runCycle():
             #    currentCutLen = cut
 
             print("Rev move to load profile")
-            tmpStatus = moveFeeder("moveRev", float(
-                runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+            tmpStatus = moveFeeder(
+                "moveRev",
+                float(runLength.get().replace(",", ".")) + saw_width + refExtension,
+                1,
+                1,
+            )
 
             print("Extend extension")
             tmpStatus = extensionE()
 
-            #print("Fold extension")
-            #tmpStatus = extensionF()
+            # print("Fold extension")
+            # tmpStatus = extensionF()
 
             # raspberry should ping loader if is loaded and retry after a sec. eg. waitForProfile() func
 
@@ -1085,13 +1262,13 @@ def runCycle():
             tmpStatus = waitForProfile()
 
             currentSpindleTime = int(time.time())
-            
+
             while tmpStatus != "done":
                 # wait for profile
                 if changingLen == True:
                     resetLoader()
                     print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
+                    runCyc.config(state=NORMAL, bg="green")
                     return
 
                 print("Waiting for profile")
@@ -1100,17 +1277,17 @@ def runCycle():
 
                 if (int(time.time()) - currentSpindleTime) > spindleOffTime:
                     ## turn spindle on
-                    turnSpindleOff = spindleOff() 
+                    turnSpindleOff = spindleOff()
 
             # tmpStatus = unloadProfile()
             print("Profile loaded")
-            #tmpStatus = moveFeeder("moveRev",
+            # tmpStatus = moveFeeder("moveRev",
             #                       float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
 
-            #print("Wait for loading sensor")
-            #tmpStatus = waitForProfile()
-            #while tmpStatus != "done":
-                # wait for profile
+            # print("Wait for loading sensor")
+            # tmpStatus = waitForProfile()
+            # while tmpStatus != "done":
+            # wait for profile
             #    if changingLen == True:
             #        print("Drop cycle")
             #        runCyc.config(state=NORMAL, bg='green')
@@ -1138,12 +1315,14 @@ def runCycle():
             ## turn spindle on
             turnSpindleOn = spindleOn()
 
-            #use plehek offset for first drill
+            # use plehek offset for first drill
             if plehekOffset != 0:
-                tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                tmpfromStart = (
+                    refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                )
                 print("Lukna plehek: " + str(tmpfromStart))
                 tmpStatus = moveFeeder("moveFwdF", tmpfromStart)
-    
+
                 print("Drill prva")
                 if not disableDrill:
                     drillRes = executeDrillPlehek()
@@ -1152,7 +1331,7 @@ def runCycle():
                         return
                 fromStart -= tmpfromStart
 
-            add_log("Št. lukenj: "+str(nbrOfHoles))
+            add_log("Št. lukenj: " + str(nbrOfHoles))
             print("Prva ročno: " + str(fromStart))
             tmpStatus = moveFeeder("moveFwd", float(fromStart))
 
@@ -1165,15 +1344,14 @@ def runCycle():
 
             if changingLen == True:
                 print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
+                runCyc.config(state=NORMAL, bg="green")
                 return
 
             moveTo = fromStart
             for x in range(1, nbrOfHoles):
-
                 if changingLen == True:
                     print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
+                    runCyc.config(state=NORMAL, bg="green")
                     return
 
                 moveTo += 120
@@ -1187,18 +1365,17 @@ def runCycle():
                         return
 
     ##
-        ##
-        ##
-        ## AUTO LOAD
-        ##
-        ##
-        ##
+    ##
+    ##
+    ## AUTO LOAD
+    ##
+    ##
+    ##
     ##
     else:
         while currentQty > 0:
-
             print("Run cycle")
-            cut = float(runLength.get().replace(',', '.'))
+            cut = float(runLength.get().replace(",", "."))
             print(cut)
             # if currentCutLen == 0:
             #    currentCutLen = cut
@@ -1208,7 +1385,6 @@ def runCycle():
             #    currentCutLen = cut
 
             if not zagaToggleS:
-
                 print("Rev move to load profile")
                 tmpStatus = retractLoader()
 
@@ -1216,8 +1392,15 @@ def runCycle():
                 if cut < 250:
                     tmpEL = 0
 
-                tmpStatus = moveFeeder("moveRev", float(
-                    runLength.get().replace(',', '.')) + saw_width + refExtension - tmpEL, 1, 1)
+                tmpStatus = moveFeeder(
+                    "moveRev",
+                    float(runLength.get().replace(",", "."))
+                    + saw_width
+                    + refExtension
+                    - tmpEL,
+                    1,
+                    1,
+                )
 
                 print("Fold extension in extended")
                 if cut > 250:
@@ -1233,7 +1416,7 @@ def runCycle():
                     if changingLen == True:
                         resetLoader()
                         print("Drop cycle")
-                        runCyc.config(state=NORMAL, bg='green')
+                        runCyc.config(state=NORMAL, bg="green")
                         return
 
                     print("Waiting for profile")
@@ -1243,13 +1426,17 @@ def runCycle():
                 # tmpStatus = unloadProfile()
                 print("Profile loaded")
                 tmpStatus = retractLoader()
-                tmpStatus = moveFeeder("moveRev",
-                                    float(runLength.get().replace(',', '.')) + saw_width + refExtension, 1, 1)
+                tmpStatus = moveFeeder(
+                    "moveRev",
+                    float(runLength.get().replace(",", ".")) + saw_width + refExtension,
+                    1,
+                    1,
+                )
 
                 print("Extend extension")
                 tmpStatus = extensionE()
 
-                '''print("Load profile")
+                """print("Load profile")
                 tmpStatus = waitForProfile()
                 while tmpStatus != "done":
                     # wait for profile
@@ -1262,10 +1449,9 @@ def runCycle():
                     print("Waiting for profile")
                     time.sleep(1)
                     tmpStatus = waitForProfile()
-                '''
+                """
 
             if zagaToggleSFirst:
-
                 nbrOfHoles = int(cut // 120)
                 rem = cut % 120
                 fromStart = refExtension + (120 - rem)
@@ -1290,12 +1476,14 @@ def runCycle():
             ## turn spindle on
             turnSpindleOn = spindleOn()
 
-            #use plehek offset for first drill
+            # use plehek offset for first drill
             if plehekOffset != 0:
-                tmpfromStart = refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                tmpfromStart = (
+                    refExtension + saw_width + sensorToDrill + biasDiff + plehekOffset
+                )
                 print("Lukna plehek: " + str(tmpfromStart))
                 tmpStatus = moveFeeder("moveFwdF", tmpfromStart)
-    
+
                 print("Drill prva")
                 if not disableDrill:
                     drillRes = executeDrillPlehek()
@@ -1305,10 +1493,9 @@ def runCycle():
                 fromStart -= tmpfromStart
 
             if nbrOfHoles > 0:
-
                 print("Prva: " + str(fromStart))
-                tmpStatus = moveFeeder("moveFwdF", fromStart)   
-                
+                tmpStatus = moveFeeder("moveFwdF", fromStart)
+
                 print("Drill prva")
                 if not disableDrill:
                     drillRes = executeDrill()
@@ -1319,16 +1506,15 @@ def runCycle():
                 if changingLen == True:
                     resetLoader()
                     print("Drop cycle")
-                    runCyc.config(state=NORMAL, bg='green')
+                    runCyc.config(state=NORMAL, bg="green")
                     return
 
                 moveTo = fromStart
                 for x in range(1, nbrOfHoles):
-
                     if changingLen == True:
                         resetLoader()
                         print("Drop cycle")
-                        runCyc.config(state=NORMAL, bg='green')
+                        runCyc.config(state=NORMAL, bg="green")
                         return
 
                     moveTo += 120
@@ -1341,15 +1527,18 @@ def runCycle():
                             print("Drill error")
                             return
                 currentQty = currentQty - 1
-                runQtyR.config(text=str(currentQtyLabel-currentQty)+' / ' + str(currentQtyLabel))
+                runQtyR.config(
+                    text=str(currentQtyLabel - currentQty)
+                    + " / "
+                    + str(currentQtyLabel)
+                )
             else:
                 currentQty -= 1
 
             # odrezi
-            #tmpCut = cut()
+            # tmpCut = cut()
 
         if currentQty == 0:
-
             ## turn spindle off
             turnSpindleOff = spindleOff()
 
@@ -1358,8 +1547,9 @@ def runCycle():
             npButton.config(image=off)
             nizekPlehekS = False
 
-            runCyc.config(state=ACTIVE, bg='green')
-            changeLen.config(state=ACTIVE, bg='green')
+            runCyc.config(state=ACTIVE, bg="green")
+            changeLen.config(state=ACTIVE, bg="green")
+
 
 def runAuto():
 
@@ -1373,7 +1563,9 @@ def runAuto():
     global manualLoading
     global disableDrill
 
-    res = c.execute("SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0 ORDER BY length ASC").fetchone()
+    res = c.execute(
+        "SELECT id,length, qty, idProfile, loader, qtyD, done FROM job WHERE done = 0 ORDER BY length ASC"
+    ).fetchone()
     idProfil = int(res[3])
     loadingBay = int(res[4])
     currJobLength = float(res[1])
@@ -1388,20 +1580,20 @@ def runAuto():
         toolSetup = True
 
     if toolSetup:
-        res = c.execute("SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)).fetchall()
+        res = c.execute(
+            "SELECT name,value FROM vars WHERE idProfil = ?", (str(idProfil),)
+        ).fetchall()
         dbvars = dict(res)
-        if float(dbvars['sensorToDrill']) == 0.0:
+        if float(dbvars["sensorToDrill"]) == 0.0:
             currentSensorToDrill = sensorToDrill
         else:
-            currentSensorToDrill = float(dbvars['sensorToDrill'])
+            currentSensorToDrill = float(dbvars["sensorToDrill"])
         currentSensorToDrill = sensorToDrill
 
-        changeTool(int(dbvars["orodjeL"]), 'LEFT')
-        changeTool(int(dbvars["orodjeD"]), 'RIGHT')
-
+        changeTool(int(dbvars["orodjeL"]), "LEFT")
+        changeTool(int(dbvars["orodjeD"]), "RIGHT")
 
     while currJobQty > 0:
-
         print("Run cycle")
         cut = currJobLength
         print(cut)
@@ -1418,9 +1610,16 @@ def runAuto():
         tmpEL = extensionLength
         if cut < 250:
             tmpEL = 0
-        
-        tmpStatus = moveFeeder("moveRev", float(
-            runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension - tmpEL , 1, 1)
+
+        tmpStatus = moveFeeder(
+            "moveRev",
+            float(runLength.get().replace(",", "."))
+            + currentSensorToDrill
+            + refExtension
+            - tmpEL,
+            1,
+            1,
+        )
 
         print("Fold extension in extended")
         tmpStatus = extensionF()
@@ -1435,7 +1634,7 @@ def runAuto():
             if stop_auto_thread == True:
                 resetLoader()
                 print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
+                runCyc.config(state=NORMAL, bg="green")
                 return
 
             print("Waiting for profile")
@@ -1445,8 +1644,14 @@ def runAuto():
         # tmpStatus = unloadProfile()
         print("Profile loaded")
         tmpStatus = retractLoader()
-        tmpStatus = moveFeeder("moveRev",
-                               float(runLength.get().replace(',', '.')) + currentSensorToDrill + refExtension, 1, 1)
+        tmpStatus = moveFeeder(
+            "moveRev",
+            float(runLength.get().replace(",", "."))
+            + currentSensorToDrill
+            + refExtension,
+            1,
+            1,
+        )
 
         print("Extend extension")
         tmpStatus = extensionE()
@@ -1458,7 +1663,7 @@ def runAuto():
             if stop_auto_thread == True:
                 resetLoader()
                 print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
+                runCyc.config(state=NORMAL, bg="green")
                 return
 
             print("Waiting for profile")
@@ -1488,16 +1693,15 @@ def runAuto():
         if stop_auto_thread == True:
             resetLoader()
             print("Drop cycle")
-            runCyc.config(state=NORMAL, bg='green')
+            runCyc.config(state=NORMAL, bg="green")
             return
 
         moveTo = fromStart
         for x in range(1, nbrOfHoles):
-
             if stop_auto_thread == True:
                 resetLoader()
                 print("Drop cycle")
-                runCyc.config(state=NORMAL, bg='green')
+                runCyc.config(state=NORMAL, bg="green")
                 return
 
             moveTo += 120
@@ -1512,18 +1716,19 @@ def runAuto():
         currJobQty = currJobQty - 1
 
 
-
 # abs = 1 => move to absolute position
 # abs = 0 => relative move
-def moveFeeder(dir, step, abs = 0, firstMove = 0):
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+def moveFeeder(dir, step, abs=0, firstMove=0):
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
 
-    #44.44
+    # 44.44
     # 0.005 koraka cca 0.5mm
     # 44.385 12.12.2023
     # zobata letev 36.5785
@@ -1532,125 +1737,116 @@ def moveFeeder(dir, step, abs = 0, firstMove = 0):
         "M": int((float(step) * 36.5785)),
         "M2": abs,
         "P": idProfil,
-        "F": firstMove
+        "F": firstMove,
     }
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    #print(hearv)
+    # print(hearv)
     if str(hearv["status"]).strip() == "waitingForProfile":
-        runCyc.config(state=ACTIVE, bg='green')
-        #print("Enabled")
+        runCyc.config(state=ACTIVE, bg="green")
+        # print("Enabled")
     """else:
         #cut.config(state=ACTIVE, bg='red')
     label.config(text=str(hearv))
 """
     return hearv["status"]
 
-def resetLoader():
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
-    data = {
-        "A": "resetLoader"
-    }
+def resetLoader():
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
+
+    data = {"A": "resetLoader"}
 
     usbl.write(json.dumps(data).encode())
-    #hearv = hearJsonl()
-    #print(hearv)
-    #if str(hearv["status"]).strip() == "done":
-    runCyc.config(state=ACTIVE, bg='green')
+    # hearv = hearJsonl()
+    # print(hearv)
+    # if str(hearv["status"]).strip() == "done":
+    runCyc.config(state=ACTIVE, bg="green")
 
-    #return hearv["status"]
+    # return hearv["status"]
     return True
 
-def retractLoader():
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
-    data = {
-        "A": "retractLoader"
-    }
+def retractLoader():
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
+
+    data = {"A": "retractLoader"}
 
     usbl.write(json.dumps(data).encode())
     hearv = hearJsonl()
-    #print(hearv)
+    # print(hearv)
     if str(hearv["status"]).strip() == "done":
-        runCyc.config(state=ACTIVE, bg='green')
+        runCyc.config(state=ACTIVE, bg="green")
 
     return hearv["status"]
+
 
 def extensionE():
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
 
-    data = {
-        "A": "extensionE"
-    }
+    data = {"A": "extensionE"}
 
     usbl.write(json.dumps(data).encode())
     hearv = hearJsonl()
-    #print(hearv)
+    # print(hearv)
     if str(hearv["status"]).strip() == "done":
-        runCyc.config(state=ACTIVE, bg='green')
+        runCyc.config(state=ACTIVE, bg="green")
 
     return hearv["status"]
+
 
 def extensionF():
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
 
-    data = {
-        "A": "extensionF"
-    }
+    data = {"A": "extensionF"}
 
     usbl.write(json.dumps(data).encode())
     hearv = hearJsonl()
 
     if str(hearv["status"]).strip() == "done":
-        runCyc.config(state=ACTIVE, bg='green')
+        runCyc.config(state=ACTIVE, bg="green")
 
     return hearv["status"]
 
-def loadProfile(idBay = 0, singleLoader = 0):
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
-    data = {
-        "A": "load",
-        "B": idBay,
-        "L": singleLoader
-    }
+def loadProfile(idBay=0, singleLoader=0):
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
+
+    data = {"A": "load", "B": idBay, "L": singleLoader}
     print(data)
     usbl.write(json.dumps(data).encode())
     hearv = hearJsonl()
 
     if str(hearv["status"]).strip() == "done":
-        runCyc.config(state=ACTIVE, bg='green')
+        runCyc.config(state=ACTIVE, bg="green")
 
     return hearv["status"]
 
-def unloadProfile():
-    runCyc.config(state=DISABLED, fg='white', bg='#e69225')
 
-    data = {
-        "A": "unload"
-    }
+def unloadProfile():
+    runCyc.config(state=DISABLED, fg="white", bg="#e69225")
+
+    data = {"A": "unload"}
 
     usbl.write(json.dumps(data).encode())
     hearv = hearJsonl()
 
     if str(hearv["status"]).strip() == "done":
-        runCyc.config(state=ACTIVE, bg='green')
+        runCyc.config(state=ACTIVE, bg="green")
 
     return hearv["status"]
 
 
 def waitForProfile():
-    res = c.execute("SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)).fetchone()
+    res = c.execute(
+        "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
+    ).fetchone()
     idProfil = int(res[0])
     if not idProfil:
         idProfil = 1
 
-    data = {
-        "A": "waitForProfile",
-        "P": idProfil
-    }
+    data = {"A": "waitForProfile", "P": idProfil}
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
@@ -1667,10 +1863,11 @@ def start_thread():
 
     currentQty = int(runQty.get())
     currentQtyLabel = int(runQty.get())
-    runQtyR.config(text='0 / '+str(currentQtyLabel))
+    runQtyR.config(text="0 / " + str(currentQtyLabel))
     # Create and launch a thread
     cycleThread = Thread(target=runCycle)
     cycleThread.start()
+
 
 def stop_thread():
     # Assign global variable and set value to stop
@@ -1679,10 +1876,10 @@ def stop_thread():
     global currentQty
     currentQty = 0
     currentQtyLabel = 0
-    runQtyR.config(text='0 / 0')
+    runQtyR.config(text="0 / 0")
     changingLen = True
-    #changeLength()
-    #cycleThread.join()
+    # changeLength()
+    # cycleThread.join()
 
 
 def start_auto_thread():
@@ -1694,6 +1891,7 @@ def start_auto_thread():
     # Create and launch a thread
     cycleAutoThread = Thread(target=runAuto)
     cycleAutoThread.start()
+
 
 def stop_auto_thread():
     # Assign global variable and set value to stop
@@ -1721,43 +1919,40 @@ def changeLength():
 
 def homeFeeder():
 
-    #homingf.config(state=DISABLED, fg='white', bg='#e69225')
+    # homingf.config(state=DISABLED, fg='white', bg='#e69225')
 
-    data = {
-        "A": "home"
-    }
+    data = {"A": "home"}
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    #if str(hearv["status"]).strip() == "done":
-        #homingf.config(state=ACTIVE, bg='green')
-    #else:
-        #homingf.config(state=ACTIVE, bg='red')
+    # if str(hearv["status"]).strip() == "done":
+    # homingf.config(state=ACTIVE, bg='green')
+    # else:
+    # homingf.config(state=ACTIVE, bg='red')
+
 
 def refFeeder(dis):
 
-    #homingf.config(state=DISABLED, fg='white', bg='#e69225')
+    # homingf.config(state=DISABLED, fg='white', bg='#e69225')
 
-    data = {
-        "A": "setRef",
-        "M": int((float(dis) * 36.5785))
-    }
+    data = {"A": "setRef", "M": int((float(dis) * 36.5785))}
 
     usbf.write(json.dumps(data).encode())
     hearv = hearJsonf()
-    #if str(hearv["status"]).strip() == "done":
-        #homingf.config(state=ACTIVE, bg='green')
-    #else:
-        #homingf.config(state=ACTIVE, bg='red')
+    # if str(hearv["status"]).strip() == "done":
+    # homingf.config(state=ACTIVE, bg='green')
+    # else:
+    # homingf.config(state=ACTIVE, bg='red')
 
 
 def changeLen():
     changeLen = True
 
+
 def home():
 
     global stepperList
-    #homingd.config(state=DISABLED,fg='white',bg='#e69225')
+    # homingd.config(state=DISABLED,fg='white',bg='#e69225')
     data = {
         "action": "home",
     }
@@ -1766,33 +1961,39 @@ def home():
     hearv = hearJson()
     print(hearv)
     if str(hearv["status"]).strip() == "done":
-        #homingd.config(state=ACTIVE, bg='green')
+        # homingd.config(state=ACTIVE, bg='green')
         stepperList = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
-    #else:
-        #homingd.config(state=ACTIVE, bg='red')
-    #label.config(text=str(hearv))
+    # else:
+    # homingd.config(state=ACTIVE, bg='red')
+    # label.config(text=str(hearv))
+
 
 def homeAll():
     global feederRef
 
     home()
-    #homeFeeder()
+    # homeFeeder()
 
     res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
     balansRef = float(res[2])
 
     refFeeder(balansRef)
-    runCyc.config(state=ACTIVE, bg='green')
-    changeLen.config(state=ACTIVE, bg='green')
+    runCyc.config(state=ACTIVE, bg="green")
+    changeLen.config(state=ACTIVE, bg="green")
 
     currentProfileId = None
+
 
 def moveStepper():
 
     global stepperList
 
     stepRatio = 80
-    if int(stepperchoosen.get()) == 7 or int(stepperchoosen.get()) == 6 or int(stepperchoosen.get()) == 5:
+    if (
+        int(stepperchoosen.get()) == 7
+        or int(stepperchoosen.get()) == 6
+        or int(stepperchoosen.get()) == 5
+    ):
         stepRatio = 80
 
     data = {
@@ -1809,9 +2010,10 @@ def moveStepper():
         listInt = 1
         for stepperData in hearv["data"]:
             stepperList[listInt] = float(stepperData) / stepRatio
-            listInt+=1
+            listInt += 1
 
     label.config(text=str(hearv["status"]))
+
 
 def nbrOfHoles(sv):
     if runLength.get():
@@ -1834,6 +2036,7 @@ def manualLoad():
         mlButton.config(image=on)
         manualLoading = True
 
+
 def visokPlehek():
     global visokPlehekS
     global nizekPlehekS
@@ -1846,6 +2049,7 @@ def visokPlehek():
         visokPlehekS = True
         npButton.config(image=off)
         nizekPlehekS = False
+
 
 def nizekPlehek():
     global nizekPlehekS
@@ -1860,6 +2064,7 @@ def nizekPlehek():
         vpButton.config(image=off)
         visokPlehekS = False
 
+
 def visokPlehekZadaj():
     global visokPlehekZadajS
     global nizekPlehekZadajS
@@ -1872,6 +2077,7 @@ def visokPlehekZadaj():
         visokPlehekZadajS = True
         npzButton.config(image=off)
         nizekPlehekZadajS = False
+
 
 def nizekPlehekZadaj():
     global nizekPlehekZadajS
@@ -1886,6 +2092,7 @@ def nizekPlehekZadaj():
         vpzButton.config(image=off)
         visokPlehekZadajS = False
 
+
 def toggleZaga():
     global zagaToggleS
     # Determine is on or off
@@ -1894,23 +2101,25 @@ def toggleZaga():
         zagaToggleS = False
     else:
         zagaToggle.config(image=on)
-        zagaToggleS = True        
+        zagaToggleS = True
+
 
 def add_log(log):
     output.insert("end", log + "\n")
     output.see("end")
-    #output.after(1000, add_timestamp)
+    # output.after(1000, add_timestamp)
+
 
 main = tk.Tk()
 main.geometry("1920x1080")
-app=FullScreenApp(main)
+app = FullScreenApp(main)
 
-text_font = ('Arial', '26')
-etext_font = ('Arial', '18')
+text_font = ("Arial", "26")
+etext_font = ("Arial", "18")
 
 s = ttk.Style()
-s.configure('TNotebook.Tab', font=('Arial' ,'18'))
-s.configure('TNotebook.Tab', padding=(30 ,10))
+s.configure("TNotebook.Tab", font=("Arial", "18"))
+s.configure("TNotebook.Tab", padding=(30, 10))
 
 notebook = ttk.Notebook(main, width=1900, height=1000)
 
@@ -1922,269 +2131,408 @@ tab4 = ttk.Frame(notebook, width=1900, height=950)
 
 # add frames to notebook
 
-notebook.add(tab1, text='Vrtalka')
-notebook.add(tab2, text='Nastavitve')
-notebook.add(tab3, text='Ročno upravljanje')
-notebook.add(tab4, text='Nastavitve stroja')
+notebook.add(tab1, text="Vrtalka")
+notebook.add(tab2, text="Nastavitve")
+notebook.add(tab3, text="Ročno upravljanje")
+notebook.add(tab4, text="Nastavitve stroja")
 notebook.pack(side=TOP)
 
 vrtalkaL = ttk.Frame(tab1, width=600, height=950)
-vrtalkaL.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
+vrtalkaL.pack(expand=True, anchor="nw", side=LEFT, padx=60, pady=40)
 
 vrtalkaD = ttk.Frame(tab1, width=1300, height=200)
-vrtalkaD.pack(expand=True, anchor='nw', side=TOP, pady=40)
+vrtalkaD.pack(expand=True, anchor="nw", side=TOP, pady=40)
 
-vrtalkaDList = ScrollableFrame(tab1, height=750, width=1300, hscroll=False, vscroll=True)
-vrtalkaDList.pack(side=BOTTOM, expand=True, anchor='nw')
+vrtalkaDList = ScrollableFrame(
+    tab1, height=750, width=1300, hscroll=False, vscroll=True
+)
+vrtalkaDList.pack(side=BOTTOM, expand=True, anchor="nw")
 
-measureBtn = Button(vrtalkaD, text='M', command=loadAndMeasure,bg='green',fg='white', font=('Courier New', '32')).grid(column=0, columnspan=3, row=0, pady=30)
+measureBtn = Button(
+    vrtalkaD,
+    text="M",
+    command=loadAndMeasure,
+    bg="green",
+    fg="white",
+    font=("Courier New", "32"),
+).grid(column=0, columnspan=3, row=0, pady=30)
 
-runJobs = Button(vrtalkaD, text='Zaženi', command=runJobs,bg='green',fg='white', font=('Courier New', '32')).grid(column=1, columnspan=3, row=0, pady=30)
-stobJobs = Button(vrtalkaD, text='Stop', command=stopJobs,bg='red',fg='white', font=('Courier New', '32')).grid(column=2, columnspan=4, row=0, pady=30)
+runJobs = Button(
+    vrtalkaD,
+    text="Zaženi",
+    command=runJobs,
+    bg="green",
+    fg="white",
+    font=("Courier New", "32"),
+).grid(column=1, columnspan=3, row=0, pady=30)
+stobJobs = Button(
+    vrtalkaD,
+    text="Stop",
+    command=stopJobs,
+    bg="red",
+    fg="white",
+    font=("Courier New", "32"),
+).grid(column=2, columnspan=4, row=0, pady=30)
 
 
 jobLength = Entry(vrtalkaD, font=text_font, width=10)
-jobLength.grid(row=1, column=0,columnspan=2,sticky=W+E)
+jobLength.grid(row=1, column=0, columnspan=2, sticky=W + E)
 jobLength.insert(0, 0.0)
 
 n = tk.StringVar()
 n.trace("w", callback)
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
-jobProfile = ttk.Combobox(vrtalkaD, width=25,textvariable=n,font=text_font, style='my.TCombobox')
+jobProfile = ttk.Combobox(
+    vrtalkaD, width=25, textvariable=n, font=text_font, style="my.TCombobox"
+)
 # Adding combobox drop down list
-jobProfile['values'] = list(profilList.values())
-jobProfile.grid(column=2,columnspan=2, row=1)
-main.option_add('*TCombobox*Listbox.font', text_font)
+jobProfile["values"] = list(profilList.values())
+jobProfile.grid(column=2, columnspan=2, row=1)
+main.option_add("*TCombobox*Listbox.font", text_font)
 
 jobQty = Entry(vrtalkaD, font=text_font, width=5)
-jobQty.grid(row=1, column=4,columnspan=2,sticky=W+E)
+jobQty.grid(row=1, column=4, columnspan=2, sticky=W + E)
 jobQty.insert(0, 0)
 
 
-addJob = Button(vrtalkaD, text='Dodaj', command=addJob,bg='brown',fg='white', font=('Courier New', '24')).grid(column=6, row=1)
+addJob = Button(
+    vrtalkaD,
+    text="Dodaj",
+    command=addJob,
+    bg="brown",
+    fg="white",
+    font=("Courier New", "24"),
+).grid(column=6, row=1)
 initJobs()
 
 
 canvas_tab2 = ScrollableFrame(tab2, height=950, width=900, hscroll=False, vscroll=True)
-canvas_tab2.pack(side=LEFT, expand=True, anchor='w')
+canvas_tab2.pack(side=LEFT, expand=True, anchor="w")
 
 numpad = ttk.Frame(tab2, width=900, height=950)
-numpad.pack(expand=True, anchor='nw', side=LEFT,padx=60, pady=40)
+numpad.pack(expand=True, anchor="nw", side=LEFT, padx=60, pady=40)
 
 
-#canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
+# canvas_tab3 = ScrollableFrame(tab3, height=500, width=690, hscroll=False, vscroll=True)
 canvas_tab3 = ttk.Frame(tab3, height=950, width=900)
-#canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
+# canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
 canvas_tab3.grid(column=0, row=0)
 
 tool_tab3 = ttk.Frame(tab3, height=50, width=300)
-#tool_tab3.pack(side=LEFT, expand=False, anchor='w')
+# tool_tab3.pack(side=LEFT, expand=False, anchor='w')
 tool_tab3.grid(column=0, row=1)
 
 canvas_tab4 = ttk.Frame(tab4, height=950, width=900)
-#canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
+# canvas_tab3.pack(side=LEFT, expand=True, anchor='nw')
 canvas_tab4.grid(column=0, row=0)
 
 
-numpad2 = ttk.Frame(tab3, width=900, height=950,borderwidth=1)
-#numpad2.pack(expand=True, anchor='e')
-numpad2.grid(column=1, row=0,sticky="ew",padx=40, pady=40)
+numpad2 = ttk.Frame(tab3, width=900, height=950, borderwidth=1)
+# numpad2.pack(expand=True, anchor='e')
+numpad2.grid(column=1, row=0, sticky="ew", padx=40, pady=40)
 
-button = tk.Button(vrtalkaL,
-                   text="Zapri",
-                   font=text_font,
-                   fg="red",
-                   command=quit).grid(column=0,
-                               row=0,
-                               padx=30,
-                               pady=30)
+button = tk.Button(vrtalkaL, text="Zapri", font=text_font, fg="red", command=quit).grid(
+    column=0, row=0, padx=30, pady=30
+)
 
-tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=2)
-tk.Label(vrtalkaL, text='     \n   ').grid(column=0,row=3)
-
-
+tk.Label(vrtalkaL, text="     \n   ").grid(column=0, row=2)
+tk.Label(vrtalkaL, text="     \n   ").grid(column=0, row=3)
 
 
 sv = StringVar()
 sv.trace("w", lambda name, index, mode, sv=sv: nbrOfHoles(sv))
-runLengthNOHL = Label(vrtalkaL, text='Št. lukenj:',font=text_font)
-runLengthNOHL.grid(row=7, column=0,sticky=W+E)
-runLengthNOH = Label(vrtalkaL, text='',font=text_font)
-runLengthNOH.grid(row=7, column=1,sticky=W+E)
+runLengthNOHL = Label(vrtalkaL, text="Št. lukenj:", font=text_font)
+runLengthNOHL.grid(row=7, column=0, sticky=W + E)
+runLengthNOH = Label(vrtalkaL, text="", font=text_font)
+runLengthNOH.grid(row=7, column=1, sticky=W + E)
 
 
-runLengthL = Label(vrtalkaL, text='Dolžina:',font=text_font)
-runLengthL.grid(row=6, column=0,sticky=W+E)
-runLength = Entry(vrtalkaL, font=etext_font, width=10,textvariable=sv)
-runLength.grid(row=6, column=1,columnspan=2,sticky=W+E)
+runLengthL = Label(vrtalkaL, text="Dolžina:", font=text_font)
+runLengthL.grid(row=6, column=0, sticky=W + E)
+runLength = Entry(vrtalkaL, font=etext_font, width=10, textvariable=sv)
+runLength.grid(row=6, column=1, columnspan=2, sticky=W + E)
 runLength.insert(0, 0.0)
 
 
-runQtyL = Label(vrtalkaL, text='Količina:',font=text_font)
-runQtyL.grid(row=8, column=0,sticky=W+E)
+runQtyL = Label(vrtalkaL, text="Količina:", font=text_font)
+runQtyL.grid(row=8, column=0, sticky=W + E)
 runQty = Entry(vrtalkaL, font=etext_font, width=10)
-runQty.grid(row=8, column=1,columnspan=2,sticky=W+E)
+runQty.grid(row=8, column=1, columnspan=2, sticky=W + E)
 runQty.insert(0, 0)
-runQtyR = Label(vrtalkaL, text='0 / 0',font=text_font)
-runQtyR.grid(row=8, column=2,sticky=W+E)
+runQtyR = Label(vrtalkaL, text="0 / 0", font=text_font)
+runQtyR.grid(row=8, column=2, sticky=W + E)
 
-runCyc = tk.Button(vrtalkaL,text="Cikel",font=text_font,bg="green",command=start_thread)
-runCyc.grid(column=0,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
-runCyc.config(state=DISABLED, fg='white', bg='red')
-changeLen = tk.Button(vrtalkaL,text="Ustavi cikel",font=text_font,bg="green",command=stop_thread)
-changeLen.grid(column=1,columnspan=2,sticky=W+E,row=9,padx=30,pady=30)
-changeLen.config(state=DISABLED, fg='white', bg='red')
+runCyc = tk.Button(
+    vrtalkaL, text="Cikel", font=text_font, bg="green", command=start_thread
+)
+runCyc.grid(column=0, columnspan=2, sticky=W + E, row=9, padx=30, pady=30)
+runCyc.config(state=DISABLED, fg="white", bg="red")
+changeLen = tk.Button(
+    vrtalkaL, text="Ustavi cikel", font=text_font, bg="green", command=stop_thread
+)
+changeLen.grid(column=1, columnspan=2, sticky=W + E, row=9, padx=30, pady=30)
+changeLen.config(state=DISABLED, fg="white", bg="red")
 
-errorBox = tk.Button(vrtalkaL,text="",font=text_font,bg="green",)
-errorBox.grid(column=0,columnspan=4,sticky=W+E,row=10,padx=30, pady=30)
+errorBox = tk.Button(
+    vrtalkaL,
+    text="",
+    font=text_font,
+    bg="green",
+)
+errorBox.grid(column=0, columnspan=4, sticky=W + E, row=10, padx=30, pady=30)
 
-mlButtonLabel = Label(vrtalkaL, text = "Ročno nalaganje:", fg = "green", font = ("Helvetica", 24))
-mlButtonLabel.grid(column=0,columnspan=4,sticky=W,row=11,padx=5, pady=30)
+mlButtonLabel = Label(
+    vrtalkaL, text="Ročno nalaganje:", fg="green", font=("Helvetica", 24)
+)
+mlButtonLabel.grid(column=0, columnspan=4, sticky=W, row=11, padx=5, pady=30)
 
-visokPlehekLabel = Label(vrtalkaL, text = "Visok plehek S:", fg = "green", font = ("Helvetica", 20))
-visokPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=12,padx=10, pady=10)
+visokPlehekLabel = Label(
+    vrtalkaL, text="Visok plehek S:", fg="green", font=("Helvetica", 20)
+)
+visokPlehekLabel.grid(column=0, columnspan=2, sticky=W, row=12, padx=10, pady=10)
 
-nizekPlehekLabel = Label(vrtalkaL, text = "Nizek plehek S:", fg = "green", font = ("Helvetica", 20))
-nizekPlehekLabel.grid(column=0,columnspan=2,sticky=W,row=13,padx=10, pady=10)
+nizekPlehekLabel = Label(
+    vrtalkaL, text="Nizek plehek S:", fg="green", font=("Helvetica", 20)
+)
+nizekPlehekLabel.grid(column=0, columnspan=2, sticky=W, row=13, padx=10, pady=10)
 
-visokPlehekZadajLabel = Label(vrtalkaL, text = "Visok plehek Z:", fg = "green", font = ("Helvetica", 20))
-visokPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=12,padx=5, pady=10)
+visokPlehekZadajLabel = Label(
+    vrtalkaL, text="Visok plehek Z:", fg="green", font=("Helvetica", 20)
+)
+visokPlehekZadajLabel.grid(column=2, columnspan=2, sticky=W, row=12, padx=5, pady=10)
 
-nizekPlehekZadajLabel = Label(vrtalkaL, text = "Nizek plehek Z:", fg = "green", font = ("Helvetica", 20))
-nizekPlehekZadajLabel.grid(column=2,columnspan=2,sticky=W,row=13,padx=5, pady=10)
+nizekPlehekZadajLabel = Label(
+    vrtalkaL, text="Nizek plehek Z:", fg="green", font=("Helvetica", 20)
+)
+nizekPlehekZadajLabel.grid(column=2, columnspan=2, sticky=W, row=13, padx=5, pady=10)
 
-on = PhotoImage(file = "/home/pi/profilapp/on.png")
-off = PhotoImage(file = "/home/pi/profilapp/off.png")
-mlButton = Button(vrtalkaL, image = off, bd = 0,command = manualLoad)
-mlButton.grid(column=2,columnspan=1,sticky=W,row=11,padx=10, pady=30)
+on = PhotoImage(file="/home/pi/profilapp/on.png")
+off = PhotoImage(file="/home/pi/profilapp/off.png")
+mlButton = Button(vrtalkaL, image=off, bd=0, command=manualLoad)
+mlButton.grid(column=2, columnspan=1, sticky=W, row=11, padx=10, pady=30)
 
-vpButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehek)
-vpButton.grid(column=1,columnspan=1,sticky=W,row=12,padx=5, pady=10)
+vpButton = Button(vrtalkaL, image=off, bd=0, command=visokPlehek)
+vpButton.grid(column=1, columnspan=1, sticky=W, row=12, padx=5, pady=10)
 
-npButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehek)
-npButton.grid(column=1,columnspan=1,sticky=W,row=13,padx=5, pady=10)
+npButton = Button(vrtalkaL, image=off, bd=0, command=nizekPlehek)
+npButton.grid(column=1, columnspan=1, sticky=W, row=13, padx=5, pady=10)
 
-vpzButton = Button(vrtalkaL, image = off, bd = 0,command = visokPlehekZadaj)
-vpzButton.grid(column=3,columnspan=1,sticky=W,row=12,padx=10, pady=10)
+vpzButton = Button(vrtalkaL, image=off, bd=0, command=visokPlehekZadaj)
+vpzButton.grid(column=3, columnspan=1, sticky=W, row=12, padx=10, pady=10)
 
-npzButton = Button(vrtalkaL, image = off, bd = 0,command = nizekPlehekZadaj)
-npzButton.grid(column=3,columnspan=1,sticky=W,row=13,padx=10, pady=10)
+npzButton = Button(vrtalkaL, image=off, bd=0, command=nizekPlehekZadaj)
+npzButton.grid(column=3, columnspan=1, sticky=W, row=13, padx=10, pady=10)
 
 # uporaba zage in
 
-remLengthL = Label(vrtalkaL, text='Ostanek:',font=text_font)
-remLengthL.grid(row=14, column=0,sticky=W+E)
+remLengthL = Label(vrtalkaL, text="Ostanek:", font=text_font)
+remLengthL.grid(row=14, column=0, sticky=W + E)
 remLength = Entry(vrtalkaL, font=etext_font, width=10)
-remLength.grid(row=14, column=1,columnspan=2,sticky=W+E)
+remLength.grid(row=14, column=1, columnspan=2, sticky=W + E)
 remLength.insert(0, 0.0)
 
 
-zagaLabel = Label(vrtalkaL, text = "Žaga:", fg = "green", font = ("Helvetica", 20))
-zagaLabel.grid(column=2,columnspan=2,sticky=W,row=14,padx=5, pady=10)
+zagaLabel = Label(vrtalkaL, text="Žaga:", fg="green", font=("Helvetica", 20))
+zagaLabel.grid(column=2, columnspan=2, sticky=W, row=14, padx=5, pady=10)
 
-zagaToggle = Button(vrtalkaL, image = off, bd = 0,command = toggleZaga)
-zagaToggle.grid(column=3,columnspan=1,sticky=W,row=14,padx=10, pady=10)
-
-
-output = tk.Text(vrtalkaL, height=6, width=40, fg = "green", font = ("Helvetica", 24))
-output.grid(column=0,columnspan=4,sticky=W,row=15,padx=5, pady=30)
-
-#homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
-#homingd.grid(column=2,row=9,padx=30,pady=30)
-
-#homingf = tk.Button(vrtalkaL,text="Homing F",font=text_font,command=homeFeeder)
-#homingf.grid(column=3,row=9,padx=30,pady=30)
+zagaToggle = Button(vrtalkaL, image=off, bd=0, command=toggleZaga)
+zagaToggle.grid(column=3, columnspan=1, sticky=W, row=14, padx=10, pady=10)
 
 
-homingA = tk.Button(vrtalkaL,text="Homing",font=text_font,command=homeAll)
-homingA.grid(column=2,row=0,padx=30,pady=30)
+output = tk.Text(vrtalkaL, height=6, width=40, fg="green", font=("Helvetica", 24))
+output.grid(column=0, columnspan=4, sticky=W, row=15, padx=5, pady=30)
+
+# homingd = tk.Button(vrtalkaL,text="Homing d",font=text_font,command=home)
+# homingd.grid(column=2,row=9,padx=30,pady=30)
+
+# homingf = tk.Button(vrtalkaL,text="Homing F",font=text_font,command=homeFeeder)
+# homingf.grid(column=3,row=9,padx=30,pady=30)
+
+
+homingA = tk.Button(vrtalkaL, text="Homing", font=text_font, command=homeAll)
+homingA.grid(column=2, row=0, padx=30, pady=30)
 
 res = c.execute("SELECT id,name FROM profili").fetchall()
 profilList = dict(res)
 
-profilChooser = ttk.Combobox(vrtalkaL, width=25,font=text_font, style='my.TCombobox')
+profilChooser = ttk.Combobox(vrtalkaL, width=25, font=text_font, style="my.TCombobox")
 # Adding combobox drop down list
-profilChooser['values'] = list(profilList.values())
+profilChooser["values"] = list(profilList.values())
 profilChooser.grid(column=0, row=2, columnspan=3)
 
-style = ttk.Style() #If you dont have a class, put your root in the()
-style.configure('TCombobox', arrowsize=50)
+style = ttk.Style()  # If you dont have a class, put your root in the()
+style.configure("TCombobox", arrowsize=50)
 
 n = tk.StringVar()
 n.trace("w", callback)
 
 
-monthchoosen = ttk.Combobox(canvas_tab2, width=25,textvariable=n,font=text_font, style='my.TCombobox')
+monthchoosen = ttk.Combobox(
+    canvas_tab2, width=25, textvariable=n, font=text_font, style="my.TCombobox"
+)
 # Adding combobox drop down list
-monthchoosen['values'] = list(profilList.values())
+monthchoosen["values"] = list(profilList.values())
 monthchoosen.grid(column=0, row=0)
-main.option_add('*TCombobox*Listbox.font', text_font)
+main.option_add("*TCombobox*Listbox.font", text_font)
 initEmptyCombo()
 
-saveSett = Button(canvas_tab2, text='Shrani', command=saveSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
+saveSett = Button(
+    canvas_tab2,
+    text="Shrani",
+    command=saveSettings,
+    bg="brown",
+    fg="white",
+    font=("Courier New", "24"),
+).grid(column=1, row=0)
 
 n1 = tk.StringVar()
 n1.trace("w", setStepperValue)
 
-tk.Label(canvas_tab3, text="Izberi stepper: ", font=text_font,anchor='w', width=15).grid(column=0, row=0,pady=(15,0))
-stepperchoosen = ttk.Combobox(canvas_tab3, width=5,textvariable=n1,font=('Arial', '30'))
+tk.Label(
+    canvas_tab3, text="Izberi stepper: ", font=text_font, anchor="w", width=15
+).grid(column=0, row=0, pady=(15, 0))
+stepperchoosen = ttk.Combobox(
+    canvas_tab3, width=5, textvariable=n1, font=("Arial", "30")
+)
 # Adding combobox drop down list
-stepperchoosen['values'] = [1,2,3,4,5,6,7]
+stepperchoosen["values"] = [1, 2, 3, 4, 5, 6, 7]
 stepperchoosen.grid(column=1, row=0)
-main.option_add('*TCombobox*Listbox.font', text_font)
+main.option_add("*TCombobox*Listbox.font", text_font)
 
-tk.Label(canvas_tab3, text="Premakni za: ", font=text_font,anchor='w', width=15).grid(column=0, row=2,pady=(15,0))
+tk.Label(canvas_tab3, text="Premakni za: ", font=text_font, anchor="w", width=15).grid(
+    column=0, row=2, pady=(15, 0)
+)
 moveStepperInput = Entry(canvas_tab3, font=text_font, width=10)
 moveStepperInput.grid(column=1, row=2)
 
-stepperButton = Button(canvas_tab3, text='Premakni stepper', command=moveStepper, width=20,bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=3)
-#tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=4)
+stepperButton = Button(
+    canvas_tab3,
+    text="Premakni stepper",
+    command=moveStepper,
+    width=20,
+    bg="brown",
+    fg="white",
+    font=("Arial", "20"),
+).grid(column=0, row=3)
+# tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=4)
 
-tk.Label(canvas_tab3, text="Izberi spindle: ", font=text_font,anchor='w', width=15).grid(column=0, row=5,pady=(15,0))
-spindlechoosen = ttk.Combobox(canvas_tab3, width=5,textvariable=n,font=('Arial', '30'))
+tk.Label(
+    canvas_tab3, text="Izberi spindle: ", font=text_font, anchor="w", width=15
+).grid(column=0, row=5, pady=(15, 0))
+spindlechoosen = ttk.Combobox(
+    canvas_tab3, width=5, textvariable=n, font=("Arial", "30")
+)
 # Adding combobox drop down list
-spindlechoosen['values'] = [1,2,3,4,5,6,7]
+spindlechoosen["values"] = [1, 2, 3, 4, 5, 6, 7]
 spindlechoosen.grid(column=1, row=5)
 
-tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=6)
+tk.Label(canvas_tab3, text="     \n   ").grid(column=0, row=6)
 
-toggle_button = Button(canvas_tab3,text="OFF", width=10, command=Simpletoggle, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=7)
-toggle_button2 = Button(canvas_tab3,text="ON", width=10, command=Simpletoggle2, bg='green',font=('Arial', '20')).grid(column=1, row=7)
+toggle_button = Button(
+    canvas_tab3,
+    text="OFF",
+    width=10,
+    command=Simpletoggle,
+    bg="brown",
+    fg="white",
+    font=("Arial", "20"),
+).grid(column=0, row=7)
+toggle_button2 = Button(
+    canvas_tab3,
+    text="ON",
+    width=10,
+    command=Simpletoggle2,
+    bg="green",
+    font=("Arial", "20"),
+).grid(column=1, row=7)
 
-tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=8)
+tk.Label(canvas_tab3, text="     \n   ").grid(column=0, row=8)
 
-toggle_button3 = Button(canvas_tab3,text="OFF ALL", width=10, command=toggleAllOff, bg='brown',fg='white',font=('Arial', '20')).grid(column=0, row=9)
-toggle_button4 = Button(canvas_tab3,text="ON ALL", width=10, command=toggleAllOn, bg='green',font=('Arial', '20')).grid(column=1, row=9)
-tk.Label(canvas_tab3, text='     \n   ').grid(column=0,row=10)
+toggle_button3 = Button(
+    canvas_tab3,
+    text="OFF ALL",
+    width=10,
+    command=toggleAllOff,
+    bg="brown",
+    fg="white",
+    font=("Arial", "20"),
+).grid(column=0, row=9)
+toggle_button4 = Button(
+    canvas_tab3,
+    text="ON ALL",
+    width=10,
+    command=toggleAllOn,
+    bg="green",
+    font=("Arial", "20"),
+).grid(column=1, row=9)
+tk.Label(canvas_tab3, text="     \n   ").grid(column=0, row=10)
 
-drill = tk.Button(canvas_tab3,text="Vrtaj",font=text_font,bg="green",command=executeDrill)\
-    .grid(column=0,columnspan=2,sticky=W+E,row=10,padx=30,pady=30)
+drill = tk.Button(
+    canvas_tab3, text="Vrtaj", font=text_font, bg="green", command=executeDrill
+).grid(column=0, columnspan=2, sticky=W + E, row=10, padx=30, pady=30)
 
-cutBtn = tk.Button(canvas_tab3,text="Žaga",font=text_font,bg="green",command=cut).grid(column=0,columnspan=2,sticky=W+E,row=11,padx=30,pady=30)
+cutBtn = tk.Button(
+    canvas_tab3, text="Žaga", font=text_font, bg="green", command=cut
+).grid(column=0, columnspan=2, sticky=W + E, row=11, padx=30, pady=30)
 
 
-toolButton1 = Button(tool_tab3,text="T1", width=10, command=lambda :changeTool(1,'LEFT'), bg='green',font=('Arial', '20')).grid(column=0, row=0)
-toolButton2 = Button(tool_tab3,text="T3", width=10, command=lambda :changeTool(3,'LEFT'), bg='green',font=('Arial', '20')).grid(column=1, row=0)
-toolButton3 = Button(tool_tab3,text="T2", width=10, command=lambda :changeTool(2,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=2, row=0)
-toolButton4 = Button(tool_tab3,text="T4", width=10, command=lambda :changeTool(4,'RIGHT'), bg='green',font=('Arial', '20')).grid(column=3, row=0)
+toolButton1 = Button(
+    tool_tab3,
+    text="T1",
+    width=10,
+    command=lambda: changeTool(1, "LEFT"),
+    bg="green",
+    font=("Arial", "20"),
+).grid(column=0, row=0)
+toolButton2 = Button(
+    tool_tab3,
+    text="T3",
+    width=10,
+    command=lambda: changeTool(3, "LEFT"),
+    bg="green",
+    font=("Arial", "20"),
+).grid(column=1, row=0)
+toolButton3 = Button(
+    tool_tab3,
+    text="T2",
+    width=10,
+    command=lambda: changeTool(2, "RIGHT"),
+    bg="green",
+    font=("Arial", "20"),
+).grid(column=2, row=0)
+toolButton4 = Button(
+    tool_tab3,
+    text="T4",
+    width=10,
+    command=lambda: changeTool(4, "RIGHT"),
+    bg="green",
+    font=("Arial", "20"),
+).grid(column=3, row=0)
 
-bias = Label(canvas_tab4, text='Bias sveder 4,2mm:',font=text_font)
-bias.grid(row=1, column=0,sticky=W+E)
+bias = Label(canvas_tab4, text="Bias sveder 4,2mm:", font=text_font)
+bias.grid(row=1, column=0, sticky=W + E)
 bias = Entry(canvas_tab4, font=etext_font, width=10)
-bias.grid(row=1, column=1,columnspan=2,sticky=W+E)
+bias.grid(row=1, column=1, columnspan=2, sticky=W + E)
 res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias'").fetchone()
 bias.insert(0, float(res[2]))
 
-bias2 = Label(canvas_tab4, text='Bias sveder 5mm:',font=text_font)
-bias2.grid(row=2, column=0,sticky=W+E)
+bias2 = Label(canvas_tab4, text="Bias sveder 5mm:", font=text_font)
+bias2.grid(row=2, column=0, sticky=W + E)
 bias2 = Entry(canvas_tab4, font=etext_font, width=10)
-bias2.grid(row=2, column=1,columnspan=2,sticky=W+E)
+bias2.grid(row=2, column=1, columnspan=2, sticky=W + E)
 res = c.execute("SELECT id,name,value FROM vars WHERE name = 'bias2'").fetchone()
 bias2.insert(0, float(res[2]))
 
 
-saveSett = Button(canvas_tab4, text='Shrani nastavitve', command=saveMachineSettings,bg='brown',fg='white', font=('Courier New', '24')).grid(column=1, row=0)
+saveSett = Button(
+    canvas_tab4,
+    text="Shrani nastavitve",
+    command=saveMachineSettings,
+    bg="brown",
+    fg="white",
+    font=("Courier New", "24"),
+).grid(column=1, row=0)
 
 
 Calculator()
@@ -2193,4 +2541,3 @@ main.bind("<FocusIn>", handle_focus)
 main.bind("<FocusOut>", handle_focus_lost)
 
 main.mainloop()
-
