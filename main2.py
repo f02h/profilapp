@@ -1538,10 +1538,10 @@ def runCycle():
 
                 if plehekOffsetZadaj != 0:
 
-                    moveToPlehekZadaj = cut - plekehOffsetZadaj
+                    moveToPlehekZadaj = cut - plehekOffsetZadaj
 
                     print("Lukna plehek zadaj: " + str(moveToPlehekZadaj))
-                    tmpStatus = moveFeeder("moveFwdF", moveToPlehekZadaj)
+                    tmpStatus = moveFeeder("moveFwdF", moveToPlehekZadaj,1)
 
                     print("Drill prva")
                     if not disableDrill:
