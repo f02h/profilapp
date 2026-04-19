@@ -1540,7 +1540,7 @@ def runCycle():
 
                 if plehekOffsetZadaj != 0:
 
-                    moveToPlehekZadaj = (cut + plehekZadajFromStart) - plehekOffsetZadaj
+                    moveToPlehekZadaj = (refExtension + saw_width + sensorToDrill + biasDiff + cut) - plehekOffsetZadaj
 
                     print("Lukna plehek zadaj: " + str(moveToPlehekZadaj))
                     tmpStatus = moveFeeder("moveFwd", moveToPlehekZadaj,1)
