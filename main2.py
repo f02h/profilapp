@@ -1535,6 +1535,21 @@ def runCycle():
                     + " / "
                     + str(currentQtyLabel)
                 )
+
+                if plehekOffsetZadaj != 0:
+
+                    moveToPlehekZadaj = cut - plekehOffsetZadaj
+
+                    print("Lukna plehek: " + str(moveToPlehekZadaj))
+                    tmpStatus = moveFeeder("moveFwdF", moveToPlehekZadaj)
+
+                    print("Drill prva")
+                    if not disableDrill:
+                        drillRes = executeDrillPlehek()
+                        if not drillRes:
+                            print("Drill error")
+                            return
+
             else:
                 currentQty -= 1
 
