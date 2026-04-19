@@ -1476,6 +1476,8 @@ def runCycle():
                 ## razlika med navadnim štartom in tem k je že odžagano
                 fromStart = 10
 
+            plehekZadajFromStart = fromStart
+
             ## turn spindle on
             turnSpindleOn = spindleOn()
 
@@ -1538,7 +1540,7 @@ def runCycle():
 
                 if plehekOffsetZadaj != 0:
 
-                    moveToPlehekZadaj = cut - plehekOffsetZadaj
+                    moveToPlehekZadaj = cut - plehekZadajFromStart - plehekOffsetZadaj
 
                     print("Lukna plehek zadaj: " + str(moveToPlehekZadaj))
                     tmpStatus = moveFeeder("moveFwd", moveToPlehekZadaj,1)
