@@ -1541,7 +1541,7 @@ def runCycle():
                     moveToPlehekZadaj = cut - plehekOffsetZadaj
 
                     print("Lukna plehek zadaj: " + str(moveToPlehekZadaj))
-                    tmpStatus = moveFeeder("moveFwdF", moveToPlehekZadaj,1)
+                    tmpStatus = moveFeeder("moveFwd", moveToPlehekZadaj,1)
 
                     print("Drill prva")
                     if not disableDrill:
@@ -2000,8 +2000,6 @@ def homeAll():
     changeLen.config(state=ACTIVE, bg="green")
 
     currentProfileId = None
-
-    tmpStatus = moveFeeder("moveFwdF", 200,1)
 
 
 def moveStepper():
