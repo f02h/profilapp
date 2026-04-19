@@ -901,6 +901,9 @@ def executeDrillPlehek():
 
     global nizekPlehekS
     global visokPlehekS
+    global nizekPlehekZadajS
+    global visokPlehekZadajS
+
 
     res = c.execute(
         "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
@@ -935,7 +938,7 @@ def executeDrillPlehek():
 
     pozicijaL = dbvars["pozicijaL"]
     pozicijaD = dbvars["pozicijaD"]
-    if nizekPlehekS or visokPlehekS:
+    if nizekPlehekS or visokPlehekS or nizekPlehekZadajS or visokPlehekZadajS:
         pozicijaL -= dbvars["plehekOdmik"]
         pozicijaD -= dbvars["plehekOdmik"]
 
