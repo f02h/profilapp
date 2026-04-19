@@ -1540,7 +1540,7 @@ def runCycle():
 
                     moveToPlehekZadaj = cut - plekehOffsetZadaj
 
-                    print("Lukna plehek: " + str(moveToPlehekZadaj))
+                    print("Lukna plehek zadaj: " + str(moveToPlehekZadaj))
                     tmpStatus = moveFeeder("moveFwdF", moveToPlehekZadaj)
 
                     print("Drill prva")
