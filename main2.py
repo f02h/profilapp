@@ -1540,7 +1540,7 @@ def runCycle():
 
                 if plehekOffsetZadaj != 0:
 
-                    moveToPlehekZadaj = biasDiff - plehekOffsetZadaj
+                    moveToPlehekZadaj = 0 - plehekOffsetZadaj
 
                     print("Lukna plehek zadaj: " + str(moveToPlehekZadaj))
                     tmpStatus = moveFeeder("moveFwd", moveToPlehekZadaj,1)
