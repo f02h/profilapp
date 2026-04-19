@@ -2001,6 +2001,8 @@ def homeAll():
 
     currentProfileId = None
 
+    tmpStatus = moveFeeder("moveFwdF", 200,1)
+
 
 def moveStepper():
 
