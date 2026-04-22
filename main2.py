@@ -904,7 +904,6 @@ def executeDrillPlehek():
     global nizekPlehekZadajS
     global visokPlehekZadajS
 
-
     res = c.execute(
         "SELECT id,name FROM profili WHERE name LIKE ?", (str(profilChooser.get()),)
     ).fetchone()
@@ -1569,6 +1568,10 @@ def runCycle():
             visokPlehekS = False
             npButton.config(image=off)
             nizekPlehekS = False
+            vpzButton.config(image=off)
+            visokPlehekZadajS = False
+            npzButton.config(image=off)
+            nizekPlehekZadajS = False
 
             runCyc.config(state=ACTIVE, bg="green")
             changeLen.config(state=ACTIVE, bg="green")
