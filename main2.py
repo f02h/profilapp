@@ -2297,22 +2297,22 @@ mlButtonLabel.grid(column=0, columnspan=4, sticky=W, row=9, padx=5, pady=30)
 visokPlehekLabel = Label(
     vrtalkaL, text="Visok plehek S:", fg="green", font=("Helvetica", 20)
 )
-visokPlehekLabel.grid(column=0, columnspan=2, sticky=W, row=10, padx=10, pady=10)
+visokPlehekLabel.grid(column=2, columnspan=2, sticky=W, row=10, padx=10, pady=10)
 
 nizekPlehekLabel = Label(
     vrtalkaL, text="Nizek plehek S:", fg="green", font=("Helvetica", 20)
 )
-nizekPlehekLabel.grid(column=0, columnspan=2, sticky=W, row=11, padx=10, pady=10)
+nizekPlehekLabel.grid(column=2, columnspan=2, sticky=W, row=11, padx=10, pady=10)
 
 visokPlehekZadajLabel = Label(
     vrtalkaL, text="Visok plehek Z:", fg="green", font=("Helvetica", 20)
 )
-visokPlehekZadajLabel.grid(column=2, columnspan=2, sticky=W, row=10, padx=5, pady=10)
+visokPlehekZadajLabel.grid(column=0, columnspan=2, sticky=W, row=10, padx=5, pady=10)
 
 nizekPlehekZadajLabel = Label(
     vrtalkaL, text="Nizek plehek Z:", fg="green", font=("Helvetica", 20)
 )
-nizekPlehekZadajLabel.grid(column=2, columnspan=2, sticky=W, row=11, padx=5, pady=10)
+nizekPlehekZadajLabel.grid(column=0, columnspan=2, sticky=W, row=11, padx=5, pady=10)
 
 runCyc = tk.Button(
     vrtalkaL, text="Cikel", font=text_font, bg="green", command=start_thread
@@ -2339,16 +2339,16 @@ mlButton = Button(vrtalkaL, image=off, bd=0, command=manualLoad)
 mlButton.grid(column=2, columnspan=1, sticky=W, row=9, padx=10, pady=30)
 
 vpButton = Button(vrtalkaL, image=off, bd=0, command=visokPlehek)
-vpButton.grid(column=1, columnspan=1, sticky=W, row=10, padx=5, pady=10)
+vpButton.grid(column=3, columnspan=1, sticky=W, row=10, padx=5, pady=10)
 
 npButton = Button(vrtalkaL, image=off, bd=0, command=nizekPlehek)
-npButton.grid(column=1, columnspan=1, sticky=W, row=11, padx=5, pady=10)
+npButton.grid(column=3, columnspan=1, sticky=W, row=11, padx=5, pady=10)
 
 vpzButton = Button(vrtalkaL, image=off, bd=0, command=visokPlehekZadaj)
-vpzButton.grid(column=3, columnspan=1, sticky=W, row=10, padx=10, pady=10)
+vpzButton.grid(column=1, columnspan=1, sticky=W, row=10, padx=10, pady=10)
 
 npzButton = Button(vrtalkaL, image=off, bd=0, command=nizekPlehekZadaj)
-npzButton.grid(column=3, columnspan=1, sticky=W, row=11, padx=10, pady=10)
+npzButton.grid(column=1, columnspan=1, sticky=W, row=11, padx=10, pady=10)
 
 # uporaba zage in
 
